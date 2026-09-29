@@ -1,0 +1,444 @@
+{
+  "artifact": "06_integrations",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Integrações (DLL, COM, sockets, e-mail, arquivos, filas)",
+  "payload": {
+    "counts": {
+      "total": 47,
+      "by_type": {
+        "dll": 35,
+        "socket": 4,
+        "com": 2,
+        "email": 2,
+        "file": 4
+      },
+      "mode": "ast+regex-fallback"
+    },
+    "integrations": [
+      {
+        "type": "dll",
+        "target": "midas.dll",
+        "source_ref": {
+          "file": "Aplicat.pas",
+          "line": 32137
+        },
+        "id": "INT-0001"
+      },
+      {
+        "type": "dll",
+        "target": "\\midas.dll",
+        "source_ref": {
+          "file": "Aplicat.pas",
+          "line": 32143
+        },
+        "id": "INT-0002"
+      },
+      {
+        "type": "socket",
+        "target": "IdTCPClient",
+        "source_ref": {
+          "file": "ArquivosDisponiveisTWFRM.pas"
+        },
+        "id": "INT-0003"
+      },
+      {
+        "type": "socket",
+        "target": "IdTCPConnection",
+        "source_ref": {
+          "file": "ArquivosDisponiveisTWFRM.pas"
+        },
+        "id": "INT-0004"
+      },
+      {
+        "type": "dll",
+        "target": "Mp2032.dll",
+        "source_ref": {
+          "file": "Bematech.pas",
+          "line": 27
+        },
+        "id": "INT-0005"
+      },
+      {
+        "type": "dll",
+        "target": "SiUSBXp.dll",
+        "source_ref": {
+          "file": "ConfiguracaoBematechFRM.pas",
+          "line": 54
+        },
+        "id": "INT-0006"
+      },
+      {
+        "type": "com",
+        "target": "ComObj",
+        "source_ref": {
+          "file": "ExportacaoInadimplentesFRM.pas"
+        },
+        "id": "INT-0007"
+      },
+      {
+        "type": "com",
+        "target": "CreateOleObject",
+        "source_ref": {
+          "file": "ImportarDisciplinaExtracurricularSescFRM.pas"
+        },
+        "id": "INT-0008"
+      },
+      {
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Relat.pas",
+          "line": 18465
+        },
+        "id": "INT-0009"
+      },
+      {
+        "type": "dll",
+        "target": "Midas.dll",
+        "source_ref": {
+          "file": "sobreFRM1.pas",
+          "line": 127
+        },
+        "id": "INT-0010"
+      },
+      {
+        "type": "dll",
+        "target": "\\Midas.dll",
+        "source_ref": {
+          "file": "sobreFRM1.pas",
+          "line": 128
+        },
+        "id": "INT-0011"
+      },
+      {
+        "type": "dll",
+        "target": "DelZip190.dll",
+        "source_ref": {
+          "file": "TABELADM.pas",
+          "line": 2558
+        },
+        "id": "INT-0012"
+      },
+      {
+        "type": "dll",
+        "target": "mscorlib.dll",
+        "source_ref": {
+          "file": "LibNFSe.pas",
+          "line": 154
+        },
+        "id": "INT-0013"
+      },
+      {
+        "type": "dll",
+        "target": "NFSe_Util.dll",
+        "source_ref": {
+          "file": "LibNFSe.pas",
+          "line": 395
+        },
+        "id": "INT-0014"
+      },
+      {
+        "type": "dll",
+        "target": "CertificadoDigital.dll",
+        "source_ref": {
+          "file": "PI_Rotinas_NotaFiscal.pas",
+          "line": 1797
+        },
+        "id": "INT-0015"
+      },
+      {
+        "type": "email",
+        "target": "IdMessage",
+        "via": "Indy",
+        "source_ref": {
+          "file": "ReportsEureka.pas"
+        },
+        "id": "INT-0016"
+      },
+      {
+        "type": "email",
+        "target": "IdSMTP",
+        "via": "Indy",
+        "source_ref": {
+          "file": "ReportsEureka.pas"
+        },
+        "id": "INT-0017"
+      },
+      {
+        "type": "dll",
+        "target": "\\cobranca.dll",
+        "source_ref": {
+          "file": "Func_Servicos.pas",
+          "line": 811
+        },
+        "id": "INT-0018"
+      },
+      {
+        "type": "dll",
+        "target": "xcdunz32.dll",
+        "source_ref": {
+          "file": "Configuracoes_Impl.pas",
+          "line": 168
+        },
+        "id": "INT-0019"
+      },
+      {
+        "type": "dll",
+        "target": "\\email_util\\EnvioEmail.dll",
+        "source_ref": {
+          "file": "uEmailDll.pas",
+          "line": 222
+        },
+        "id": "INT-0020"
+      },
+      {
+        "type": "dll",
+        "target": "\\email_util\\EnvioEmailImediato.dll",
+        "source_ref": {
+          "file": "uEmailDllImediato.pas",
+          "line": 216
+        },
+        "id": "INT-0021"
+      },
+      {
+        "type": "dll",
+        "target": "\\xcdunz32.dll",
+        "source_ref": {
+          "file": "InformacoesSophia.pas",
+          "line": 86
+        },
+        "id": "INT-0022"
+      },
+      {
+        "type": "dll",
+        "target": "\\xcdzip32.dll",
+        "source_ref": {
+          "file": "InformacoesSophia.pas",
+          "line": 96
+        },
+        "id": "INT-0023"
+      },
+      {
+        "type": "dll",
+        "target": "transmitir.dll",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 159
+        },
+        "id": "INT-0024"
+      },
+      {
+        "type": "dll",
+        "target": "Cobranca.dll",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2644
+        },
+        "id": "INT-0025"
+      },
+      {
+        "type": "socket",
+        "target": "IdTCPServer",
+        "source_ref": {
+          "file": "srvmainFRM1.pas"
+        },
+        "id": "INT-0026"
+      },
+      {
+        "type": "dll",
+        "target": "sophbib.dll",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 1832
+        },
+        "id": "INT-0027"
+      },
+      {
+        "type": "dll",
+        "target": "\\sophbib.dll",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 1837
+        },
+        "id": "INT-0028"
+      },
+      {
+        "type": "dll",
+        "target": "\\DelZip190.dll",
+        "source_ref": {
+          "file": "uTabelas.pas",
+          "line": 146
+        },
+        "id": "INT-0029"
+      },
+      {
+        "type": "dll",
+        "target": "Vindi.dll",
+        "source_ref": {
+          "file": "uVindiDll.pas",
+          "line": 360
+        },
+        "id": "INT-0030"
+      },
+      {
+        "type": "dll",
+        "target": "dbexpsda.dll",
+        "source_ref": {
+          "file": "uSophiaInfoConfiguraConexao.pas",
+          "line": 55
+        },
+        "id": "INT-0031"
+      },
+      {
+        "type": "dll",
+        "target": "sqloledb.dll",
+        "source_ref": {
+          "file": "uSophiaInfoConfiguraConexao.pas",
+          "line": 56
+        },
+        "id": "INT-0032"
+      },
+      {
+        "type": "dll",
+        "target": "srvRelatorios.dll",
+        "source_ref": {
+          "file": "WebRelat_Impl.pas",
+          "line": 1426
+        },
+        "id": "INT-0033"
+      },
+      {
+        "type": "dll",
+        "target": "BEMADP32.dll",
+        "source_ref": {
+          "file": "RELATDM.pas",
+          "line": 514
+        },
+        "id": "INT-0034"
+      },
+      {
+        "type": "dll",
+        "target": "Mp2032.DLL",
+        "source_ref": {
+          "file": "Bematech.pas",
+          "line": 498
+        },
+        "id": "INT-0035"
+      },
+      {
+        "type": "dll",
+        "target": "Mp2032_4k.dll",
+        "source_ref": {
+          "file": "Bematech.pas",
+          "line": 505
+        },
+        "id": "INT-0036"
+      },
+      {
+        "type": "dll",
+        "target": "freeStr.dll",
+        "source_ref": {
+          "file": "Criptografia.pas",
+          "line": 141
+        },
+        "id": "INT-0037"
+      },
+      {
+        "type": "dll",
+        "target": "ntdll.dll",
+        "source_ref": {
+          "file": "FP_Prima.pas",
+          "line": 7058
+        },
+        "id": "INT-0038"
+      },
+      {
+        "type": "dll",
+        "target": "kernel32.dll",
+        "source_ref": {
+          "file": "FP_Prima.pas",
+          "line": 10960
+        },
+        "id": "INT-0039"
+      },
+      {
+        "type": "dll",
+        "target": "MAPI32.DLL",
+        "source_ref": {
+          "file": "Mapi.pas",
+          "line": 388
+        },
+        "id": "INT-0040"
+      },
+      {
+        "type": "dll",
+        "target": "ole32.dll",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 57
+        },
+        "id": "INT-0041"
+      },
+      {
+        "type": "socket",
+        "target": "ScktComp",
+        "source_ref": {
+          "file": "SftpLib.pas"
+        },
+        "id": "INT-0042"
+      },
+      {
+        "type": "dll",
+        "target": "IMM32.DLL",
+        "source_ref": {
+          "file": "Controls.pas",
+          "line": 10461
+        },
+        "id": "INT-0043"
+      },
+      {
+        "id": "INT-0044",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_NotaFiscal.pas",
+          "line": 467
+        }
+      },
+      {
+        "id": "INT-0045",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_NotaFiscal.pas",
+          "line": 504
+        }
+      },
+      {
+        "id": "INT-0046",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_ExportacaoAplicativos.pas",
+          "line": 346
+        }
+      },
+      {
+        "id": "INT-0047",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_ExportacaoAplicativos.pas",
+          "line": 514
+        }
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-06T12:03:54.624092+00:00",
+    "run_id": "310f5112f743",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\repo\\sophia\\sophia-full-src"
+  }
+}

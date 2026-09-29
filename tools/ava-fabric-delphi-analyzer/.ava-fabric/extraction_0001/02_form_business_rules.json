@@ -1,0 +1,924 @@
+{
+  "artifact": "02_form_business_rules",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Regras de negócio em telas/forms com tratamento de campos",
+  "payload": {
+    "counts": {
+      "forms": 22,
+      "fields": 92
+    },
+    "forms": [
+      {
+        "form_name": "frmClientesFornecedores",
+        "form_class": "TfrmClientesFornecedores",
+        "source_file": "uClientesFornecedores.dfm",
+        "field_count": 19,
+        "fields": [
+          {
+            "name": "edtNome",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtApelido",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkCliente",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkFornecedor",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtGrupoCF",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtCPF",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtCNPJ",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdGrupoCF",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtEndereco",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtNumero",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtBairro",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtCidade",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtEstado",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtComplemento",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtCEP",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtTelefone",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtCelular",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtEmail",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "DBGrid1",
+        "form_class": "TDBGrid",
+        "source_file": "uClientesFornecedoresCadastrados.dfm",
+        "field_count": 0,
+        "fields": []
+      },
+      {
+        "form_name": "frmGruposCF",
+        "form_class": "TfrmGruposCF",
+        "source_file": "uGruposCF.dfm",
+        "field_count": 2,
+        "fields": [
+          {
+            "name": "edtNome",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmGruposCFCadastrados",
+        "form_class": "TfrmGruposCFCadastrados",
+        "source_file": "uGruposCFCadastrados.dfm",
+        "field_count": 1,
+        "fields": [
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "ReadOnly": "True",
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "dmImprimir",
+        "form_class": "TdmImprimir",
+        "source_file": "udmImprimir.dfm",
+        "field_count": 0,
+        "fields": []
+      },
+      {
+        "form_name": "frmBaixarTituloLancamentosCP",
+        "form_class": "TfrmBaixarTituloLancamentosCP",
+        "source_file": "uBaixarTituloLancamentosCP.dfm",
+        "field_count": 10,
+        "fields": [
+          {
+            "name": "dtpDataPagamento",
+            "component_class": "TDateTimePicker",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtTipoPagamento",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtContaCorrente",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtValorPago",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "mmObservacao",
+            "component_class": "TMemo",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdContaCorrente",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False",
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdTipoPagamento",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False",
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtSaldoDevedor",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "ReadOnly": "True",
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "mmObservacaoPagamento",
+            "component_class": "TMemo",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmBaixarTituloLancamentosCR",
+        "form_class": "TfrmBaixarTituloLancamentosCR",
+        "source_file": "uBaixarTituloLancamentosCR.dfm",
+        "field_count": 10,
+        "fields": [
+          {
+            "name": "dtpDataRecebimento",
+            "component_class": "TDateTimePicker",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtTipoPagamento",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtContaCorrente",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtValorRecebido",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "mmObservacao",
+            "component_class": "TMemo",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdContaCorrente",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False",
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdTipoPagamento",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False",
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtSaldoCredor",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "ReadOnly": "True",
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "mmObservacaoPagamento",
+            "component_class": "TMemo",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmBancos",
+        "form_class": "TfrmBancos",
+        "source_file": "uBancos.dfm",
+        "field_count": 3,
+        "fields": [
+          {
+            "name": "edtCodigo",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtNome",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmBancosCadastrados",
+        "form_class": "TfrmBancosCadastrados",
+        "source_file": "uBancosCadastrados.dfm",
+        "field_count": 1,
+        "fields": [
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmContasCorrente",
+        "form_class": "TfrmContasCorrente",
+        "source_file": "uContasCorrente.dfm",
+        "field_count": 11,
+        "fields": [
+          {
+            "name": "edtAgencia",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtDigitoAgencia",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtConta",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtDigitoConta",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtBanco",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtSaldo",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkImpressaoBoleto",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "cmbSaldo",
+            "component_class": "TComboBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdBanco",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtNome",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "btnNova",
+        "form_class": "TButton",
+        "source_file": "uContasCorrenteCadastradas.dfm",
+        "field_count": 1,
+        "fields": [
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "Label9",
+        "form_class": "TLabel",
+        "source_file": "uContasPagar.dfm",
+        "field_count": 12,
+        "fields": [
+          {
+            "name": "edtTitulo",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "mmDescricao",
+            "component_class": "TMemo",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdTipoCobranca",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtTipoCobranca",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "dtpDataEmissao",
+            "component_class": "TDateTimePicker",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtParcelas",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "dtpVencimento",
+            "component_class": "TDateTimePicker",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtValorTotal",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtFornecedor",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtPlanoConta",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdFornecedor",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdPlanoContas",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "DBGrid1",
+        "form_class": "TDBGrid",
+        "source_file": "uContasPagarCadastradas.dfm",
+        "field_count": 0,
+        "fields": []
+      },
+      {
+        "form_name": "GroupBox1",
+        "form_class": "TGroupBox",
+        "source_file": "uContasReceber.dfm",
+        "field_count": 12,
+        "fields": [
+          {
+            "name": "edtTitulo",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdTipoCobranca",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtTipoCobranca",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "dtpDataEmissao",
+            "component_class": "TDateTimePicker",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtParcelas",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {
+              "OnChange": "edtParcelasChange"
+            },
+            "has_validation": false
+          },
+          {
+            "name": "dtpVencimento",
+            "component_class": "TDateTimePicker",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtValorTotal",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkImprimir",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtCliente",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtPlanoConta",
+            "component_class": "TEdit",
+            "properties": {
+              "Enabled": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdCliente",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtIdPlanoContas",
+            "component_class": "TEdit",
+            "properties": {
+              "Visible": "False"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "DBGrid1",
+        "form_class": "TDBGrid",
+        "source_file": "uContasReceberCadastradas.dfm",
+        "field_count": 0,
+        "fields": []
+      },
+      {
+        "form_name": "frmPlanoContas",
+        "form_class": "TfrmPlanoContas",
+        "source_file": "uPlanoContas.dfm",
+        "field_count": 3,
+        "fields": [
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "edtTitulo",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "mskSequencia",
+            "component_class": "TMaskEdit",
+            "properties": {
+              "EditMask": "'##.##.##.##;0;_'",
+              "MaxLength": "11"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmPlanoContasCadastradas",
+        "form_class": "TfrmPlanoContasCadastradas",
+        "source_file": "uPlanoContasCadastradas.dfm",
+        "field_count": 1,
+        "fields": [
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "ReadOnly": "True",
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmTiposCobranca",
+        "form_class": "TfrmTiposCobranca",
+        "source_file": "uTiposCobranca.dfm",
+        "field_count": 2,
+        "fields": [
+          {
+            "name": "edtNome",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmTiposCobrancaCadastrados",
+        "form_class": "TfrmTiposCobrancaCadastrados",
+        "source_file": "uTiposCobrancaCadastrados.dfm",
+        "field_count": 1,
+        "fields": [
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "ReadOnly": "True",
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmTiposPagamento",
+        "form_class": "TfrmTiposPagamento",
+        "source_file": "uTiposPagamento.dfm",
+        "field_count": 2,
+        "fields": [
+          {
+            "name": "edtNome",
+            "component_class": "TEdit",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          },
+          {
+            "name": "chkAtivo",
+            "component_class": "TCheckBox",
+            "properties": {},
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmTiposPagamentoCadastrados",
+        "form_class": "TfrmTiposPagamentoCadastrados",
+        "source_file": "uTiposPagamentoCadastrados.dfm",
+        "field_count": 1,
+        "fields": [
+          {
+            "name": "DBGrid1",
+            "component_class": "TDBGrid",
+            "properties": {
+              "ReadOnly": "True",
+              "DataSource": "DataSource1"
+            },
+            "event_handlers": {},
+            "has_validation": false
+          }
+        ]
+      },
+      {
+        "form_name": "frmPrincipal",
+        "form_class": "TfrmPrincipal",
+        "source_file": "uPrincipal.dfm",
+        "field_count": 0,
+        "fields": []
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T10:58:13.476671+00:00",
+    "run_id": "0c2410168872",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "./examples/Meu-ERP"
+  }
+}

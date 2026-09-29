@@ -1,0 +1,20 @@
+{
+  "artifact": "07_apis",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "APIs usadas (REST/SOAP/HTTP clients e endpoints)",
+  "payload": {
+    "counts": {
+      "total": 0,
+      "mode": "ast+regex-fallback",
+      "note": "nenhum cliente HTTP detectado (esperado em app desktop ADO/local sem integração REST/SOAP)"
+    },
+    "apis": []
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T14:29:34.094098+00:00",
+    "run_id": "8b37039f6672",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\Meu-ERP"
+  }
+}

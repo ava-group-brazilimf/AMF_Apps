@@ -1,0 +1,101 @@
+{
+  "engine": "headroom",
+  "model": "claude-sonnet-4-5-20250929",
+  "artifacts": [
+    {
+      "artifact": "01_business_rules",
+      "mode": "headroom",
+      "tokens_in": 657,
+      "tokens_out": 621,
+      "reduction_pct": 5.5,
+      "transforms": [
+        "router:smart_crusher:0.16"
+      ]
+    },
+    {
+      "artifact": "02_form_business_rules",
+      "mode": "headroom",
+      "tokens_in": 4464,
+      "tokens_out": 3804,
+      "reduction_pct": 14.8,
+      "transforms": [
+        "router:smart_crusher:0.01"
+      ]
+    },
+    {
+      "artifact": "03_database_rules",
+      "mode": "headroom",
+      "tokens_in": 1403,
+      "tokens_out": 854,
+      "reduction_pct": 39.1,
+      "transforms": [
+        "router:smart_crusher:0.03"
+      ]
+    },
+    {
+      "artifact": "04_database_schemas",
+      "mode": "headroom",
+      "tokens_in": 1546,
+      "tokens_out": 1399,
+      "reduction_pct": 9.5,
+      "transforms": [
+        "router:smart_crusher:0.04"
+      ]
+    },
+    {
+      "artifact": "05_procedures",
+      "mode": "headroom",
+      "tokens_in": 26633,
+      "tokens_out": 16092,
+      "reduction_pct": 39.6,
+      "transforms": [
+        "router:smart_crusher:0.03"
+      ]
+    },
+    {
+      "artifact": "06_integrations",
+      "mode": "headroom",
+      "tokens_in": 220,
+      "tokens_out": 207,
+      "reduction_pct": 5.9,
+      "transforms": [
+        "router:smart_crusher:0.20"
+      ]
+    },
+    {
+      "artifact": "07_apis",
+      "mode": "headroom",
+      "tokens_in": 157,
+      "tokens_out": 150,
+      "reduction_pct": 4.5,
+      "transforms": [
+        "router:smart_crusher:0.46"
+      ]
+    },
+    {
+      "artifact": "08_code_overview",
+      "mode": "headroom",
+      "tokens_in": 1487,
+      "tokens_out": 984,
+      "reduction_pct": 33.8,
+      "transforms": [
+        "router:smart_crusher:0.03"
+      ]
+    },
+    {
+      "artifact": "09_test_coverage",
+      "mode": "headroom",
+      "tokens_in": 193,
+      "tokens_out": 182,
+      "reduction_pct": 5.7,
+      "transforms": [
+        "router:smart_crusher:0.31"
+      ]
+    }
+  ],
+  "totals": {
+    "tokens_in": 36760,
+    "tokens_out": 24293,
+    "reduction_pct": 33.9
+  }
+}

@@ -1,0 +1,420 @@
+{
+  "artifact": "04_database_schemas",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Schemas de banco (tabelas, colunas, chaves, índices)",
+  "payload": {
+    "counts": {
+      "tables_ddl": 0,
+      "tables_inferred": 11,
+      "datasets": 21,
+      "mode": "ast+regex-fallback"
+    },
+    "tables": [],
+    "inferred_tables": [
+      {
+        "name": "cliente_fornecedor",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idcliente_fornecedor"
+        ],
+        "operations": [
+          "delete",
+          "insert"
+        ],
+        "used_in": [
+          "uClientesFornecedores.pas",
+          "uClientesFornecedoresCadastrados.pas"
+        ]
+      },
+      {
+        "name": "grupo_cliente_fornecedor",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idgrupo_cliente_fornecedor"
+        ],
+        "operations": [
+          "delete",
+          "insert"
+        ],
+        "used_in": [
+          "uGruposCF.pas",
+          "uGruposCFCadastrados.pas"
+        ]
+      },
+      {
+        "name": "contas_receber",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idconta_receber",
+          "quitado_em",
+          "valor",
+          "valor_recebido",
+          "vencimento"
+        ],
+        "operations": [
+          "insert",
+          "select",
+          "update"
+        ],
+        "used_in": [
+          "uBaixarTituloLancamentosCR.pas",
+          "uContasReceber.pas",
+          "udmImprimir.pas"
+        ]
+      },
+      {
+        "name": "conta_corrente",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "agencia",
+          "conta",
+          "digito_agencia",
+          "digito_conta",
+          "idconta_corrente",
+          "impressao_boleto",
+          "nome",
+          "saldo"
+        ],
+        "operations": [
+          "insert",
+          "select",
+          "update"
+        ],
+        "used_in": [
+          "uBaixarTituloLancamentosCP.pas",
+          "uBaixarTituloLancamentosCR.pas",
+          "uContasCorrente.pas",
+          "udmImprimir.pas"
+        ]
+      },
+      {
+        "name": "lancamento",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [],
+        "operations": [
+          "insert"
+        ],
+        "used_in": [
+          "uBaixarTituloLancamentosCP.pas"
+        ]
+      },
+      {
+        "name": "contas_pagar",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idconta_pagar",
+          "pago_em",
+          "valor_pago"
+        ],
+        "operations": [
+          "delete",
+          "insert",
+          "select",
+          "update"
+        ],
+        "used_in": [
+          "uBaixarTituloLancamentosCP.pas",
+          "uContasPagar.pas",
+          "uContasPagarCadastradas.pas"
+        ]
+      },
+      {
+        "name": "lancamento_contas_receber",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [],
+        "operations": [
+          "insert"
+        ],
+        "used_in": [
+          "uBaixarTituloLancamentosCR.pas"
+        ]
+      },
+      {
+        "name": "banco",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [],
+        "operations": [
+          "insert"
+        ],
+        "used_in": [
+          "uBancos.pas"
+        ]
+      },
+      {
+        "name": "plano_contas",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idplano_contas"
+        ],
+        "operations": [
+          "delete",
+          "insert"
+        ],
+        "used_in": [
+          "uPlanoContas.pas",
+          "uPlanoContasCadastradas.pas"
+        ]
+      },
+      {
+        "name": "tipo_cobranca",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idtipo_cobranca"
+        ],
+        "operations": [
+          "delete",
+          "insert"
+        ],
+        "used_in": [
+          "uTiposCobranca.pas",
+          "uTiposCobrancaCadastrados.pas"
+        ]
+      },
+      {
+        "name": "tipo_pagamento",
+        "origin": "inferred_from_sql",
+        "accessed_columns": [
+          "idtipo_pagamento"
+        ],
+        "operations": [
+          "delete",
+          "insert"
+        ],
+        "used_in": [
+          "uTiposPagamento.pas",
+          "uTiposPagamentoCadastrados.pas"
+        ]
+      }
+    ],
+    "db_component_datasets": [
+      {
+        "unit": "uClientesFornecedores",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uGruposCF",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "components": [
+          "TADOCommand",
+          "TADOTable"
+        ]
+      },
+      {
+        "unit": "udmImprimir",
+        "components": [
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uBancos",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uBancosCadastrados",
+        "components": [
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uContasCorrente",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uContasCorrenteCadastradas",
+        "components": [
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uContasPagar",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uContasReceber",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uContasReceberCadastradas",
+        "components": [
+          "TADOCommand",
+          "TADOQuery"
+        ]
+      },
+      {
+        "unit": "uPlanoContas",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "components": [
+          "TADOCommand",
+          "TADOTable"
+        ]
+      },
+      {
+        "unit": "uTiposCobranca",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "components": [
+          "TADOCommand",
+          "TADOTable"
+        ]
+      },
+      {
+        "unit": "uTiposPagamento",
+        "components": [
+          "TADOCommand"
+        ]
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "components": [
+          "TADOCommand",
+          "TADOTable"
+        ]
+      }
+    ],
+    "dataset_fields": [
+      {
+        "dataset": "uClientesFornecedoresCadastrados",
+        "fields": [
+          {
+            "name": "Ativo",
+            "delphi_type": "WideString"
+          }
+        ]
+      },
+      {
+        "dataset": "uBaixarTituloLancamentosCP",
+        "fields": [
+          {
+            "name": "Valor Pago",
+            "delphi_type": "Float"
+          }
+        ]
+      },
+      {
+        "dataset": "uBaixarTituloLancamentosCR",
+        "fields": [
+          {
+            "name": "Valor Pago",
+            "delphi_type": "Float"
+          }
+        ]
+      },
+      {
+        "dataset": "uContasCorrenteCadastradas",
+        "fields": [
+          {
+            "name": "Nome",
+            "delphi_type": "WideString"
+          },
+          {
+            "name": "Saldo",
+            "delphi_type": "Float"
+          }
+        ]
+      },
+      {
+        "dataset": "uContasPagarCadastradas",
+        "fields": [
+          {
+            "name": "C",
+            "delphi_type": "AutoInc"
+          },
+          {
+            "name": "T",
+            "delphi_type": "WideString"
+          },
+          {
+            "name": "Valor",
+            "delphi_type": "Float"
+          }
+        ]
+      },
+      {
+        "dataset": "uContasReceberCadastradas",
+        "fields": [
+          {
+            "name": "C",
+            "delphi_type": "AutoInc"
+          },
+          {
+            "name": "T",
+            "delphi_type": "WideString"
+          },
+          {
+            "name": "Valor",
+            "delphi_type": "Float"
+          },
+          {
+            "name": "Valor Pago",
+            "delphi_type": "Float"
+          },
+          {
+            "name": "Cliente/Fornecedor",
+            "delphi_type": "AutoInc"
+          }
+        ]
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T16:35:57.496926+00:00",
+    "run_id": "211b1ad3915d",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "./examples/Meu-ERP"
+  }
+}

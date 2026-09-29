@@ -1,0 +1,110 @@
+{
+  "engine": "headroom",
+  "model": "claude-sonnet-4-5-20250929",
+  "artifacts": [
+    {
+      "artifact": "01_business_rules",
+      "mode": "headroom",
+      "tokens_in": 657,
+      "tokens_out": 620,
+      "reduction_pct": 5.6,
+      "duration_ms": 2242,
+      "transforms": [
+        "router:smart_crusher:0.16"
+      ]
+    },
+    {
+      "artifact": "02_form_business_rules",
+      "mode": "headroom",
+      "tokens_in": 4464,
+      "tokens_out": 3804,
+      "reduction_pct": 14.8,
+      "duration_ms": 20,
+      "transforms": [
+        "router:smart_crusher:0.01"
+      ]
+    },
+    {
+      "artifact": "03_database_rules",
+      "mode": "headroom",
+      "tokens_in": 1402,
+      "tokens_out": 854,
+      "reduction_pct": 39.1,
+      "duration_ms": 16,
+      "transforms": [
+        "router:smart_crusher:0.03"
+      ]
+    },
+    {
+      "artifact": "04_database_schemas",
+      "mode": "headroom",
+      "tokens_in": 1545,
+      "tokens_out": 1399,
+      "reduction_pct": 9.4,
+      "duration_ms": 11,
+      "transforms": [
+        "router:smart_crusher:0.04"
+      ]
+    },
+    {
+      "artifact": "05_procedures",
+      "mode": "headroom",
+      "tokens_in": 26633,
+      "tokens_out": 16092,
+      "reduction_pct": 39.6,
+      "duration_ms": 81,
+      "transforms": [
+        "router:smart_crusher:0.03"
+      ]
+    },
+    {
+      "artifact": "06_integrations",
+      "mode": "headroom",
+      "tokens_in": 220,
+      "tokens_out": 206,
+      "reduction_pct": 6.4,
+      "duration_ms": 4,
+      "transforms": [
+        "router:smart_crusher:0.20"
+      ]
+    },
+    {
+      "artifact": "07_apis",
+      "mode": "headroom",
+      "tokens_in": 157,
+      "tokens_out": 150,
+      "reduction_pct": 4.5,
+      "duration_ms": 5,
+      "transforms": [
+        "router:smart_crusher:0.46"
+      ]
+    },
+    {
+      "artifact": "08_code_overview",
+      "mode": "headroom",
+      "tokens_in": 1487,
+      "tokens_out": 983,
+      "reduction_pct": 33.9,
+      "duration_ms": 12,
+      "transforms": [
+        "router:smart_crusher:0.03"
+      ]
+    },
+    {
+      "artifact": "09_test_coverage",
+      "mode": "headroom",
+      "tokens_in": 193,
+      "tokens_out": 182,
+      "reduction_pct": 5.7,
+      "duration_ms": 4,
+      "transforms": [
+        "router:smart_crusher:0.31"
+      ]
+    }
+  ],
+  "totals": {
+    "tokens_in": 36758,
+    "tokens_out": 24290,
+    "reduction_pct": 33.9
+  }
+}

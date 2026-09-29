@@ -1,0 +1,20 @@
+{
+  "artifact": "06_integrations",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Integrações (DLL, COM, sockets, e-mail, arquivos, filas)",
+  "payload": {
+    "counts": {
+      "total": 0,
+      "by_type": {},
+      "mode": "regex-only"
+    },
+    "integrations": []
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T10:58:13.490866+00:00",
+    "run_id": "0c2410168872",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "./examples/Meu-ERP"
+  }
+}

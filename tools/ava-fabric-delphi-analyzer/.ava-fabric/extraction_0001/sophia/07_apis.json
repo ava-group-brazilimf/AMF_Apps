@@ -1,0 +1,331 @@
+{
+  "artifact": "07_apis",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "APIs usadas (REST/SOAP/HTTP clients e endpoints)",
+  "payload": {
+    "counts": {
+      "total": 24,
+      "mode": "ast+regex-fallback"
+    },
+    "apis": [
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://portal.sophia.com.br/SophiAWebAPI/"
+        ],
+        "used_in": "AlunoDigitalMatriculaFRM.pas",
+        "source_ref": {
+          "file": "AlunoDigitalMatriculaFRM.pas"
+        },
+        "id": "API-0001"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://site.layers.education/sophia/?"
+        ],
+        "used_in": "BannerSophiaFRM.pas",
+        "source_ref": {
+          "file": "BannerSophiaFRM.pas"
+        },
+        "id": "API-0002"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://"
+        ],
+        "used_in": "configFRM.pas",
+        "source_ref": {
+          "file": "configFRM.pas"
+        },
+        "id": "API-0003"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://build.sophia.com.br/tutoriais/",
+          "https://conteudo.sophia.com.br/campanha-painel-do-gestor-botao-de-interesse",
+          "https://painelgestor.sophia.com.br/",
+          "https://www.sophia.com.br/area-cliente/loginsinglesignon"
+        ],
+        "used_in": "mainFRM1.pas",
+        "source_ref": {
+          "file": "mainFRM1.pas"
+        },
+        "id": "API-0004"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://webapicentralatendimento.sescgo.com.br/api/json"
+        ],
+        "used_in": "defSESCSCA.pas",
+        "source_ref": {
+          "file": "defSESCSCA.pas"
+        },
+        "id": "API-0005"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://escolar.sophia.com.br/CEP/WcfCepService.svc/rest/"
+        ],
+        "used_in": "CEP.pas",
+        "source_ref": {
+          "file": "CEP.pas"
+        },
+        "id": "API-0006"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://schemas.datacontract.org/2004/07/WCFNFSeMigrate",
+          "http://tempuri.org/",
+          "http://tempuri.org/INFSeMigrate/%operationName%",
+          "https://"
+        ],
+        "used_in": "WS_Homolog_Migrate.pas",
+        "source_ref": {
+          "file": "WS_Homolog_Migrate.pas"
+        },
+        "id": "API-0007"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://www."
+        ],
+        "used_in": "ReportsEureka.pas",
+        "source_ref": {
+          "file": "ReportsEureka.pas"
+        },
+        "id": "API-0008"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://download.sophia.com.br/sgx/%s.zip"
+        ],
+        "used_in": "Configuracoes_Impl.pas",
+        "source_ref": {
+          "file": "Configuracoes_Impl.pas"
+        },
+        "id": "API-0009"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://aplic3.sesc.com.br:94/cawsprj/soap/ICAWebService",
+          "http://aplic3.sesc.com.br:94/cawsprj/wsdl/ICAWebService/"
+        ],
+        "used_in": "IntegracaoSESC_Webservice.pas",
+        "source_ref": {
+          "file": "IntegracaoSESC_Webservice.pas"
+        },
+        "id": "API-0010"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://www.w3.org/2001/XMLSchema-instance"
+        ],
+        "used_in": "Internet.pas",
+        "source_ref": {
+          "file": "Internet.pas"
+        },
+        "id": "API-0011"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://cloud02.sophia.com.br",
+          "https://portal.sophia.com.br/SophiAWebAPI/",
+          "https://portal.sophia.com.br/sg_web/default.aspx?escola="
+        ],
+        "used_in": "srvmainFRM1.pas",
+        "source_ref": {
+          "file": "srvmainFRM1.pas"
+        },
+        "id": "API-0012"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://sgxnotificacaofinanceira.azurewebsites.net/api"
+        ],
+        "used_in": "uAzureFunctionNotificacaoCobranca.pas",
+        "source_ref": {
+          "file": "uAzureFunctionNotificacaoCobranca.pas"
+        },
+        "id": "API-0013"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://sgxnotificacaoocorrencia.azurewebsites.net/api"
+        ],
+        "used_in": "uAzureFunctionNotificacaoOcorrencia.pas",
+        "source_ref": {
+          "file": "uAzureFunctionNotificacaoOcorrencia.pas"
+        },
+        "id": "API-0014"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://portal.sophia.com.br/SophiAWebAPI/"
+        ],
+        "used_in": "uIntegracaoBancaria.pas",
+        "source_ref": {
+          "file": "uIntegracaoBancaria.pas"
+        },
+        "id": "API-0015"
+      },
+      {
+        "client_class": "THTTPRIO",
+        "protocol": "SOAP",
+        "endpoints": [
+          "http://tempuri.org/",
+          "http://tempuri.org/ISophiaEscolar/%operationName%"
+        ],
+        "used_in": "WsSophiaEscolar.pas",
+        "source_ref": {
+          "file": "WsSophiaEscolar.pas"
+        },
+        "id": "API-0016"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://sjc.prima.com.br:8182/LicencaPrima/service.asmx",
+          "http://tempuri.org/",
+          "http://tempuri.org/%operationName%"
+        ],
+        "used_in": "uSophiaInfoEnviaInformacoes.pas",
+        "source_ref": {
+          "file": "uSophiaInfoEnviaInformacoes.pas"
+        },
+        "id": "API-0017"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://build.sophia.com.br/escolar/",
+          "https://nps.sophia.com.br/index.php?",
+          "https://nps.sophia.com.br/validacao.php",
+          "https://sophia.com.br/sophia_browser.exe"
+        ],
+        "used_in": "uWebBrowser.pas",
+        "source_ref": {
+          "file": "uWebBrowser.pas"
+        },
+        "id": "API-0018"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://build.sophia.com.br/tutoriais/",
+          "https://conteudo.sophia.com.br/campanha-indique-ganhe-sophia",
+          "https://matricula.sophia.com.br",
+          "https://sjc.sophia.com.br:8183/",
+          "https://sophia.com.br/"
+        ],
+        "used_in": "definicoes_super.pas",
+        "source_ref": {
+          "file": "definicoes_super.pas"
+        },
+        "id": "API-0019"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://utils.sophia.com.br/licenca/atualizacao/dta.lb"
+        ],
+        "used_in": "DTAFuncs.pas",
+        "source_ref": {
+          "file": "DTAFuncs.pas"
+        },
+        "id": "API-0020"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "https://"
+        ],
+        "used_in": "ExportaInfoWeb_OFFLINE.pas",
+        "source_ref": {
+          "file": "ExportaInfoWeb_OFFLINE.pas"
+        },
+        "id": "API-0021"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://",
+          "https://"
+        ],
+        "used_in": "FP_Prima.pas",
+        "source_ref": {
+          "file": "FP_Prima.pas"
+        },
+        "id": "API-0022"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://",
+          "https://"
+        ],
+        "used_in": "FP_Prima_Outros_Comps.pas",
+        "source_ref": {
+          "file": "FP_Prima_Outros_Comps.pas"
+        },
+        "id": "API-0023"
+      },
+      {
+        "client_class": "unknown",
+        "protocol": "HTTP",
+        "endpoints": [
+          "http://sjc.prima.com.br:8182/LicencaPrima/service.asmx",
+          "http://tempuri.org/",
+          "http://tempuri.org/%operationName%"
+        ],
+        "used_in": "WebServicePrimaLic.pas",
+        "source_ref": {
+          "file": "WebServicePrimaLic.pas"
+        },
+        "id": "API-0024"
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-06T12:03:54.629269+00:00",
+    "run_id": "310f5112f743",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\repo\\sophia\\sophia-full-src"
+  }
+}

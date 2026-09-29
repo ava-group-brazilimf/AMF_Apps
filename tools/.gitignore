@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# AVA Fabric extractions / compressed outputs
+.ava-fabric/extraction*/
+.ava-fabric/compressed*/
+.ava-fabric/extraction_*/
+.ava-fabric/compressed_*/
+
+# Large cloned example repos
+ava-fabric-delphi-analyzer/examples/processaERP/
+ava-fabric-delphi-analyzer/examples/T2TiERP-1-Delphi/
+ava-fabric-delphi-analyzer/examples/T2TiERP-2-Delphi/
+ava-fabric-delphi-analyzer/examples/BoldForDelphi/
+

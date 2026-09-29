@@ -1,0 +1,5757 @@
+{
+  "artifact": "05_procedures",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Procedures (stored procedures + procedures/functions do código)",
+  "payload": {
+    "counts": {
+      "code_procedures": 341,
+      "stored_procedures": 0,
+      "mode": "ast+regex-fallback"
+    },
+    "code_procedures": [
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "cBancos",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 30
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "dBancos",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 38
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "getAtivo",
+        "kind": "function",
+        "params": [],
+        "returns": "char",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 45
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "getCodigo",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 50
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "getIdBanco",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 55
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "getNome",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 60
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "setAtivo",
+        "kind": "procedure",
+        "params": [
+          "pAtivo: char"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 67
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "setCodigo",
+        "kind": "procedure",
+        "params": [
+          "pCodigo: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 72
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "setIdBanco",
+        "kind": "procedure",
+        "params": [
+          "pIdBanco: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 77
+        }
+      },
+      {
+        "unit": "uClassBancos",
+        "class": "ClassBancos",
+        "name": "setNome",
+        "kind": "procedure",
+        "params": [
+          "pNome: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassBancos.pas",
+          "line": 82
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "cClassClienteFornecedor",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 89
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "dClassClienteFornecedor",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 97
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getApelido",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 102
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getAtivo",
+        "kind": "function",
+        "params": [],
+        "returns": "char",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 107
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getBairro",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 112
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getCelular",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 117
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getCEP",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 122
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getCidade",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 127
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getCNPJ",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 132
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getComplemento",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 137
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getCPF",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 142
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getEmail",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 147
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getEndereco",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 152
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getEstado",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 157
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getIdClienteFornecedor",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 162
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getIdGrupoCF",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 167
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getNomeRazaoSocial",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 172
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getNumero",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 177
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getObservacao",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 182
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getPessoa",
+        "kind": "function",
+        "params": [],
+        "returns": "char",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 187
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getTelefone",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 192
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "getTipo",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 197
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setApelido",
+        "kind": "procedure",
+        "params": [
+          "pApelido: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 204
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setAtivo",
+        "kind": "procedure",
+        "params": [
+          "pAtivo: char"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 209
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setBairro",
+        "kind": "procedure",
+        "params": [
+          "pBairro: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 214
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setCelular",
+        "kind": "procedure",
+        "params": [
+          "pCelular: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 219
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setCEP",
+        "kind": "procedure",
+        "params": [
+          "pCEP: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 224
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setCidade",
+        "kind": "procedure",
+        "params": [
+          "pCidade: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 229
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setCNPJ",
+        "kind": "procedure",
+        "params": [
+          "pCNPJ: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 234
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setComplemento",
+        "kind": "procedure",
+        "params": [
+          "pComplemento: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 239
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setCPF",
+        "kind": "procedure",
+        "params": [
+          "pCPF: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 244
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setEmail",
+        "kind": "procedure",
+        "params": [
+          "pEmail: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 249
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setEndereco",
+        "kind": "procedure",
+        "params": [
+          "pEndereco: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 254
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setEstado",
+        "kind": "procedure",
+        "params": [
+          "pEstado: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 259
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setIdClienteFornecedor",
+        "kind": "procedure",
+        "params": [
+          "pIdClienteFornecedor: integer"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 264
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setIdGrupoCF",
+        "kind": "procedure",
+        "params": [
+          "pIdGrupoCF: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 270
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setNomeRazaoSocial",
+        "kind": "procedure",
+        "params": [
+          "pNomeRazaoSocial: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 275
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setNumero",
+        "kind": "procedure",
+        "params": [
+          "pNumero: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 280
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setObservacao",
+        "kind": "procedure",
+        "params": [
+          "pObservacao: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 285
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setPessoa",
+        "kind": "procedure",
+        "params": [
+          "pPessoa: char"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 290
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setTelefone",
+        "kind": "procedure",
+        "params": [
+          "pTelefone: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 295
+        }
+      },
+      {
+        "unit": "uClassClienteFornecedor",
+        "class": "ClassClienteFornecedor",
+        "name": "setTipo",
+        "kind": "procedure",
+        "params": [
+          "pTipo: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassClienteFornecedor.pas",
+          "line": 300
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "cContasCorrente",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 15,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 49
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "dConstasCorrente",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 63
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getAgencia",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 69
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getAtivo",
+        "kind": "function",
+        "params": [],
+        "returns": "char",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 74
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getConta",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 79
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getDigitoAgencia",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 84
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getDigitoConta",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 89
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getIdBanco",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 94
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getIdContaCorrente",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 99
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getImpressoaBoleto",
+        "kind": "function",
+        "params": [],
+        "returns": "char",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 104
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getNome",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 109
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "getSaldo",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 114
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setAgencia",
+        "kind": "procedure",
+        "params": [
+          "pAgencia: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 121
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setAtivo",
+        "kind": "procedure",
+        "params": [
+          "pAtivo: char"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 126
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setConta",
+        "kind": "procedure",
+        "params": [
+          "pConta: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 131
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setDigitoAgencia",
+        "kind": "procedure",
+        "params": [
+          "pDigitoAgencia: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 136
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setDigitoConta",
+        "kind": "procedure",
+        "params": [
+          "pDigitoConta: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 141
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setIdBanco",
+        "kind": "procedure",
+        "params": [
+          "pIdBanco: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 146
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setIdContaCorrente",
+        "kind": "procedure",
+        "params": [
+          "pIdContaCorrente: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 151
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setImpressaoBoleto",
+        "kind": "procedure",
+        "params": [
+          "pImpressaoBoleto: char"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 156
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setNome",
+        "kind": "procedure",
+        "params": [
+          "pNome: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 161
+        }
+      },
+      {
+        "unit": "uClassContasCorrente",
+        "class": "ClassContasCorrente",
+        "name": "setSaldo",
+        "kind": "procedure",
+        "params": [
+          "pSaldo: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasCorrente.pas",
+          "line": 166
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "cContasPagar",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 19,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 58
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "dContasPagar",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 76
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getDataCadastro",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 83
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getDataEmissao",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 88
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getDescricao",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 93
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getIdClienteFornecedor",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 98
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getIdContasPagar",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 103
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getIdPlanoContas",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 108
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getIdTipoCobranca",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 113
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getPagoEm",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 118
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getQuantParcelas",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 123
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getTitulo",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 128
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getValor",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 133
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getValorPago",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 138
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "getVencimento",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 143
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setDataCadastro",
+        "kind": "procedure",
+        "params": [
+          "pDataCadastro: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 150
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setDataEmissao",
+        "kind": "procedure",
+        "params": [
+          "pDataEmissao: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 155
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setDescricao",
+        "kind": "procedure",
+        "params": [
+          "pDescricao: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 160
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setIdClienteFornecedor",
+        "kind": "procedure",
+        "params": [
+          "pIdClienteFornecedor: integer"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 165
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setIdContasPagar",
+        "kind": "procedure",
+        "params": [
+          "pIdContasPagar: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 171
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setIdPlanoContas",
+        "kind": "procedure",
+        "params": [
+          "pIdPlanoContas: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 176
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setIdTipoCobranca",
+        "kind": "procedure",
+        "params": [
+          "pIdTipoCobranca: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 181
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setPagoEm",
+        "kind": "procedure",
+        "params": [
+          "pPagoEm: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 186
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setQuantParcelas",
+        "kind": "procedure",
+        "params": [
+          "pQuantParcelas: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 191
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setTitulo",
+        "kind": "procedure",
+        "params": [
+          "pTitulo: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 196
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setValor",
+        "kind": "procedure",
+        "params": [
+          "pValor: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 201
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setValorPago",
+        "kind": "procedure",
+        "params": [
+          "pValorPago: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 206
+        }
+      },
+      {
+        "unit": "uClassContasPagar",
+        "class": "ClassContasPagar",
+        "name": "setVencimento",
+        "kind": "procedure",
+        "params": [
+          "pVencimento: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasPagar.pas",
+          "line": 211
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "cContasPagar",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 55
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "dContasPagar",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 72
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getDataCadastro",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 77
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getDataEmissao",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 82
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getIdClienteFornecedor",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 87
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getIdContasReceber",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 92
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getIdPlanoContas",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 97
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getIdTipoCobranca",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 102
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getQuantParcelas",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 107
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getQuitadoEm",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 112
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getTitulo",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 117
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getValor",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 122
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getValorRecebido",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 127
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "getVencimento",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 9,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 132
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setDataCadastro",
+        "kind": "procedure",
+        "params": [
+          "pDataCadastro: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 140
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setDataEmissao",
+        "kind": "procedure",
+        "params": [
+          "pDataEmissao: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 145
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setIdClienteFornecedor",
+        "kind": "procedure",
+        "params": [
+          "pIdClienteFornecedor: integer"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 150
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setIdContasReceber",
+        "kind": "procedure",
+        "params": [
+          "pIdContasReceber: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 156
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setIdPlanoContas",
+        "kind": "procedure",
+        "params": [
+          "pIdPlanoContas: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 161
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setIdTipoCobranca",
+        "kind": "procedure",
+        "params": [
+          "pIdTipoCobranca: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 166
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setQuantParcelas",
+        "kind": "procedure",
+        "params": [
+          "pQuantParcelas: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 171
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setQuitadoEm",
+        "kind": "procedure",
+        "params": [
+          "pQuitadoEm: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 176
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setTitulo",
+        "kind": "procedure",
+        "params": [
+          "pTitulo: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 181
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setValor",
+        "kind": "procedure",
+        "params": [
+          "pValor: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 186
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setValorRecebido",
+        "kind": "procedure",
+        "params": [
+          "pValorRecebido: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 191
+        }
+      },
+      {
+        "unit": "uClassContasReceber",
+        "class": "ClassContasReceber",
+        "name": "setVencimento",
+        "kind": "procedure",
+        "params": [
+          "pVencimento: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassContasReceber.pas",
+          "line": 196
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "cGrupoCF",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 28
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "dGrupoCF",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 35
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "getAtivo",
+        "kind": "function",
+        "params": [],
+        "returns": "char",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 40
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "getIdGrupoCF",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 45
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "getNome",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 50
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "setAtivo",
+        "kind": "procedure",
+        "params": [
+          "pAtivo: char"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 55
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "setIdGrupoCF",
+        "kind": "procedure",
+        "params": [
+          "pIdGrupoCF: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 60
+        }
+      },
+      {
+        "unit": "uClassGrupoCF",
+        "class": "ClassGrupoCF",
+        "name": "setNome",
+        "kind": "procedure",
+        "params": [
+          "pNome: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassGrupoCF.pas",
+          "line": 65
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "cLancamentosCP",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 39
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "dLancamentosCP",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 50
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getDataPagamento",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 56
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getIdContaCorrente",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 61
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getIdContaPagar",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 66
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getIdLancamentoCP",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 71
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getIdTipoPagamento",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 76
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getObservacao",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 81
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "getValorPago",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 86
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setDataPagamento",
+        "kind": "procedure",
+        "params": [
+          "pDataPagamento: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 93
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setIdContaCorrente",
+        "kind": "procedure",
+        "params": [
+          "pContaCorrente: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 98
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setIdContaPagar",
+        "kind": "procedure",
+        "params": [
+          "pIdContaPagar: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 103
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setIdLancamentoCP",
+        "kind": "procedure",
+        "params": [
+          "pIdLancamentoCP: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 108
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setIdTipoPagamento",
+        "kind": "procedure",
+        "params": [
+          "pIdTipoPagamento: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 113
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setObservacao",
+        "kind": "procedure",
+        "params": [
+          "pObservacao: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 118
+        }
+      },
+      {
+        "unit": "uClassLancamentosCP",
+        "class": "ClassLancamentosCP",
+        "name": "setValorPago",
+        "kind": "procedure",
+        "params": [
+          "pValorPago: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCP.pas",
+          "line": 123
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "cLancamentosCR",
+        "kind": "constructor",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 39
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "dLancamentosCR",
+        "kind": "destructor",
+        "params": [],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 50
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getDataRecebimento",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 56
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getIdContaCorrente",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 61
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getIdContaReceber",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 66
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getIdLancamentoCP",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 71
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getIdTipoPagamento",
+        "kind": "function",
+        "params": [],
+        "returns": "integer",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 76
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getObservacao",
+        "kind": "function",
+        "params": [],
+        "returns": "string",
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 81
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "getValorRecebido",
+        "kind": "function",
+        "params": [],
+        "returns": "double",
+        "loc": 8,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 86
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setDataRecebimento",
+        "kind": "procedure",
+        "params": [
+          "pDataReceber: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 93
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setIdContaCorrente",
+        "kind": "procedure",
+        "params": [
+          "pContaCorrente: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 98
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setIdContaReceber",
+        "kind": "procedure",
+        "params": [
+          "pIdContaReceber: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 103
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setIdLancamentoCR",
+        "kind": "procedure",
+        "params": [
+          "pIdLancamentoCR: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 108
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setIdTipoPagamento",
+        "kind": "procedure",
+        "params": [
+          "pIdTipoPagamento: integer"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 113
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setObservacao",
+        "kind": "procedure",
+        "params": [
+          "pObservacao: string"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 118
+        }
+      },
+      {
+        "unit": "uClassLancamentosCR",
+        "class": "ClassLancamentosCR",
+        "name": "setValorRecebido",
+        "kind": "procedure",
+        "params": [
+          "pValorRecebido: double"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClassLancamentosCR.pas",
+          "line": 123
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "btnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "Application.MessageBox",
+          "self.CadastrarClienteFornecedor"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 87
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "CadastrarClienteFornecedor",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 61,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox",
+          "IntToStr",
+          "StrToInt",
+          "edtNome.SetFocus",
+          "self.Ativo",
+          "self.LimparCampos",
+          "self.Pessoa",
+          "self.Tipo",
+          "self.cliente_fornecedor.setApelido",
+          "self.cliente_fornecedor.setBairro",
+          "self.cliente_fornecedor.setCEP",
+          "self.cliente_fornecedor.setCNPJ",
+          "self.cliente_fornecedor.setCPF",
+          "self.cliente_fornecedor.setCelular",
+          "self.cliente_fornecedor.setCidade",
+          "self.cliente_fornecedor.setComplemento",
+          "self.cliente_fornecedor.setEmail",
+          "self.cliente_fornecedor.setEndereco",
+          "self.cliente_fornecedor.setEstado"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 96
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 26,
+        "calls": [],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 156
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "Ativo",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "self.cliente_fornecedor.setAtivo"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 181
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "Pessoa",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "cliente_fornecedor.setPessoa"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 190
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "Tipo",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "cliente_fornecedor.setTipo"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 199
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "self.cliente_fornecedor.dClassClienteFornecedor"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 210
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 217
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "VerificarCamposNulos",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 11,
+        "calls": [],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 223
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 233
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "Button1Click",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 17,
+        "calls": [
+          "IntToStr",
+          "TfrmGruposCFCadastrados.Create",
+          "self.gruposcf_cadastrados.Destroy",
+          "self.gruposcf_cadastrados.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 239
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "rdbFisicaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "edtCNPJ.Hide",
+          "edtCPF.Show",
+          "lblCNPJ.Hide",
+          "lblCPF.Show"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 255
+        }
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "class": "TfrmClientesFornecedores",
+        "name": "rdbJuridicaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "edtCNPJ.Show",
+          "edtCPF.Hide",
+          "lblCNPJ.Show",
+          "lblCPF.Hide"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 265
+        }
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "class": "TfrmClieFornCadastrados",
+        "name": "btnExcluirClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "self.ExcluirCF"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 50
+        }
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "class": "TfrmClieFornCadastrados",
+        "name": "ExcluirCF",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 22,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 57
+        }
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "class": "TfrmClieFornCadastrados",
+        "name": "btnNovoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "TfrmClientesFornecedores.Create",
+          "self.cliente_fornecedor.Destroy",
+          "self.cliente_fornecedor.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 78
+        }
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "class": "TfrmClieFornCadastrados",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 88
+        }
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "class": "TfrmClieFornCadastrados",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "StrToInt",
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 93
+        }
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "class": "TfrmClieFornCadastrados",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 106
+        }
+      },
+      {
+        "unit": "uGruposCF",
+        "class": "TfrmGruposCF",
+        "name": "btnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.CadastrarGrupoCF"
+        ],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 36
+        }
+      },
+      {
+        "unit": "uGruposCF",
+        "class": "TfrmGruposCF",
+        "name": "CadastrarGrupoCF",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 28,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox",
+          "grupocf.setNome",
+          "self.edtNome.SetFocus"
+        ],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 41
+        }
+      },
+      {
+        "unit": "uGruposCF",
+        "class": "TfrmGruposCF",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.grupocf.dGrupoCF"
+        ],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 68
+        }
+      },
+      {
+        "unit": "uGruposCF",
+        "class": "TfrmGruposCF",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 74
+        }
+      },
+      {
+        "unit": "uGruposCF",
+        "class": "TfrmGruposCF",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 79
+        }
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "class": "TfrmGruposCFCadastrados",
+        "name": "btnExcluirClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "self.ExcluirGrupoCF"
+        ],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 43
+        }
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "class": "TfrmGruposCFCadastrados",
+        "name": "ExcluirGrupoCF",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox"
+        ],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 50
+        }
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "class": "TfrmGruposCFCadastrados",
+        "name": "btnNovoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "TfrmGruposCF.Create",
+          "self.grupos_cf.Destroy",
+          "self.grupos_cf.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 75
+        }
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "class": "TfrmGruposCFCadastrados",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 85
+        }
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "class": "TfrmGruposCFCadastrados",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "StrToInt",
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 90
+        }
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "class": "TfrmGruposCFCadastrados",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 101
+        }
+      },
+      {
+        "unit": "udmImprimir",
+        "class": "TdmImprimir",
+        "name": "DadosPadrao",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 19,
+        "calls": [
+          "StrToCurrDef"
+        ],
+        "source_ref": {
+          "file": "udmImprimir.pas",
+          "line": 35
+        }
+      },
+      {
+        "unit": "udmImprimir",
+        "class": "TdmImprimir",
+        "name": "DadosPersonalizados",
+        "kind": "procedure",
+        "params": [
+          "idconta_receber: integer"
+        ],
+        "returns": null,
+        "loc": 17,
+        "calls": [
+          "IntToStr",
+          "StrToCurr",
+          "StrToDate",
+          "self.ADOQuery1.SQL"
+        ],
+        "source_ref": {
+          "file": "udmImprimir.pas",
+          "line": 53
+        }
+      },
+      {
+        "unit": "udmImprimir",
+        "class": "TdmImprimir",
+        "name": "DadosSacado",
+        "kind": "procedure",
+        "params": [
+          "idcliente: integer"
+        ],
+        "returns": null,
+        "loc": 22,
+        "calls": [
+          "IntToStr",
+          "self.ADOQuery1.SQL"
+        ],
+        "source_ref": {
+          "file": "udmImprimir.pas",
+          "line": 69
+        }
+      },
+      {
+        "unit": "udmImprimir",
+        "class": "TdmImprimir",
+        "name": "DadosCedente",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [
+          "self.ADOQuery1.SQL"
+        ],
+        "source_ref": {
+          "file": "udmImprimir.pas",
+          "line": 90
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "btnSalvarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 39,
+        "calls": [
+          "Application.MessageBox",
+          "btnVoltar.SetFocus",
+          "self.AtualizarContaCorrente",
+          "self.AtualizarSaldoDevedor",
+          "self.AtualizarValorPago",
+          "self.LimparCampos",
+          "self.SalvarPagamento",
+          "self.VerificarQuitação"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 86
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "SalvarPagamento",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 17,
+        "calls": [
+          "ADOCommand1.Execute",
+          "FloatToStr",
+          "IntToStr",
+          "self.PegarDados"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 124
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "PegarDados",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "FormatDateTime",
+          "StrToFloat",
+          "StrToInt",
+          "self.lancamentoCP.setDataPagamento",
+          "self.lancamentoCP.setIdContaCorrente",
+          "self.lancamentoCP.setIdContaPagar",
+          "self.lancamentoCP.setIdTipoPagamento",
+          "self.lancamentoCP.setObservacao",
+          "self.lancamentoCP.setValorPago"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 140
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "AtualizarValorPago",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 151
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "VerificarQuitação",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [
+          "ADOCommand1.Execute",
+          "FormatDateTime",
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 161
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "AtualizarSaldoDevedor",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "FloatTOStr",
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 178
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "AtualizarContaCorrente",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [
+          "FloatToStr",
+          "IntToStr",
+          "self.ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 186
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "PegarSaldoContaCorrente",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 15,
+        "calls": [
+          "IntToStr",
+          "StrToFloat",
+          "self.ADOQuery2.SQL"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 203
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "VerificarCamposNulos",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 217
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "VerificarValorPago",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 228
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "btnSelecionarContaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "IntToStr",
+          "TfrmContasCorrenteCadastradas.Create",
+          "self.contas_corrente.Destroy",
+          "self.contas_corrente.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 237
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "btnSelecionarTipoPagamentoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 15,
+        "calls": [
+          "TfrmTiposPagamentoCadastrados.Create",
+          "self.tipo_pagamento.Destroy",
+          "self.tipo_pagamento.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 250
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 264
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "btnVoltar2Click",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 269
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.ADOQuery1.Parameters"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 274
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.lancamentoCP.dLancamentosCP"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 282
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 288
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "class": "TfrmBaixarTituloLancamentosCP",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 13,
+        "calls": [],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 294
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "btnSelecionarContaCorrenteClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "IntToStr",
+          "self.contas_corrente.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 82
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "btnSelecionarTipoPagamentoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "self.tipo_pagamento.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 92
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "btnVoltar2Click",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 103
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 108
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 13,
+        "calls": [
+          "TfrmContasCorrenteCadastradas.Create",
+          "TfrmTiposPagamentoCadastrados.Create",
+          "self.ADOQuery1.Parameters"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 114
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.contas_corrente.Destroy",
+          "self.lancamentoCR.dLancamentosCR",
+          "self.tipo_pagamento.Destroy"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 126
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "btnSalvarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 40,
+        "calls": [
+          "Application.MessageBox",
+          "btnVoltar.SetFocus",
+          "self.AtualizarContaCorrente",
+          "self.AtualizarSaldoCredor",
+          "self.AtualizarValorPago",
+          "self.LimparCampos",
+          "self.SalvarPagamento",
+          "self.VerificarQuitação"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 134
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "SalvarPagamento",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 17,
+        "calls": [
+          "ADOCommand1.Execute",
+          "FloatToStr",
+          "IntToStr",
+          "self.PegarDados"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 173
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "PegarDados",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "FormatDateTime",
+          "StrToFloat",
+          "StrToInt",
+          "self.lancamentoCR.setDataRecebimento",
+          "self.lancamentoCR.setIdContaCorrente",
+          "self.lancamentoCR.setIdContaReceber",
+          "self.lancamentoCR.setIdTipoPagamento",
+          "self.lancamentoCR.setObservacao",
+          "self.lancamentoCR.setValorRecebido"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 189
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "AtualizarValorPago",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 200
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "AtualizarSaldoCredor",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "FloatTOStr",
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 210
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "AtualizarContaCorrente",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [
+          "FloatToStr",
+          "IntToStr",
+          "self.ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 218
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "PegarSaldoContaCorrente",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 15,
+        "calls": [
+          "IntToStr",
+          "StrToFloat",
+          "self.ADOQuery2.SQL"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 235
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "VerificarCamposNulos",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 249
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "VerificarValorPago",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 259
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "VerificarQuitação",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 17,
+        "calls": [
+          "ADOCommand1.Execute",
+          "FormatDateTime",
+          "StrToFloat"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 268
+        }
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "class": "TfrmBaixarTituloLancamentosCR",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 13,
+        "calls": [],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 284
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "brnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.CadastrarBanco"
+        ],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 41
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "CadastrarBanco",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "Application.MessageBox",
+          "self.ADOCommand1.Execute",
+          "self.LimparCampos",
+          "self.PegarDados",
+          "self.edtCodigo.SetFocus"
+        ],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 47
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "PegarDados",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "self.bancos.setAtivo",
+          "self.bancos.setCodigo",
+          "self.bancos.setNome"
+        ],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 72
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 83
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.bancos.dBancos"
+        ],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 88
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 94
+        }
+      },
+      {
+        "unit": "uBancos",
+        "class": "TfrmBancos",
+        "name": "Button2Click",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 102
+        }
+      },
+      {
+        "unit": "uBancosCadastrados",
+        "class": "TfrmBancosCadastrados",
+        "name": "btnNovoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "TfrmBancos.Create",
+          "self.bancos.Destroy",
+          "self.bancos.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uBancosCadastrados.pas",
+          "line": 36
+        }
+      },
+      {
+        "unit": "uBancosCadastrados",
+        "class": "TfrmBancosCadastrados",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBancosCadastrados.pas",
+          "line": 46
+        }
+      },
+      {
+        "unit": "uBancosCadastrados",
+        "class": "TfrmBancosCadastrados",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "StrToInt",
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uBancosCadastrados.pas",
+          "line": 51
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "btnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "Application.MessageBox",
+          "self.CadastrarContaCorrente",
+          "self.LimparCampos",
+          "self.edtNome.SetFocus"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 57
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "CadastrarContaCorrente",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 20,
+        "calls": [
+          "FloatToStr",
+          "IntToStr",
+          "self.ADOCommand1.Execute",
+          "self.PegarDados"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 82
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "PegarDados",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 30,
+        "calls": [
+          "StrToFloat",
+          "StrToInt",
+          "self.contas_corrente.setAgencia",
+          "self.contas_corrente.setAtivo",
+          "self.contas_corrente.setConta",
+          "self.contas_corrente.setDigitoAgencia",
+          "self.contas_corrente.setDigitoConta",
+          "self.contas_corrente.setIdBanco",
+          "self.contas_corrente.setImpressaoBoleto",
+          "self.contas_corrente.setNome",
+          "self.contas_corrente.setSaldo"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 101
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "VerificarCamposNulos",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 130
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 17,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 141
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "TfrmBancosCadastrados.Create"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 157
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.bancos.Destroy",
+          "self.contas_corrente.dConstasCorrente"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 164
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "btnSelecionarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "IntToStr",
+          "self.bancos.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 172
+        }
+      },
+      {
+        "unit": "uContasCorrente",
+        "class": "TfrmContasCorrente",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "self.Close",
+          "self.LimparCampos"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 181
+        }
+      },
+      {
+        "unit": "uContasCorrenteCadastradas",
+        "class": "TfrmContasCorrenteCadastradas",
+        "name": "btnNovaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "TfrmContasCorrente.Create",
+          "self.contas_corrente.Destroy",
+          "self.contas_corrente.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasCorrenteCadastradas.pas",
+          "line": 43
+        }
+      },
+      {
+        "unit": "uContasCorrenteCadastradas",
+        "class": "TfrmContasCorrenteCadastradas",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uContasCorrenteCadastradas.pas",
+          "line": 53
+        }
+      },
+      {
+        "unit": "uContasCorrenteCadastradas",
+        "class": "TfrmContasCorrenteCadastradas",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 13,
+        "calls": [
+          "StrToInt",
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uContasCorrenteCadastradas.pas",
+          "line": 58
+        }
+      },
+      {
+        "unit": "uContasCorrenteCadastradas",
+        "class": "TfrmContasCorrenteCadastradas",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasCorrenteCadastradas.pas",
+          "line": 70
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "VerificarCamposNulos",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "StrToFloat",
+          "StrToInt"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 77
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "btnCadastrarContaPagarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "Application.MessageBox",
+          "edtTitulo.SetFocus",
+          "self.CadastrarContaPagar",
+          "self.LimparCampos"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 88
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "CadastrarContaPagar",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.LoopParcelas",
+          "self.PegarDados"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 113
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "PegarDados",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 16,
+        "calls": [
+          "FormatDateTime",
+          "StrToFloat",
+          "StrToInt",
+          "self.contas_pagar.setDataCadastro",
+          "self.contas_pagar.setDataEmissao",
+          "self.contas_pagar.setDescricao",
+          "self.contas_pagar.setIdClienteFornecedor",
+          "self.contas_pagar.setIdPlanoContas",
+          "self.contas_pagar.setIdTipoCobranca",
+          "self.contas_pagar.setQuantParcelas",
+          "self.contas_pagar.setTitulo",
+          "self.contas_pagar.setValor",
+          "self.contas_pagar.setVencimento"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 121
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "LoopParcelas",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 42,
+        "calls": [
+          "ADOCommand1.Execute",
+          "FloatToStr",
+          "IntToStr"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 136
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "PegarUltimaConta",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 20,
+        "calls": [
+          "IntToStr",
+          "StrToInt",
+          "self.ADOQuery1.SQL"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 177
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 196
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.contas_pagar.dContasPagar",
+          "self.fornecedor.Destroy",
+          "self.plano.Destroy",
+          "self.tipo_cobranca.Destroy"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 213
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "TfrmClieFornCadastrados.Create",
+          "TfrmPlanoContasCadastradas.Create",
+          "TfrmTiposCobrancaCadastrados.Create"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 221
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "btnSelecionaPlanoContaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "IntToStr",
+          "self.plano.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 231
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "btnSelecionarFornecedorClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 22,
+        "calls": [
+          "IntToStr",
+          "self.fornecedor.ADOQuery1",
+          "self.fornecedor.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 241
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "btnSelecionarTipoCobrancaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "IntToStr",
+          "self.tipo_cobranca.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 262
+        }
+      },
+      {
+        "unit": "uContasPagar",
+        "class": "TfrmContasPagar",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.Close",
+          "self.LimparCampos"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 272
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "btnBaixarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 29,
+        "calls": [
+          "StrToFloat",
+          "TfrmBaixarTituloLancamentosCP.Create",
+          "self.baixar_tituloL.Destroy",
+          "self.baixar_tituloL.ShowModal",
+          "self.btnVoltar.SetFocus"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 52
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "btnEditarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "ShowMessage"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 80
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "btnExcluirClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 28,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox",
+          "self.btnVoltar.SetFocus"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 86
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "btnImprimirBoletoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "Application.MessageBox",
+          "self.ImprimirBoleto"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 113
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "ImprimirBoleto",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 124
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "btnNovaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "TfrmContasPagar.Create",
+          "self.contas_pagar.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 129
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 138
+        }
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "class": "TfrmContasPagarCadastradas",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 143
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "btnCadastrarContaPagarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 27,
+        "calls": [
+          "Application.MessageBox",
+          "edtTitulo.SetFocus",
+          "self.CadastradarContaReceber",
+          "self.Imprimir",
+          "self.LimparCampos"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 79
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "Imprimir",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 36,
+        "calls": [
+          "TACBrBolLayOut",
+          "dm.ACBrBoleto1.Imprimir",
+          "self.ADOQuery1.SQL",
+          "self.dm.ACBrBoleto1",
+          "self.dm.DadosCedente",
+          "self.dm.DadosPadrao",
+          "self.dm.DadosPersonalizados",
+          "self.dm.DadosSacado"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 105
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "VerificarCamposNulos",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "StrToFloat",
+          "StrToInt"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 140
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "CadastradarContaReceber",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.LoopParcelas",
+          "self.PegarDados"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 151
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "edtParcelasChange",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "StrToInt"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 159
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "PegarDados",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 15,
+        "calls": [
+          "FormatDateTime",
+          "StrToFloat",
+          "StrToInt",
+          "self.contas_receber.setDataCadastro",
+          "self.contas_receber.setDataEmissao",
+          "self.contas_receber.setIdClienteFornecedor",
+          "self.contas_receber.setIdPlanoContas",
+          "self.contas_receber.setIdTipoCobranca",
+          "self.contas_receber.setQuantParcelas",
+          "self.contas_receber.setTitulo",
+          "self.contas_receber.setValor",
+          "self.contas_receber.setVencimento"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 167
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "LoopParcelas",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 41,
+        "calls": [
+          "ADOCommand1.Execute",
+          "FloatToStr",
+          "IntToStr"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 181
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "PegarUltimaConta",
+        "kind": "function",
+        "params": [],
+        "returns": null,
+        "loc": 21,
+        "calls": [
+          "ADOQuery1.SQL.Add",
+          "ADOQuery1.SQL.Clear",
+          "IntToStr",
+          "StrToInt"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 221
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "LimparCampos",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 18,
+        "calls": [],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 241
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "btnSelecionaPlanoContaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 11,
+        "calls": [
+          "IntToStr",
+          "self.plano.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 258
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "btnSelecionarClienteClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 22,
+        "calls": [
+          "IntToStr",
+          "self.cliente.ADOQuery1",
+          "self.cliente.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 268
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "btnSelecionarTipoCobrancaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 13,
+        "calls": [
+          "IntToStr",
+          "self.tipo_cobranca.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 289
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 301
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "self.cliente.Destroy",
+          "self.contas_receber.dContasPagar",
+          "self.plano.Destroy",
+          "self.tipo_cobranca.Destroy"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 306
+        }
+      },
+      {
+        "unit": "uContasReceber",
+        "class": "TfrmContasReceber",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "TdmImprimir.Create",
+          "TfrmClieFornCadastrados.Create",
+          "TfrmPlanoContasCadastradas.Create",
+          "TfrmTiposCobrancaCadastrados.Create"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 315
+        }
+      },
+      {
+        "unit": "uContasReceberCadastradas",
+        "class": "TfrmContasReceberCadastradas",
+        "name": "btnBaixarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 28,
+        "calls": [
+          "StrToFloat",
+          "TfrmBaixarTituloLancamentosCR.Create",
+          "self.baixar_tituloL.Destroy",
+          "self.baixar_tituloL.ShowModal",
+          "self.btnVoltar.SetFocus"
+        ],
+        "source_ref": {
+          "file": "uContasReceberCadastradas.pas",
+          "line": 51
+        }
+      },
+      {
+        "unit": "uContasReceberCadastradas",
+        "class": "TfrmContasReceberCadastradas",
+        "name": "btnImprimirBoletoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 12,
+        "calls": [
+          "StrToInt",
+          "TdmImprimir.Create",
+          "self.dm.ACBrBoleto1",
+          "self.dm.DadosCedente",
+          "self.dm.DadosPadrao",
+          "self.dm.DadosPersonalizados",
+          "self.dm.DadosSacado"
+        ],
+        "source_ref": {
+          "file": "uContasReceberCadastradas.pas",
+          "line": 78
+        }
+      },
+      {
+        "unit": "uContasReceberCadastradas",
+        "class": "TfrmContasReceberCadastradas",
+        "name": "btnNovaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 10,
+        "calls": [
+          "TfrmContasReceber.Create",
+          "self.contas_receber.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uContasReceberCadastradas.pas",
+          "line": 89
+        }
+      },
+      {
+        "unit": "uContasReceberCadastradas",
+        "class": "TfrmContasReceberCadastradas",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uContasReceberCadastradas.pas",
+          "line": 98
+        }
+      },
+      {
+        "unit": "uPlanoContas",
+        "class": "TfrmPlanoContas",
+        "name": "btnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 27,
+        "calls": [
+          "Application.MessageBox",
+          "mskSequencia.SetFocus",
+          "self.CadastrarPlanoContas"
+        ],
+        "source_ref": {
+          "file": "uPlanoContas.pas",
+          "line": 34
+        }
+      },
+      {
+        "unit": "uPlanoContas",
+        "class": "TfrmPlanoContas",
+        "name": "CadastrarPlanoContas",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uPlanoContas.pas",
+          "line": 60
+        }
+      },
+      {
+        "unit": "uPlanoContas",
+        "class": "TfrmPlanoContas",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uPlanoContas.pas",
+          "line": 73
+        }
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "class": "TfrmPlanoContasCadastradas",
+        "name": "btnExcluirClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 44
+        }
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "class": "TfrmPlanoContasCadastradas",
+        "name": "btnNovoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.plano.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 69
+        }
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "class": "TfrmPlanoContasCadastradas",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 77
+        }
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "class": "TfrmPlanoContasCadastradas",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "StrToInt",
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 82
+        }
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "class": "TfrmPlanoContasCadastradas",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "TfrmPlanoContas.Create"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 95
+        }
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "class": "TfrmPlanoContasCadastradas",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.plano.Destroy"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 100
+        }
+      },
+      {
+        "unit": "uTiposCobranca",
+        "class": "TfrmTiposCobranca",
+        "name": "btnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 27,
+        "calls": [
+          "Application.MessageBox",
+          "edtNome.SetFocus",
+          "self.CadastrarTipoCobranca"
+        ],
+        "source_ref": {
+          "file": "uTiposCobranca.pas",
+          "line": 34
+        }
+      },
+      {
+        "unit": "uTiposCobranca",
+        "class": "TfrmTiposCobranca",
+        "name": "CadastrarTipoCobranca",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uTiposCobranca.pas",
+          "line": 60
+        }
+      },
+      {
+        "unit": "uTiposCobranca",
+        "class": "TfrmTiposCobranca",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uTiposCobranca.pas",
+          "line": 73
+        }
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "class": "TfrmTiposCobrancaCadastrados",
+        "name": "btnExcluirClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 43
+        }
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "class": "TfrmTiposCobrancaCadastrados",
+        "name": "btnNovoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.tipo_cobranca.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 68
+        }
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "class": "TfrmTiposCobrancaCadastrados",
+        "name": "Button1Click",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 76
+        }
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "class": "TfrmTiposCobrancaCadastrados",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "StrToInt",
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 81
+        }
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "class": "TfrmTiposCobrancaCadastrados",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "TfrmTiposCobranca.Create"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 94
+        }
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "class": "TfrmTiposCobrancaCadastrados",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.tipo_cobranca.Destroy"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 99
+        }
+      },
+      {
+        "unit": "uTiposPagamento",
+        "class": "TfrmTiposPagamento",
+        "name": "btnCadastrarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 29,
+        "calls": [
+          "Application.MessageBox",
+          "edtNome.SetFocus",
+          "self.CadastrarTipoPagamento"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamento.pas",
+          "line": 32
+        }
+      },
+      {
+        "unit": "uTiposPagamento",
+        "class": "TfrmTiposPagamento",
+        "name": "CadastrarTipoPagamento",
+        "kind": "procedure",
+        "params": [],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "ADOCommand1.Execute"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamento.pas",
+          "line": 60
+        }
+      },
+      {
+        "unit": "uTiposPagamento",
+        "class": "TfrmTiposPagamento",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamento.pas",
+          "line": 73
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "btnExcluirClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 26,
+        "calls": [
+          "ADOCommand1.Execute",
+          "Application.MessageBox"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 44
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "btnNovoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 9,
+        "calls": [
+          "self.tipos_pc.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 69
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "btnVoltarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 77
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "DBGrid1CellClick",
+        "kind": "procedure",
+        "params": [
+          "Column: TColumn"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "self.Close"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 82
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "TfrmTiposPagamento.Create"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 95
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 7,
+        "calls": [
+          "self.tipos_pc.Destroy"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 100
+        }
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "class": "TfrmTiposPagamentoCadastrados",
+        "name": "FormCreate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 106
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgFinanceiroClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "pnlClienteFornecedor.Hide",
+          "pnlFinanceiro.Show"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 78
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgClienteFornecedorClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 8,
+        "calls": [
+          "pnlClienteFornecedor.Show",
+          "pnlFinanceiro.Hide"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 85
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "FormActivate",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "TfrmBancosCadastrados.Create",
+          "TfrmClieForncadastrados.Create",
+          "TfrmContasCorrenteCadastradas.Create",
+          "TfrmContasPagarCadastradas.Create",
+          "TfrmContasReceberCadastradas.Create",
+          "TfrmGruposCFCadastrados.Create",
+          "TfrmPlanoContasCadastradas.Create",
+          "TfrmTiposCobrancaCadastrados.Create",
+          "TfrmTiposPagamentoCadastrados.Create"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 92
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "FormClose",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject",
+          "Action: TCloseAction"
+        ],
+        "returns": null,
+        "loc": 14,
+        "calls": [
+          "self.bancos.Destroy",
+          "self.cliente_fornecedorC.Destroy",
+          "self.contas_corrente.Destroy",
+          "self.contas_pagar.Destroy",
+          "self.contas_receber.Destroy",
+          "self.gruposcf_cadastrados.Destroy",
+          "self.plano_contas.Destroy",
+          "self.tipo_cobranca.Destroy",
+          "self.tipos_pc.Destroy"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 105
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgBancosClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.bancos.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 118
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgCadastrarCFClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.cliente_fornecedorC.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 123
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgCFCadastradosClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.gruposcf_cadastrados.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 128
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgPlanoContasClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.plano_contas.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 133
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgTipoCobrancaClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.tipo_cobranca.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 138
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgTipoPagamentoClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.tipos_pc.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 143
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgContasCorrenteClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.contas_corrente.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 148
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgContasPagarClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.contas_pagar.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 153
+        }
+      },
+      {
+        "unit": "uPrincipal",
+        "class": "TfrmPrincipal",
+        "name": "imgContasReceberClick",
+        "kind": "procedure",
+        "params": [
+          "Sender: TObject"
+        ],
+        "returns": null,
+        "loc": 6,
+        "calls": [
+          "self.contas_receber.ShowModal"
+        ],
+        "source_ref": {
+          "file": "uPrincipal.pas",
+          "line": 158
+        }
+      }
+    ],
+    "stored_procedures": []
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T14:29:34.081943+00:00",
+    "run_id": "8b37039f6672",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\Meu-ERP"
+  }
+}

@@ -1,0 +1,344 @@
+{
+  "artifact": "03_database_rules",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Regras de banco (constraints, transações, integridade)",
+  "payload": {
+    "counts": {
+      "total": 27,
+      "mode": "ast+regex-fallback"
+    },
+    "rules": [
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "cliente_fornecedor"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedores.pas",
+          "line": 124
+        },
+        "id": "DBR-0001"
+      },
+      {
+        "type": "write_operation",
+        "operation": "delete",
+        "tables": [
+          "cliente_fornecedor"
+        ],
+        "source_ref": {
+          "file": "uClientesFornecedoresCadastrados.pas",
+          "line": 59
+        },
+        "id": "DBR-0002"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "grupo_cliente_fornecedor"
+        ],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 52
+        },
+        "id": "DBR-0003"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "grupo_cliente_fornecedor"
+        ],
+        "source_ref": {
+          "file": "uGruposCF.pas",
+          "line": 55
+        },
+        "id": "DBR-0004"
+      },
+      {
+        "type": "write_operation",
+        "operation": "delete",
+        "tables": [
+          "grupo_cliente_fornecedor"
+        ],
+        "source_ref": {
+          "file": "uGruposCFCadastrados.pas",
+          "line": 53
+        },
+        "id": "DBR-0005"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "lancamento"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 128
+        },
+        "id": "DBR-0006"
+      },
+      {
+        "type": "write_operation",
+        "operation": "update",
+        "tables": [
+          "contas_pagar"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 154
+        },
+        "id": "DBR-0007"
+      },
+      {
+        "type": "write_operation",
+        "operation": "update",
+        "tables": [
+          "contas_pagar"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 167
+        },
+        "id": "DBR-0008"
+      },
+      {
+        "type": "write_operation",
+        "operation": "update",
+        "tables": [
+          "conta_corrente"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCP.pas",
+          "line": 196
+        },
+        "id": "DBR-0009"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "lancamento_contas_receber"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 177
+        },
+        "id": "DBR-0010"
+      },
+      {
+        "type": "write_operation",
+        "operation": "update",
+        "tables": [
+          "contas_receber"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 203
+        },
+        "id": "DBR-0011"
+      },
+      {
+        "type": "write_operation",
+        "operation": "update",
+        "tables": [
+          "conta_corrente"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 228
+        },
+        "id": "DBR-0012"
+      },
+      {
+        "type": "write_operation",
+        "operation": "update",
+        "tables": [
+          "contas_receber"
+        ],
+        "source_ref": {
+          "file": "uBaixarTituloLancamentosCR.pas",
+          "line": 273
+        },
+        "id": "DBR-0013"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "banco"
+        ],
+        "source_ref": {
+          "file": "uBancos.pas",
+          "line": 51
+        },
+        "id": "DBR-0014"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "conta_corrente"
+        ],
+        "source_ref": {
+          "file": "uContasCorrente.pas",
+          "line": 86
+        },
+        "id": "DBR-0015"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "contas_pagar"
+        ],
+        "source_ref": {
+          "file": "uContasPagar.pas",
+          "line": 154
+        },
+        "id": "DBR-0016"
+      },
+      {
+        "type": "write_operation",
+        "operation": "delete",
+        "tables": [
+          "contas_pagar"
+        ],
+        "source_ref": {
+          "file": "uContasPagarCadastradas.pas",
+          "line": 92
+        },
+        "id": "DBR-0017"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "contas_receber"
+        ],
+        "source_ref": {
+          "file": "uContasReceber.pas",
+          "line": 199
+        },
+        "id": "DBR-0018"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "plano_contas"
+        ],
+        "source_ref": {
+          "file": "uPlanoContas.pas",
+          "line": 63
+        },
+        "id": "DBR-0019"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "plano_contas"
+        ],
+        "source_ref": {
+          "file": "uPlanoContas.pas",
+          "line": 66
+        },
+        "id": "DBR-0020"
+      },
+      {
+        "type": "write_operation",
+        "operation": "delete",
+        "tables": [
+          "plano_contas"
+        ],
+        "source_ref": {
+          "file": "uPlanoContasCadastradas.pas",
+          "line": 50
+        },
+        "id": "DBR-0021"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "tipo_cobranca"
+        ],
+        "source_ref": {
+          "file": "uTiposCobranca.pas",
+          "line": 63
+        },
+        "id": "DBR-0022"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "tipo_cobranca"
+        ],
+        "source_ref": {
+          "file": "uTiposCobranca.pas",
+          "line": 66
+        },
+        "id": "DBR-0023"
+      },
+      {
+        "type": "write_operation",
+        "operation": "delete",
+        "tables": [
+          "tipo_cobranca"
+        ],
+        "source_ref": {
+          "file": "uTiposCobrancaCadastrados.pas",
+          "line": 49
+        },
+        "id": "DBR-0024"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "tipo_pagamento"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamento.pas",
+          "line": 63
+        },
+        "id": "DBR-0025"
+      },
+      {
+        "type": "write_operation",
+        "operation": "insert",
+        "tables": [
+          "tipo_pagamento"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamento.pas",
+          "line": 66
+        },
+        "id": "DBR-0026"
+      },
+      {
+        "type": "write_operation",
+        "operation": "delete",
+        "tables": [
+          "tipo_pagamento"
+        ],
+        "source_ref": {
+          "file": "uTiposPagamentoCadastrados.pas",
+          "line": 50
+        },
+        "id": "DBR-0027"
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T14:29:34.076763+00:00",
+    "run_id": "8b37039f6672",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\Meu-ERP"
+  }
+}

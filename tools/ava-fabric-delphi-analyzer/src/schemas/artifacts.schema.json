@@ -1,0 +1,240 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ava-fabric/delphi-analyzer/artifacts.schema.json",
+  "title": "AVA Fabric Delphi Analyzer - envelope + payload contract",
+  "description": "Valida o envelope comum (schemas.py::envelope) e o payload de cada um dos 9 artefatos JSON gerados por delphi_ast_analyzer.py::analyze().",
+  "type": "object",
+  "required": ["artifact", "schema_version", "project", "description", "payload", "_volatile"],
+  "properties": {
+    "artifact": { "type": "string", "enum": [
+      "01_business_rules", "02_form_business_rules", "03_database_rules",
+      "04_database_schemas", "05_procedures", "06_integrations", "07_apis",
+      "08_code_overview", "09_test_coverage"
+    ] },
+    "schema_version": { "type": "string" },
+    "project": { "type": "string" },
+    "description": { "type": "string" },
+    "payload": { "type": "object" },
+    "_volatile": {
+      "type": "object",
+      "required": ["generated_at", "run_id", "analyzer", "source_root"],
+      "properties": {
+        "generated_at": { "type": "string" },
+        "run_id": { "type": "string" },
+        "analyzer": { "type": "string" },
+        "source_root": { "type": "string" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "artifact": { "const": "01_business_rules" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "rules"],
+            "properties": {
+              "counts": {
+                "type": "object",
+                "required": ["total", "by_type", "mode"]
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "unit", "type", "source_ref"],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["validation", "calculation", "state_classification",
+                               "threshold_condition"]
+                    }
+                  },
+                  "not": { "required": ["rule_type"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "02_form_business_rules" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "forms"],
+            "properties": {
+              "counts": { "type": "object", "required": ["forms", "fields"] },
+              "forms": { "type": "array" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "03_database_rules" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "rules"],
+            "properties": {
+              "counts": { "type": "object", "required": ["total", "mode"] },
+              "rules": { "type": "array" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "04_database_schemas" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "tables", "inferred_tables",
+                         "relationships", "db_component_datasets", "dataset_fields"],
+            "properties": {
+              "counts": {
+                "type": "object",
+                "required": ["tables_ddl", "tables_inferred", "datasets",
+                             "relationships", "mode"]
+              },
+              "tables": { "type": "array" },
+              "inferred_tables": { "type": "array" },
+              "relationships": { "type": "array" },
+              "db_component_datasets": { "type": "array" },
+              "dataset_fields": { "type": "array", "description": "campos de datasets Delphi em .dfm" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "05_procedures" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "code_procedures", "stored_procedures"],
+            "properties": {
+              "counts": {
+                "type": "object",
+                "required": ["code_procedures", "stored_procedures", "mode"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "06_integrations" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "integrations"],
+            "properties": {
+              "counts": { "type": "object", "required": ["total", "by_type", "mode"] },
+              "integrations": { "type": "array" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "07_apis" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "apis"],
+            "properties": {
+              "counts": { "type": "object", "required": ["total", "mode"] },
+              "apis": { "type": "array" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "08_code_overview" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["totals", "classes", "complexity_by_unit"],
+            "properties": {
+              "classes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "file", "line"],
+                  "properties": {
+                    "name": { "type": "string" },
+                    "parent": { "type": ["string", "null"] },
+                    "file": { "type": "string" },
+                    "line": { "type": "integer" }
+                  }
+                }
+              },
+              "totals": {
+                "type": "object",
+                "required": ["units_parsed_ast", "loc_total", "classes",
+                             "procedures", "functions", "forms_screens",
+                             "input_fields", "avg_cyclomatic", "units_total",
+                             "business_rules", "integrations", "apis",
+                             "db_tables", "mode"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "artifact": { "const": "09_test_coverage" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["counts", "test_findings", "auxiliary_indicators"],
+            "properties": {
+              "counts": {
+                "type": "object",
+                "required": ["test_units", "test_methods", "test_fixtures",
+                             "manual_test_docs", "runner_configs", "ci_test_stages",
+                             "test_data_files", "mode"]
+              },
+              "test_findings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "kind", "source_ref"],
+                  "properties": {
+                    "kind": { "type": "string", "enum": ["fixture_class", "published_test_method",
+                                                          "attribute", "framework_uses", "filename_pattern"] },
+                    "detected_via": { "type": "string", "enum": ["ast", "regex", "filename"] }
+                  }
+                }
+              },
+              "auxiliary_indicators": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "category", "label", "source_ref"],
+                  "properties": {
+                    "category": { "type": "string", "enum": ["manual_doc", "runner_config",
+                                                              "ci_test_stage", "test_data"] }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

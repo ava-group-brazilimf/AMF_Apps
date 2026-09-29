@@ -1,0 +1,107 @@
+{
+  "artifact": "08_code_overview",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Levantamento geral (LOC, módulos, forms, telas, métricas)",
+  "payload": {
+    "totals": {
+      "units_parsed_ast": 1971,
+      "loc_total": 1968859,
+      "classes": 4512,
+      "procedures": 32002,
+      "functions": 18814,
+      "forms_screens": 870,
+      "input_fields": 7126,
+      "avg_cyclomatic": 45.2,
+      "units_total": 1982,
+      "business_rules": 14487,
+      "integrations": 47,
+      "apis": 24,
+      "db_tables": 686,
+      "mode": "ast+regex-fallback"
+    },
+    "complexity_by_unit": [
+      {
+        "unit": "RelPer",
+        "cyclomatic": 3846,
+        "methods": 81
+      },
+      {
+        "unit": "RelatRDM",
+        "cyclomatic": 2802,
+        "methods": 604
+      },
+      {
+        "unit": "Relat",
+        "cyclomatic": 2563,
+        "methods": 487
+      },
+      {
+        "unit": "mainFRM1",
+        "cyclomatic": 1450,
+        "methods": 591
+      },
+      {
+        "unit": "Controls",
+        "cyclomatic": 1191,
+        "methods": 676
+      },
+      {
+        "unit": "Relat_GenFRM",
+        "cyclomatic": 921,
+        "methods": 142
+      },
+      {
+        "unit": "FP_Prima",
+        "cyclomatic": 913,
+        "methods": 373
+      },
+      {
+        "unit": "listaDM",
+        "cyclomatic": 823,
+        "methods": 480
+      },
+      {
+        "unit": "AlunosDM",
+        "cyclomatic": 749,
+        "methods": 365
+      },
+      {
+        "unit": "academico",
+        "cyclomatic": 709,
+        "methods": 177
+      },
+      {
+        "unit": "configFRM",
+        "cyclomatic": 665,
+        "methods": 364
+      },
+      {
+        "unit": "CensoEscolarDM",
+        "cyclomatic": 641,
+        "methods": 56
+      },
+      {
+        "unit": "FiltroSQLSophia",
+        "cyclomatic": 594,
+        "methods": 79
+      },
+      {
+        "unit": "FuncsRelatPer",
+        "cyclomatic": 584,
+        "methods": 99
+      },
+      {
+        "unit": "PI_Acad_ManipAtaNota",
+        "cyclomatic": 574,
+        "methods": 142
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-06T12:03:54.639236+00:00",
+    "run_id": "310f5112f743",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\repo\\sophia\\sophia-full-src"
+  }
+}

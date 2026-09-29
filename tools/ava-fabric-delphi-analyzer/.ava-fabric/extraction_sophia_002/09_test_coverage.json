@@ -1,0 +1,558 @@
+{
+  "artifact": "09_test_coverage",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Cobertura de testes (frameworks DUnit/DUnitX, fixtures, testes e indicadores auxiliares de teste)",
+  "payload": {
+    "counts": {
+      "test_units": 39,
+      "test_methods": 0,
+      "test_fixtures": 1,
+      "manual_test_docs": 1,
+      "runner_configs": 0,
+      "ci_test_stages": 0,
+      "test_data_files": 1,
+      "mode": "ast+regex-fallback"
+    },
+    "test_findings": [
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTesteFrameworkCase.pas",
+          "line": 75
+        },
+        "id": "TST-0001"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTesteFrameworkExceptions.pas",
+          "line": 5
+        },
+        "id": "TST-0002"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTesteFrameworkModal.pas",
+          "line": 102
+        },
+        "id": "TST-0003"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTesteFrameworkRelatorio.pas",
+          "line": 5
+        },
+        "id": "TST-0004"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTesteExploratorio.pas",
+          "line": 4
+        },
+        "id": "TST-0005"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTesteMain.pas",
+          "line": 58
+        },
+        "id": "TST-0006"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTestePadraoAcademico.pas",
+          "line": 5
+        },
+        "id": "TST-0007"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTestePadraoCadastro.pas",
+          "line": 5
+        },
+        "id": "TST-0008"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTestePadraoFinanceiro.pas",
+          "line": 4
+        },
+        "id": "TST-0009"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFramework",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "uTestePadraoRematricula.pas",
+          "line": 5
+        },
+        "id": "TST-0010"
+      },
+      {
+        "kind": "fixture_class",
+        "name": "TestCalculoDosIsITA",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "TestesIsIta.pas",
+          "line": 8
+        },
+        "id": "TST-0011"
+      },
+      {
+        "kind": "framework_uses",
+        "name": "TestFrameWork",
+        "detected_via": "ast",
+        "source_ref": {
+          "file": "TestesIsIta.pas",
+          "line": 5
+        },
+        "id": "TST-0012"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "Atestado.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "Atestado.pas",
+          "line": null
+        },
+        "id": "TST-0013"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "Filtro_AlunoTopEspecialFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "Filtro_AlunoTopEspecialFRM.pas",
+          "line": null
+        },
+        "id": "TST-0014"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "ImportacaoProspectivo.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "ImportacaoProspectivo.pas",
+          "line": null
+        },
+        "id": "TST-0015"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "InfoAtestadoFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "InfoAtestadoFRM.pas",
+          "line": null
+        },
+        "id": "TST-0016"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "LemAtestadosFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "LemAtestadosFRM.pas",
+          "line": null
+        },
+        "id": "TST-0017"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "PI_Atestado.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "PI_Atestado.pas",
+          "line": null
+        },
+        "id": "TST-0018"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "PI_Integ_Prospectivo.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "PI_Integ_Prospectivo.pas",
+          "line": null
+        },
+        "id": "TST-0019"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "TestaArredondamentoFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "TestaArredondamentoFRM.pas",
+          "line": null
+        },
+        "id": "TST-0020"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "TesteConfiguracaoEmailFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": null
+        },
+        "id": "TST-0021"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "TesteLancamentoNotaFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "TesteLancamentoNotaFRM.pas",
+          "line": null
+        },
+        "id": "TST-0022"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "TesteNotificacaoFRM.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "TesteNotificacaoFRM.pas",
+          "line": null
+        },
+        "id": "TST-0023"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "TestesIsIta.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "TestesIsIta.pas",
+          "line": null
+        },
+        "id": "TST-0024"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "constFuncoesEspeciais.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "constFuncoesEspeciais.pas",
+          "line": null
+        },
+        "id": "TST-0025"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "srvFuncoesEspeciais.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "srvFuncoesEspeciais.pas",
+          "line": null
+        },
+        "id": "TST-0026"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uEmailTestarConfiguracao.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": null
+        },
+        "id": "TST-0027"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uServidorTarefasTestarEnvioEmail.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": null
+        },
+        "id": "TST-0028"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uServidorTarefasTestarSmtp.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": null
+        },
+        "id": "TST-0029"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteExploratorio.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteExploratorio.pas",
+          "line": null
+        },
+        "id": "TST-0030"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkCaminhoTemporario.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkCaminhoTemporario.pas",
+          "line": null
+        },
+        "id": "TST-0031"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkCase.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkCase.pas",
+          "line": null
+        },
+        "id": "TST-0032"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkClick.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkClick.pas",
+          "line": null
+        },
+        "id": "TST-0033"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkExceptions.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkExceptions.pas",
+          "line": null
+        },
+        "id": "TST-0034"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkFindComponent.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkFindComponent.pas",
+          "line": null
+        },
+        "id": "TST-0035"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkGetValue.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkGetValue.pas",
+          "line": null
+        },
+        "id": "TST-0036"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkHelp.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkHelp.pas",
+          "line": null
+        },
+        "id": "TST-0037"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkModal.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkModal.pas",
+          "line": null
+        },
+        "id": "TST-0038"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkParametro.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkParametro.pas",
+          "line": null
+        },
+        "id": "TST-0039"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkRelatorio.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkRelatorio.pas",
+          "line": null
+        },
+        "id": "TST-0040"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkSelect.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkSelect.pas",
+          "line": null
+        },
+        "id": "TST-0041"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkSendKeys.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkSendKeys.pas",
+          "line": null
+        },
+        "id": "TST-0042"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkSetValue.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkSetValue.pas",
+          "line": null
+        },
+        "id": "TST-0043"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkSleep.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkSleep.pas",
+          "line": null
+        },
+        "id": "TST-0044"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteFrameworkWait.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteFrameworkWait.pas",
+          "line": null
+        },
+        "id": "TST-0045"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTesteMain.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTesteMain.pas",
+          "line": null
+        },
+        "id": "TST-0046"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTestePadraoAcademico.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTestePadraoAcademico.pas",
+          "line": null
+        },
+        "id": "TST-0047"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTestePadraoCadastro.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTestePadraoCadastro.pas",
+          "line": null
+        },
+        "id": "TST-0048"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTestePadraoFinanceiro.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTestePadraoFinanceiro.pas",
+          "line": null
+        },
+        "id": "TST-0049"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "uTestePadraoRematricula.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "uTestePadraoRematricula.pas",
+          "line": null
+        },
+        "id": "TST-0050"
+      },
+      {
+        "kind": "filename_pattern",
+        "name": "xmlProspectivoFunil.pas",
+        "detected_via": "filename",
+        "source_ref": {
+          "file": "xmlProspectivoFunil.pas",
+          "line": null
+        },
+        "id": "TST-0051"
+      }
+    ],
+    "auxiliary_indicators": [
+      {
+        "category": "manual_doc",
+        "label": "Manual — Documented",
+        "source_ref": {
+          "file": "Servicos.Implementacoes.Testes.csproj.FileListAbsolute.txt",
+          "path": "SGx.ServidorTarefas\\Servicos.Implementacoes.Testes\\obj\\Debug\\netcoreapp2.2\\Servicos.Implementacoes.Testes.csproj.FileListAbsolute.txt",
+          "line": null
+        },
+        "id": "TSTX-0001"
+      },
+      {
+        "category": "test_data",
+        "label": "Test Data",
+        "source_ref": {
+          "file": "nunit_random_seed.tmp",
+          "path": "SGx.ServidorTarefas\\Servicos.Implementacoes.Testes\\bin\\Debug\\netcoreapp2.2\\nunit_random_seed.tmp",
+          "line": null
+        },
+        "id": "TSTX-0002"
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T17:16:26.481804+00:00",
+    "run_id": "2f7859f1c7a8",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\repo\\sophia\\sophia-full-src"
+  }
+}

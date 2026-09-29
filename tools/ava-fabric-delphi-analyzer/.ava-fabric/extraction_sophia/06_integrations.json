@@ -1,0 +1,2979 @@
+{
+  "artifact": "06_integrations",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Integrações (DLL, COM, sockets, e-mail, arquivos, filas)",
+  "payload": {
+    "counts": {
+      "total": 328,
+      "by_type": {
+        "file": 205,
+        "email": 98,
+        "com": 6,
+        "dll": 17,
+        "socket": 2
+      },
+      "mode": "regex-only"
+    },
+    "integrations": [
+      {
+        "id": "INT-0001",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "CriptFile.pas",
+          "line": 612
+        }
+      },
+      {
+        "id": "INT-0002",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "CriptFile.pas",
+          "line": 645
+        }
+      },
+      {
+        "id": "INT-0003",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "CriptFile.pas",
+          "line": 673
+        }
+      },
+      {
+        "id": "INT-0004",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "CriptFile.pas",
+          "line": 696
+        }
+      },
+      {
+        "id": "INT-0005",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "CriptFile.pas",
+          "line": 717
+        }
+      },
+      {
+        "id": "INT-0006",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "U_Cipher.pas",
+          "line": 124
+        }
+      },
+      {
+        "id": "INT-0007",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "U_Cipher.pas",
+          "line": 130
+        }
+      },
+      {
+        "id": "INT-0008",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "U_Cipher.pas",
+          "line": 173
+        }
+      },
+      {
+        "id": "INT-0009",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "U_Cipher.pas",
+          "line": 178
+        }
+      },
+      {
+        "id": "INT-0010",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "AluMatriculaFRM.pas",
+          "line": 5053
+        }
+      },
+      {
+        "id": "INT-0011",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "AluMatriculaFRM.pas",
+          "line": 5495
+        }
+      },
+      {
+        "id": "INT-0012",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "AluProdServFRM.pas",
+          "line": 546
+        }
+      },
+      {
+        "id": "INT-0013",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "AluProdServFRM.pas",
+          "line": 637
+        }
+      },
+      {
+        "id": "INT-0014",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "ArquivosDisponiveisTWFRM.pas",
+          "line": 847
+        }
+      },
+      {
+        "id": "INT-0015",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "clForumSophia.pas",
+          "line": 109
+        }
+      },
+      {
+        "id": "INT-0016",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "configDM.pas",
+          "line": 1429
+        }
+      },
+      {
+        "id": "INT-0017",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "configDM.pas",
+          "line": 3164
+        }
+      },
+      {
+        "id": "INT-0018",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "configDM.pas",
+          "line": 3178
+        }
+      },
+      {
+        "id": "INT-0019",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "configDM.pas",
+          "line": 3178
+        }
+      },
+      {
+        "id": "INT-0020",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "configDM.pas",
+          "line": 3207
+        }
+      },
+      {
+        "id": "INT-0021",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "configFRM.pas",
+          "line": 7942
+        }
+      },
+      {
+        "id": "INT-0022",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "GestaoAssinaturaNovoEnvelopeFRM.pas",
+          "line": 449
+        }
+      },
+      {
+        "id": "INT-0023",
+        "type": "com",
+        "target": "Excel.Application",
+        "source_ref": {
+          "file": "ImportarDisciplinaExtracurricularSescFRM.pas",
+          "line": 98
+        }
+      },
+      {
+        "id": "INT-0024",
+        "type": "com",
+        "target": "Excel.Application",
+        "source_ref": {
+          "file": "ImportarProcessoSeletivoSescFRM.pas",
+          "line": 245
+        }
+      },
+      {
+        "id": "INT-0025",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "InformacaoPagamentoFRM.pas",
+          "line": 77
+        }
+      },
+      {
+        "id": "INT-0026",
+        "type": "com",
+        "target": "Excel.application",
+        "source_ref": {
+          "file": "listaDM.pas",
+          "line": 9791
+        }
+      },
+      {
+        "id": "INT-0027",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "MatriculaOnlineFRM.pas",
+          "line": 284
+        }
+      },
+      {
+        "id": "INT-0028",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "ProtocolosFRM.pas",
+          "line": 291
+        }
+      },
+      {
+        "id": "INT-0029",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "SophiaMaisConfigFRM.pas",
+          "line": 2582
+        }
+      },
+      {
+        "id": "INT-0030",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 37
+        }
+      },
+      {
+        "id": "INT-0031",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 38
+        }
+      },
+      {
+        "id": "INT-0032",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 46
+        }
+      },
+      {
+        "id": "INT-0033",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 61
+        }
+      },
+      {
+        "id": "INT-0034",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 80
+        }
+      },
+      {
+        "id": "INT-0035",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 127
+        }
+      },
+      {
+        "id": "INT-0036",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 139
+        }
+      },
+      {
+        "id": "INT-0037",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 148
+        }
+      },
+      {
+        "id": "INT-0038",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "TesteConfiguracaoEmailFRM.pas",
+          "line": 167
+        }
+      },
+      {
+        "id": "INT-0039",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "uGuidEstacao.pas",
+          "line": 29
+        }
+      },
+      {
+        "id": "INT-0040",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "ConfigFile.pas",
+          "line": 135
+        }
+      },
+      {
+        "id": "INT-0041",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "ConfigFile.pas",
+          "line": 194
+        }
+      },
+      {
+        "id": "INT-0042",
+        "type": "com",
+        "target": "NFSe_Util.util",
+        "source_ref": {
+          "file": "PI_NFSeUtil_DLL.pas",
+          "line": 76
+        }
+      },
+      {
+        "id": "INT-0043",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "LibNFSe.pas",
+          "line": 306
+        }
+      },
+      {
+        "id": "INT-0044",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "LibNFSe.pas",
+          "line": 324
+        }
+      },
+      {
+        "id": "INT-0045",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_NF_GINFES.pas",
+          "line": 308
+        }
+      },
+      {
+        "id": "INT-0046",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_NF_RPSDSF.pas",
+          "line": 81
+        }
+      },
+      {
+        "id": "INT-0047",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_NotaFiscal.pas",
+          "line": 467
+        }
+      },
+      {
+        "id": "INT-0048",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_NotaFiscal.pas",
+          "line": 504
+        }
+      },
+      {
+        "id": "INT-0049",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_Formulas_Gravacao.pas",
+          "line": 1388
+        }
+      },
+      {
+        "id": "INT-0050",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_Formulas_Gravacao.pas",
+          "line": 1406
+        }
+      },
+      {
+        "id": "INT-0051",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Geral_OfertaServicos.pas",
+          "line": 298
+        }
+      },
+      {
+        "id": "INT-0052",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Geral_OfertaServicos.pas",
+          "line": 405
+        }
+      },
+      {
+        "id": "INT-0053",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "ReportsEureka.pas",
+          "line": 5
+        }
+      },
+      {
+        "id": "INT-0054",
+        "type": "email",
+        "target": "TIdSMTP",
+        "source_ref": {
+          "file": "ReportsEureka.pas",
+          "line": 24
+        }
+      },
+      {
+        "id": "INT-0055",
+        "type": "email",
+        "target": "TIdMessage",
+        "source_ref": {
+          "file": "ReportsEureka.pas",
+          "line": 25
+        }
+      },
+      {
+        "id": "INT-0056",
+        "type": "email",
+        "target": "TIdSMTP",
+        "source_ref": {
+          "file": "ReportsEureka.pas",
+          "line": 109
+        }
+      },
+      {
+        "id": "INT-0057",
+        "type": "email",
+        "target": "TIdMessage",
+        "source_ref": {
+          "file": "ReportsEureka.pas",
+          "line": 163
+        }
+      },
+      {
+        "id": "INT-0058",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "ReportsEureka.pas",
+          "line": 207
+        }
+      },
+      {
+        "id": "INT-0059",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Avaliacao.pas",
+          "line": 841
+        }
+      },
+      {
+        "id": "INT-0060",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "CadastroCurriculoRDM.pas",
+          "line": 2746
+        }
+      },
+      {
+        "id": "INT-0061",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "chequesRDM.pas",
+          "line": 1175
+        }
+      },
+      {
+        "id": "INT-0062",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "chequesRDM.pas",
+          "line": 1244
+        }
+      },
+      {
+        "id": "INT-0063",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "CTRLAcesso.pas",
+          "line": 907
+        }
+      },
+      {
+        "id": "INT-0064",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "CTRLAcesso.pas",
+          "line": 1833
+        }
+      },
+      {
+        "id": "INT-0065",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "CTRLAcesso.pas",
+          "line": 1856
+        }
+      },
+      {
+        "id": "INT-0066",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uEmailEnvio.pas",
+          "line": 51
+        }
+      },
+      {
+        "id": "INT-0067",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailProcessarFila.pas",
+          "line": 15
+        }
+      },
+      {
+        "id": "INT-0068",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEmailProcessarFila.pas",
+          "line": 35
+        }
+      },
+      {
+        "id": "INT-0069",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEmailProcessarFila.pas",
+          "line": 465
+        }
+      },
+      {
+        "id": "INT-0070",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEmailProcessarFila.pas",
+          "line": 472
+        }
+      },
+      {
+        "id": "INT-0071",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailProcessarFila.pas",
+          "line": 588
+        }
+      },
+      {
+        "id": "INT-0072",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailProcessarFila.pas",
+          "line": 608
+        }
+      },
+      {
+        "id": "INT-0073",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "ExportWeb.pas",
+          "line": 627
+        }
+      },
+      {
+        "id": "INT-0074",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1005
+        }
+      },
+      {
+        "id": "INT-0075",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1095
+        }
+      },
+      {
+        "id": "INT-0076",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1140
+        }
+      },
+      {
+        "id": "INT-0077",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1173
+        }
+      },
+      {
+        "id": "INT-0078",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1233
+        }
+      },
+      {
+        "id": "INT-0079",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1603
+        }
+      },
+      {
+        "id": "INT-0080",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1716
+        }
+      },
+      {
+        "id": "INT-0081",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1813
+        }
+      },
+      {
+        "id": "INT-0082",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1896
+        }
+      },
+      {
+        "id": "INT-0083",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 1961
+        }
+      },
+      {
+        "id": "INT-0084",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2098
+        }
+      },
+      {
+        "id": "INT-0085",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2147
+        }
+      },
+      {
+        "id": "INT-0086",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2180
+        }
+      },
+      {
+        "id": "INT-0087",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2213
+        }
+      },
+      {
+        "id": "INT-0088",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2259
+        }
+      },
+      {
+        "id": "INT-0089",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2342
+        }
+      },
+      {
+        "id": "INT-0090",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2375
+        }
+      },
+      {
+        "id": "INT-0091",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2485
+        }
+      },
+      {
+        "id": "INT-0092",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 2745
+        }
+      },
+      {
+        "id": "INT-0093",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 3415
+        }
+      },
+      {
+        "id": "INT-0094",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 3507
+        }
+      },
+      {
+        "id": "INT-0095",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 3559
+        }
+      },
+      {
+        "id": "INT-0096",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 3589
+        }
+      },
+      {
+        "id": "INT-0097",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 3638
+        }
+      },
+      {
+        "id": "INT-0098",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 3993
+        }
+      },
+      {
+        "id": "INT-0099",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4050
+        }
+      },
+      {
+        "id": "INT-0100",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4134
+        }
+      },
+      {
+        "id": "INT-0101",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4197
+        }
+      },
+      {
+        "id": "INT-0102",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4281
+        }
+      },
+      {
+        "id": "INT-0103",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4326
+        }
+      },
+      {
+        "id": "INT-0104",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4356
+        }
+      },
+      {
+        "id": "INT-0105",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4389
+        }
+      },
+      {
+        "id": "INT-0106",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4432
+        }
+      },
+      {
+        "id": "INT-0107",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4522
+        }
+      },
+      {
+        "id": "INT-0108",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4561
+        }
+      },
+      {
+        "id": "INT-0109",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4592
+        }
+      },
+      {
+        "id": "INT-0110",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4623
+        }
+      },
+      {
+        "id": "INT-0111",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4652
+        }
+      },
+      {
+        "id": "INT-0112",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4698
+        }
+      },
+      {
+        "id": "INT-0113",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 4823
+        }
+      },
+      {
+        "id": "INT-0114",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 5139
+        }
+      },
+      {
+        "id": "INT-0115",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Internet.pas",
+          "line": 5229
+        }
+      },
+      {
+        "id": "INT-0116",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "NotaFiscalEletronica.pas",
+          "line": 76
+        }
+      },
+      {
+        "id": "INT-0117",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_CfgAcad.pas",
+          "line": 2408
+        }
+      },
+      {
+        "id": "INT-0118",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_CfgAcad.pas",
+          "line": 2500
+        }
+      },
+      {
+        "id": "INT-0119",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_ConjuntoAvals.pas",
+          "line": 993
+        }
+      },
+      {
+        "id": "INT-0120",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 335
+        }
+      },
+      {
+        "id": "INT-0121",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 651
+        }
+      },
+      {
+        "id": "INT-0122",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 682
+        }
+      },
+      {
+        "id": "INT-0123",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 722
+        }
+      },
+      {
+        "id": "INT-0124",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 899
+        }
+      },
+      {
+        "id": "INT-0125",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 958
+        }
+      },
+      {
+        "id": "INT-0126",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 1016
+        }
+      },
+      {
+        "id": "INT-0127",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 1139
+        }
+      },
+      {
+        "id": "INT-0128",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 1267
+        }
+      },
+      {
+        "id": "INT-0129",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Acad_IntegracaoQuadroHorario.pas",
+          "line": 1671
+        }
+      },
+      {
+        "id": "INT-0130",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_ExportacaoAplicativos.pas",
+          "line": 346
+        }
+      },
+      {
+        "id": "INT-0131",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_ExportacaoAplicativos.pas",
+          "line": 514
+        }
+      },
+      {
+        "id": "INT-0132",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 91
+        }
+      },
+      {
+        "id": "INT-0133",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 285
+        }
+      },
+      {
+        "id": "INT-0134",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 361
+        }
+      },
+      {
+        "id": "INT-0135",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 456
+        }
+      },
+      {
+        "id": "INT-0136",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 483
+        }
+      },
+      {
+        "id": "INT-0137",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 518
+        }
+      },
+      {
+        "id": "INT-0138",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 596
+        }
+      },
+      {
+        "id": "INT-0139",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 645
+        }
+      },
+      {
+        "id": "INT-0140",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 882
+        }
+      },
+      {
+        "id": "INT-0141",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 1049
+        }
+      },
+      {
+        "id": "INT-0142",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 1458
+        }
+      },
+      {
+        "id": "INT-0143",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_IntegracaoUntis.pas",
+          "line": 1469
+        }
+      },
+      {
+        "id": "INT-0144",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_ManutencaoServicos.pas",
+          "line": 318
+        }
+      },
+      {
+        "id": "INT-0145",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Notificacoes.pas",
+          "line": 2530
+        }
+      },
+      {
+        "id": "INT-0146",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "ProcessamentoRetornoChequesItau.pas",
+          "line": 28
+        }
+      },
+      {
+        "id": "INT-0147",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "ProcessamentoRetornoPagarItau.pas",
+          "line": 30
+        }
+      },
+      {
+        "id": "INT-0148",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "ProtocolosRDM.pas",
+          "line": 523
+        }
+      },
+      {
+        "id": "INT-0149",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 2531
+        }
+      },
+      {
+        "id": "INT-0150",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 6545
+        }
+      },
+      {
+        "id": "INT-0151",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 7855
+        }
+      },
+      {
+        "id": "INT-0152",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 7944
+        }
+      },
+      {
+        "id": "INT-0153",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 8080
+        }
+      },
+      {
+        "id": "INT-0154",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uBase64Helper.pas",
+          "line": 28
+        }
+      },
+      {
+        "id": "INT-0155",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uConfig.pas",
+          "line": 351
+        }
+      },
+      {
+        "id": "INT-0156",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uConfig.pas",
+          "line": 384
+        }
+      },
+      {
+        "id": "INT-0157",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 16
+        }
+      },
+      {
+        "id": "INT-0158",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 17
+        }
+      },
+      {
+        "id": "INT-0159",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 20
+        }
+      },
+      {
+        "id": "INT-0160",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 23
+        }
+      },
+      {
+        "id": "INT-0161",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 25
+        }
+      },
+      {
+        "id": "INT-0162",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 27
+        }
+      },
+      {
+        "id": "INT-0163",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 28
+        }
+      },
+      {
+        "id": "INT-0164",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 30
+        }
+      },
+      {
+        "id": "INT-0165",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 41
+        }
+      },
+      {
+        "id": "INT-0166",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 51
+        }
+      },
+      {
+        "id": "INT-0167",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 52
+        }
+      },
+      {
+        "id": "INT-0168",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 63
+        }
+      },
+      {
+        "id": "INT-0169",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 65
+        }
+      },
+      {
+        "id": "INT-0170",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 72
+        }
+      },
+      {
+        "id": "INT-0171",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 80
+        }
+      },
+      {
+        "id": "INT-0172",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 94
+        }
+      },
+      {
+        "id": "INT-0173",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 97
+        }
+      },
+      {
+        "id": "INT-0174",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 115
+        }
+      },
+      {
+        "id": "INT-0175",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 123
+        }
+      },
+      {
+        "id": "INT-0176",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 171
+        }
+      },
+      {
+        "id": "INT-0177",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 174
+        }
+      },
+      {
+        "id": "INT-0178",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 179
+        }
+      },
+      {
+        "id": "INT-0179",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 186
+        }
+      },
+      {
+        "id": "INT-0180",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 220
+        }
+      },
+      {
+        "id": "INT-0181",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 228
+        }
+      },
+      {
+        "id": "INT-0182",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 335
+        }
+      },
+      {
+        "id": "INT-0183",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uEmailTestarConfiguracao.pas",
+          "line": 344
+        }
+      },
+      {
+        "id": "INT-0184",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEnvioEmail.pas",
+          "line": 1477
+        }
+      },
+      {
+        "id": "INT-0185",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEnvioEmail.pas",
+          "line": 1509
+        }
+      },
+      {
+        "id": "INT-0186",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEnvioEmail.pas",
+          "line": 1512
+        }
+      },
+      {
+        "id": "INT-0187",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEnvioEmail.pas",
+          "line": 1515
+        }
+      },
+      {
+        "id": "INT-0188",
+        "type": "email",
+        "target": "idSmtp",
+        "source_ref": {
+          "file": "uEnvioEmail.pas",
+          "line": 1534
+        }
+      },
+      {
+        "id": "INT-0189",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "uFinancas.pas",
+          "line": 456
+        }
+      },
+      {
+        "id": "INT-0190",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "uFinancas.pas",
+          "line": 3033
+        }
+      },
+      {
+        "id": "INT-0191",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "uGuidsServidorRelatorios.pas",
+          "line": 52
+        }
+      },
+      {
+        "id": "INT-0192",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 657
+        }
+      },
+      {
+        "id": "INT-0193",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 980
+        }
+      },
+      {
+        "id": "INT-0194",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 1070
+        }
+      },
+      {
+        "id": "INT-0195",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 1179
+        }
+      },
+      {
+        "id": "INT-0196",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 1276
+        }
+      },
+      {
+        "id": "INT-0197",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 1742
+        }
+      },
+      {
+        "id": "INT-0198",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 1815
+        }
+      },
+      {
+        "id": "INT-0199",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 1893
+        }
+      },
+      {
+        "id": "INT-0200",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 3104
+        }
+      },
+      {
+        "id": "INT-0201",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uServidorHttp.pas",
+          "line": 3401
+        }
+      },
+      {
+        "id": "INT-0202",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 10
+        }
+      },
+      {
+        "id": "INT-0203",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 13
+        }
+      },
+      {
+        "id": "INT-0204",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 22
+        }
+      },
+      {
+        "id": "INT-0205",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 29
+        }
+      },
+      {
+        "id": "INT-0206",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 36
+        }
+      },
+      {
+        "id": "INT-0207",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 43
+        }
+      },
+      {
+        "id": "INT-0208",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarEnvioEmail.pas",
+          "line": 43
+        }
+      },
+      {
+        "id": "INT-0209",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 10
+        }
+      },
+      {
+        "id": "INT-0210",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 13
+        }
+      },
+      {
+        "id": "INT-0211",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 22
+        }
+      },
+      {
+        "id": "INT-0212",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 29
+        }
+      },
+      {
+        "id": "INT-0213",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 36
+        }
+      },
+      {
+        "id": "INT-0214",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 43
+        }
+      },
+      {
+        "id": "INT-0215",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "uServidorTarefasTestarSmtp.pas",
+          "line": 43
+        }
+      },
+      {
+        "id": "INT-0216",
+        "type": "dll",
+        "target": "cobranca.dll",
+        "source_ref": {
+          "file": "RelatRDM.pas",
+          "line": 1043
+        }
+      },
+      {
+        "id": "INT-0217",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 2086
+        }
+      },
+      {
+        "id": "INT-0218",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "tabelasRDM.pas",
+          "line": 5871
+        }
+      },
+      {
+        "id": "INT-0219",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "uSophiaInfoDtaFuncs.pas",
+          "line": 66
+        }
+      },
+      {
+        "id": "INT-0220",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "uSophiaInfoGetSo.pas",
+          "line": 77
+        }
+      },
+      {
+        "id": "INT-0221",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 9
+        }
+      },
+      {
+        "id": "INT-0222",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 193
+        }
+      },
+      {
+        "id": "INT-0223",
+        "type": "email",
+        "target": "TIdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 193
+        }
+      },
+      {
+        "id": "INT-0224",
+        "type": "email",
+        "target": "TIdMessage",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 194
+        }
+      },
+      {
+        "id": "INT-0225",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 201
+        }
+      },
+      {
+        "id": "INT-0226",
+        "type": "email",
+        "target": "TIdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 201
+        }
+      },
+      {
+        "id": "INT-0227",
+        "type": "email",
+        "target": "TIdMessage",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 203
+        }
+      },
+      {
+        "id": "INT-0228",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 218
+        }
+      },
+      {
+        "id": "INT-0229",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 225
+        }
+      },
+      {
+        "id": "INT-0230",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 226
+        }
+      },
+      {
+        "id": "INT-0231",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 227
+        }
+      },
+      {
+        "id": "INT-0232",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 228
+        }
+      },
+      {
+        "id": "INT-0233",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 229
+        }
+      },
+      {
+        "id": "INT-0234",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 233
+        }
+      },
+      {
+        "id": "INT-0235",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 245
+        }
+      },
+      {
+        "id": "INT-0236",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 249
+        }
+      },
+      {
+        "id": "INT-0237",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 251
+        }
+      },
+      {
+        "id": "INT-0238",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 256
+        }
+      },
+      {
+        "id": "INT-0239",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 267
+        }
+      },
+      {
+        "id": "INT-0240",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 270
+        }
+      },
+      {
+        "id": "INT-0241",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 274
+        }
+      },
+      {
+        "id": "INT-0242",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 277
+        }
+      },
+      {
+        "id": "INT-0243",
+        "type": "email",
+        "target": "IdSMTP",
+        "source_ref": {
+          "file": "SrvArquivosDM.pas",
+          "line": 299
+        }
+      },
+      {
+        "id": "INT-0244",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "WebRelat_Impl.pas",
+          "line": 1159
+        }
+      },
+      {
+        "id": "INT-0245",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "WebRelat_Impl.pas",
+          "line": 1164
+        }
+      },
+      {
+        "id": "INT-0246",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "WebRelat_Impl.pas",
+          "line": 1166
+        }
+      },
+      {
+        "id": "INT-0247",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uTLBConfig.pas",
+          "line": 96
+        }
+      },
+      {
+        "id": "INT-0248",
+        "type": "email",
+        "target": "IdSmtp",
+        "source_ref": {
+          "file": "uTLBConfig.pas",
+          "line": 120
+        }
+      },
+      {
+        "id": "INT-0249",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "boletoDM.pas",
+          "line": 850
+        }
+      },
+      {
+        "id": "INT-0250",
+        "type": "dll",
+        "target": "DarumaFramework.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 7
+        }
+      },
+      {
+        "id": "INT-0251",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 8
+        }
+      },
+      {
+        "id": "INT-0252",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 9
+        }
+      },
+      {
+        "id": "INT-0253",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 10
+        }
+      },
+      {
+        "id": "INT-0254",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 11
+        }
+      },
+      {
+        "id": "INT-0255",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 12
+        }
+      },
+      {
+        "id": "INT-0256",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 13
+        }
+      },
+      {
+        "id": "INT-0257",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 14
+        }
+      },
+      {
+        "id": "INT-0258",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 15
+        }
+      },
+      {
+        "id": "INT-0259",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 16
+        }
+      },
+      {
+        "id": "INT-0260",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 17
+        }
+      },
+      {
+        "id": "INT-0261",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 18
+        }
+      },
+      {
+        "id": "INT-0262",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 19
+        }
+      },
+      {
+        "id": "INT-0263",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 20
+        }
+      },
+      {
+        "id": "INT-0264",
+        "type": "dll",
+        "target": "DarumaFrameWork.dll",
+        "source_ref": {
+          "file": "Daruma.pas",
+          "line": 21
+        }
+      },
+      {
+        "id": "INT-0265",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "DoDownAutomatico.pas",
+          "line": 435
+        }
+      },
+      {
+        "id": "INT-0266",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "DoDownAutomatico.pas",
+          "line": 522
+        }
+      },
+      {
+        "id": "INT-0267",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "DoDownAutomatico.pas",
+          "line": 529
+        }
+      },
+      {
+        "id": "INT-0268",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 155
+        }
+      },
+      {
+        "id": "INT-0269",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 201
+        }
+      },
+      {
+        "id": "INT-0270",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 295
+        }
+      },
+      {
+        "id": "INT-0271",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 307
+        }
+      },
+      {
+        "id": "INT-0272",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 337
+        }
+      },
+      {
+        "id": "INT-0273",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 348
+        }
+      },
+      {
+        "id": "INT-0274",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 367
+        }
+      },
+      {
+        "id": "INT-0275",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "DTAFuncs.pas",
+          "line": 391
+        }
+      },
+      {
+        "id": "INT-0276",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "EIReport.pas",
+          "line": 480
+        }
+      },
+      {
+        "id": "INT-0277",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "EIReport.pas",
+          "line": 831
+        }
+      },
+      {
+        "id": "INT-0278",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Exceptions.pas",
+          "line": 94
+        }
+      },
+      {
+        "id": "INT-0279",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Exceptions.pas",
+          "line": 101
+        }
+      },
+      {
+        "id": "INT-0280",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Exceptions.pas",
+          "line": 147
+        }
+      },
+      {
+        "id": "INT-0281",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Exceptions.pas",
+          "line": 154
+        }
+      },
+      {
+        "id": "INT-0282",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Exceptions.pas",
+          "line": 218
+        }
+      },
+      {
+        "id": "INT-0283",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Exceptions.pas",
+          "line": 225
+        }
+      },
+      {
+        "id": "INT-0284",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "ExportaInfoWeb_OFFLINE.pas",
+          "line": 1223
+        }
+      },
+      {
+        "id": "INT-0285",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "FP_Prima.pas",
+          "line": 2014
+        }
+      },
+      {
+        "id": "INT-0286",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "FP_Prima.pas",
+          "line": 6200
+        }
+      },
+      {
+        "id": "INT-0287",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "FP_Prima.pas",
+          "line": 12108
+        }
+      },
+      {
+        "id": "INT-0288",
+        "type": "com",
+        "target": "Excel.Application",
+        "source_ref": {
+          "file": "FP_Prima_DevExpress.pas",
+          "line": 1838
+        }
+      },
+      {
+        "id": "INT-0289",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "Logo.pas",
+          "line": 113
+        }
+      },
+      {
+        "id": "INT-0290",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "Logo.pas",
+          "line": 195
+        }
+      },
+      {
+        "id": "INT-0291",
+        "type": "dll",
+        "target": "ole32.dll",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 57
+        }
+      },
+      {
+        "id": "INT-0292",
+        "type": "com",
+        "target": "Excel.Application",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 5975
+        }
+      },
+      {
+        "id": "INT-0293",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 1278
+        }
+      },
+      {
+        "id": "INT-0294",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 2823
+        }
+      },
+      {
+        "id": "INT-0295",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 3458
+        }
+      },
+      {
+        "id": "INT-0296",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 3646
+        }
+      },
+      {
+        "id": "INT-0297",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 5589
+        }
+      },
+      {
+        "id": "INT-0298",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 5597
+        }
+      },
+      {
+        "id": "INT-0299",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 5627
+        }
+      },
+      {
+        "id": "INT-0300",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 5631
+        }
+      },
+      {
+        "id": "INT-0301",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 6553
+        }
+      },
+      {
+        "id": "INT-0302",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Aplicat.pas",
+          "line": 6575
+        }
+      },
+      {
+        "id": "INT-0303",
+        "type": "socket",
+        "target": "TClientSocket",
+        "source_ref": {
+          "file": "SftpLib.pas",
+          "line": 12
+        }
+      },
+      {
+        "id": "INT-0304",
+        "type": "socket",
+        "target": "TClientSocket",
+        "source_ref": {
+          "file": "SftpLib.pas",
+          "line": 509
+        }
+      },
+      {
+        "id": "INT-0305",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "SftpLib.pas",
+          "line": 1031
+        }
+      },
+      {
+        "id": "INT-0306",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "SftpLib.pas",
+          "line": 1091
+        }
+      },
+      {
+        "id": "INT-0307",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "srvMovContabil.pas",
+          "line": 3634
+        }
+      },
+      {
+        "id": "INT-0308",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "SRVMAINFRM.pas",
+          "line": 1218
+        }
+      },
+      {
+        "id": "INT-0309",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "PI_Arquivos.pas",
+          "line": 388
+        }
+      },
+      {
+        "id": "INT-0310",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Arquivos.pas",
+          "line": 411
+        }
+      },
+      {
+        "id": "INT-0311",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Excecoes.pas",
+          "line": 1453
+        }
+      },
+      {
+        "id": "INT-0312",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Excecoes.pas",
+          "line": 1460
+        }
+      },
+      {
+        "id": "INT-0313",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Excecoes.pas",
+          "line": 1552
+        }
+      },
+      {
+        "id": "INT-0314",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Excecoes.pas",
+          "line": 1559
+        }
+      },
+      {
+        "id": "INT-0315",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_ExportacaoMeiraFernandes.pas",
+          "line": 257
+        }
+      },
+      {
+        "id": "INT-0316",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_Financ_RecebimentoAuto.pas",
+          "line": 2803
+        }
+      },
+      {
+        "id": "INT-0317",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "PI_FSF.pas",
+          "line": 456
+        }
+      },
+      {
+        "id": "INT-0318",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "AtualizadorBaseFRM.pas",
+          "line": 136
+        }
+      },
+      {
+        "id": "INT-0319",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "AtualizadorBaseFRM.pas",
+          "line": 780
+        }
+      },
+      {
+        "id": "INT-0320",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "fpstBuild.pas",
+          "line": 547
+        }
+      },
+      {
+        "id": "INT-0321",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "fpstBuild.pas",
+          "line": 1561
+        }
+      },
+      {
+        "id": "INT-0322",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "fpstBuild.pas",
+          "line": 1608
+        }
+      },
+      {
+        "id": "INT-0323",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "fpstBuild.pas",
+          "line": 1695
+        }
+      },
+      {
+        "id": "INT-0324",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "fpstBuild.pas",
+          "line": 1699
+        }
+      },
+      {
+        "id": "INT-0325",
+        "type": "file",
+        "target": "TFileStream.Create",
+        "source_ref": {
+          "file": "fpstBuild.pas",
+          "line": 2769
+        }
+      },
+      {
+        "id": "INT-0326",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Funcs_SGx.pas",
+          "line": 2225
+        }
+      },
+      {
+        "id": "INT-0327",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Funcs_SGx.pas",
+          "line": 2386
+        }
+      },
+      {
+        "id": "INT-0328",
+        "type": "file",
+        "target": "AssignFile",
+        "source_ref": {
+          "file": "Funcs_SGx.pas",
+          "line": 2534
+        }
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-06T11:44:09.542158+00:00",
+    "run_id": "2a7e6900abca",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\repo\\sophia\\sophia-full-src"
+  }
+}

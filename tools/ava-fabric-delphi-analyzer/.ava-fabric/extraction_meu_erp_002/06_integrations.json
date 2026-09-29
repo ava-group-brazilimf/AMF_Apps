@@ -1,0 +1,41 @@
+{
+  "artifact": "06_integrations",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Integrações (DLL, COM, sockets, e-mail, arquivos, filas)",
+  "payload": {
+    "counts": {
+      "total": 2,
+      "by_type": {
+        "banking_boleto": 2
+      },
+      "mode": "ast+regex-fallback"
+    },
+    "integrations": [
+      {
+        "type": "banking_boleto",
+        "target": "ACBrBoleto",
+        "via": "ACBr",
+        "source_ref": {
+          "file": "udmImprimir.pas"
+        },
+        "id": "INT-0001"
+      },
+      {
+        "type": "banking_boleto",
+        "target": "ACBrBoletoFCFortesFr",
+        "via": "ACBr",
+        "source_ref": {
+          "file": "udmImprimir.pas"
+        },
+        "id": "INT-0002"
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T14:29:34.092567+00:00",
+    "run_id": "8b37039f6672",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\Meu-ERP"
+  }
+}

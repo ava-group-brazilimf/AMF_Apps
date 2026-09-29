@@ -1,0 +1,8 @@
+# Compressão real (recomendado). Sem ele, usa-se o fallback SmartCrusher-lite.
+headroom-ai[all]>=0.22
+
+# Validação do contrato dos 8 artefatos (src/validate_artifacts.py)
+jsonschema>=4.20
+
+# Geração do dashboard Excel (src/generate_excel_report.py)
+xlsxwriter>=3.1

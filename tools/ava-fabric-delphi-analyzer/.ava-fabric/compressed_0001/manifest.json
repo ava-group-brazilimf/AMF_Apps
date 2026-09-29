@@ -1,0 +1,101 @@
+{
+  "engine": "headroom",
+  "model": "claude-sonnet-4-5-20250929",
+  "artifacts": [
+    {
+      "artifact": "01_business_rules",
+      "mode": "headroom",
+      "tokens_in": 156,
+      "tokens_out": 156,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "02_form_business_rules",
+      "mode": "headroom",
+      "tokens_in": 7383,
+      "tokens_out": 7383,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "03_database_rules",
+      "mode": "headroom",
+      "tokens_in": 1613,
+      "tokens_out": 1613,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "04_database_schemas",
+      "mode": "headroom",
+      "tokens_in": 694,
+      "tokens_out": 694,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "05_procedures",
+      "mode": "headroom",
+      "tokens_in": 56376,
+      "tokens_out": 56376,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "06_integrations",
+      "mode": "headroom",
+      "tokens_in": 156,
+      "tokens_out": 156,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "07_apis",
+      "mode": "headroom",
+      "tokens_in": 174,
+      "tokens_out": 174,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "08_code_overview",
+      "mode": "headroom",
+      "tokens_in": 1483,
+      "tokens_out": 1483,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    },
+    {
+      "artifact": "09_test_coverage",
+      "mode": "headroom",
+      "tokens_in": 219,
+      "tokens_out": 219,
+      "reduction_pct": 0.0,
+      "transforms": [
+        "router:noop"
+      ]
+    }
+  ],
+  "totals": {
+    "tokens_in": 68254,
+    "tokens_out": 68254,
+    "reduction_pct": 0.0
+  }
+}

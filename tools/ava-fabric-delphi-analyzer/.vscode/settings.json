@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd \"c:\\\\Users\\\\r\\.b\\.almeida\\\\Downloads\\\\files \\(2\\)\\\\ava-fabric-delphi-analyzer\\\\ava-fabric-delphi-analyzer\"; python src/run_pipeline\\.py \\./examples/Meu-ERP --extraction \\./\\.ava-fabric/extraction --compressed \\./\\.ava-fabric/compressed 2>&1 \\| Select-Object -Last 30$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd \"c:\\\\Users\\\\r\\.b\\.almeida\\\\Downloads\\\\files \\(2\\)\\\\ava-fabric-delphi-analyzer\\\\ava-fabric-delphi-analyzer\"; python src/run_pipeline\\.py \\./examples/Meu-ERP --extraction \\./\\.ava-fabric/extraction --compressed \\./\\.ava-fabric/compressed 2>&1$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "artifact": "09_test_coverage",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Cobertura de testes (frameworks DUnit/DUnitX, fixtures, testes e indicadores auxiliares de teste)",
+  "payload": {
+    "counts": {
+      "test_units": 0,
+      "test_methods": 0,
+      "test_fixtures": 0,
+      "manual_test_docs": 0,
+      "runner_configs": 0,
+      "ci_test_stages": 0,
+      "test_data_files": 0,
+      "mode": "regex-only"
+    },
+    "test_findings": [],
+    "auxiliary_indicators": []
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T10:58:13.495062+00:00",
+    "run_id": "0c2410168872",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "./examples/Meu-ERP"
+  }
+}

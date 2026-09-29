@@ -1,0 +1,31 @@
+{
+  "artifact": "08_code_overview",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Levantamento geral (LOC, módulos, forms, telas, métricas)",
+  "payload": {
+    "totals": {
+      "units_parsed_ast": 0,
+      "loc_total": 1968859,
+      "classes": 4975,
+      "procedures": 54536,
+      "functions": 32235,
+      "forms_screens": 870,
+      "input_fields": 7126,
+      "avg_cyclomatic": 0,
+      "units_total": 1982,
+      "business_rules": 3943,
+      "integrations": 328,
+      "apis": 23,
+      "db_tables": 1,
+      "mode": "regex-only"
+    },
+    "complexity_by_unit": []
+  },
+  "_volatile": {
+    "generated_at": "2026-07-06T11:44:09.552849+00:00",
+    "run_id": "2a7e6900abca",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "C:\\Desenv\\repo\\sophia\\sophia-full-src"
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "artifact": "08_code_overview",
+  "schema_version": "0.1.0",
+  "project": "AVA Fabric - Legacy Delphi Migration",
+  "description": "Levantamento geral (LOC, módulos, forms, telas, métricas)",
+  "payload": {
+    "totals": {
+      "units_parsed_ast": 30,
+      "loc_total": 4630,
+      "classes": 30,
+      "procedures": 253,
+      "functions": 88,
+      "forms_screens": 22,
+      "input_fields": 92,
+      "avg_cyclomatic": 3.1,
+      "units_total": 30,
+      "business_rules": 6,
+      "integrations": 2,
+      "apis": 0,
+      "db_tables": 11,
+      "mode": "ast+regex-fallback"
+    },
+    "classes": [
+      {
+        "name": "ClassBancos",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassBancos.pas"
+      },
+      {
+        "name": "ClassClienteFornecedor",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassClienteFornecedor.pas"
+      },
+      {
+        "name": "ClassContasCorrente",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassContasCorrente.pas"
+      },
+      {
+        "name": "ClassContasPagar",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassContasPagar.pas"
+      },
+      {
+        "name": "ClassContasReceber",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassContasReceber.pas"
+      },
+      {
+        "name": "ClassGrupoCF",
+        "parent": null,
+        "line": 6,
+        "attributes": [],
+        "file": "uClassGrupoCF.pas"
+      },
+      {
+        "name": "ClassLancamentosCP",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassLancamentosCP.pas"
+      },
+      {
+        "name": "ClassLancamentosCR",
+        "parent": null,
+        "line": 5,
+        "attributes": [],
+        "file": "uClassLancamentosCR.pas"
+      },
+      {
+        "name": "TfrmClientesFornecedores",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uClientesFornecedores.pas"
+      },
+      {
+        "name": "TfrmClieFornCadastrados",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uClientesFornecedoresCadastrados.pas"
+      },
+      {
+        "name": "TfrmGruposCF",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uGruposCF.pas"
+      },
+      {
+        "name": "TfrmGruposCFCadastrados",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uGruposCFCadastrados.pas"
+      },
+      {
+        "name": "TdmImprimir",
+        "parent": "TDataModule",
+        "line": 10,
+        "attributes": [],
+        "file": "udmImprimir.pas"
+      },
+      {
+        "name": "TfrmBaixarTituloLancamentosCP",
+        "parent": "TForm",
+        "line": 12,
+        "attributes": [],
+        "file": "uBaixarTituloLancamentosCP.pas"
+      },
+      {
+        "name": "TfrmBaixarTituloLancamentosCR",
+        "parent": "TForm",
+        "line": 12,
+        "attributes": [],
+        "file": "uBaixarTituloLancamentosCR.pas"
+      },
+      {
+        "name": "TfrmBancos",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uBancos.pas"
+      },
+      {
+        "name": "TfrmBancosCadastrados",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uBancosCadastrados.pas"
+      },
+      {
+        "name": "TfrmContasCorrente",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uContasCorrente.pas"
+      },
+      {
+        "name": "TfrmContasCorrenteCadastradas",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uContasCorrenteCadastradas.pas"
+      },
+      {
+        "name": "TfrmContasPagar",
+        "parent": "TForm",
+        "line": 12,
+        "attributes": [],
+        "file": "uContasPagar.pas"
+      },
+      {
+        "name": "TfrmContasPagarCadastradas",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uContasPagarCadastradas.pas"
+      },
+      {
+        "name": "TfrmContasReceber",
+        "parent": "TForm",
+        "line": 12,
+        "attributes": [],
+        "file": "uContasReceber.pas"
+      },
+      {
+        "name": "TfrmContasReceberCadastradas",
+        "parent": "TForm",
+        "line": 12,
+        "attributes": [],
+        "file": "uContasReceberCadastradas.pas"
+      },
+      {
+        "name": "TfrmPlanoContas",
+        "parent": "TForm",
+        "line": 10,
+        "attributes": [],
+        "file": "uPlanoContas.pas"
+      },
+      {
+        "name": "TfrmPlanoContasCadastradas",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uPlanoContasCadastradas.pas"
+      },
+      {
+        "name": "TfrmTiposCobranca",
+        "parent": "TForm",
+        "line": 10,
+        "attributes": [],
+        "file": "uTiposCobranca.pas"
+      },
+      {
+        "name": "TfrmTiposCobrancaCadastrados",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uTiposCobrancaCadastrados.pas"
+      },
+      {
+        "name": "TfrmTiposPagamento",
+        "parent": "TForm",
+        "line": 10,
+        "attributes": [],
+        "file": "uTiposPagamento.pas"
+      },
+      {
+        "name": "TfrmTiposPagamentoCadastrados",
+        "parent": "TForm",
+        "line": 11,
+        "attributes": [],
+        "file": "uTiposPagamentoCadastrados.pas"
+      },
+      {
+        "name": "TfrmPrincipal",
+        "parent": "TForm",
+        "line": 14,
+        "attributes": [],
+        "file": "uPrincipal.pas"
+      }
+    ],
+    "complexity_by_unit": [
+      {
+        "unit": "uContasReceber",
+        "cyclomatic": 9,
+        "methods": 15
+      },
+      {
+        "unit": "uClientesFornecedores",
+        "cyclomatic": 8,
+        "methods": 13
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCP",
+        "cyclomatic": 6,
+        "methods": 18
+      },
+      {
+        "unit": "uBaixarTituloLancamentosCR",
+        "cyclomatic": 6,
+        "methods": 17
+      },
+      {
+        "unit": "uContasCorrente",
+        "cyclomatic": 6,
+        "methods": 9
+      },
+      {
+        "unit": "uContasPagar",
+        "cyclomatic": 5,
+        "methods": 13
+      },
+      {
+        "unit": "uContasPagarCadastradas",
+        "cyclomatic": 5,
+        "methods": 8
+      },
+      {
+        "unit": "uPlanoContasCadastradas",
+        "cyclomatic": 4,
+        "methods": 6
+      },
+      {
+        "unit": "uTiposCobrancaCadastrados",
+        "cyclomatic": 4,
+        "methods": 6
+      },
+      {
+        "unit": "uTiposPagamentoCadastrados",
+        "cyclomatic": 4,
+        "methods": 7
+      },
+      {
+        "unit": "uClientesFornecedoresCadastrados",
+        "cyclomatic": 3,
+        "methods": 6
+      },
+      {
+        "unit": "uGruposCF",
+        "cyclomatic": 3,
+        "methods": 5
+      },
+      {
+        "unit": "uGruposCFCadastrados",
+        "cyclomatic": 3,
+        "methods": 6
+      },
+      {
+        "unit": "uContasReceberCadastradas",
+        "cyclomatic": 3,
+        "methods": 4
+      },
+      {
+        "unit": "uPlanoContas",
+        "cyclomatic": 3,
+        "methods": 3
+      }
+    ]
+  },
+  "_volatile": {
+    "generated_at": "2026-07-07T16:35:57.509305+00:00",
+    "run_id": "211b1ad3915d",
+    "analyzer": "delphi_ast_analyzer/0.1.0",
+    "source_root": "./examples/Meu-ERP"
+  }
+}
