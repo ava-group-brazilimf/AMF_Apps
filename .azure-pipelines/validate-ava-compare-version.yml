@@ -1,0 +1,233 @@
+# pipeline: ava-devops-compare-version — Prompt Validation
+# Plataforma: Azure DevOps
+# Finalidade: Valida estruturalmente o agente compare-version-agent.md e artefatos
+#             relacionados após cada alteração no PR/branch.
+
+trigger:
+  branches:
+    include:
+      - main
+      - "feature/*"
+      - "fix/*"
+  paths:
+    include:
+      - src/modules/ava-fabric-agents/devops-agents/agents/compare-version-agent.md
+      - .github/skills/ava-devops-compare-version/SKILL.md
+      - src/shared/templates/reports/parity-test-report-template.md
+      - src/shared/schemas/wave-comparison.schema.json
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  AGENT_FILE: src/modules/ava-fabric-agents/devops-agents/agents/compare-version-agent.md
+  SKILL_FILE: .github/skills/ava-devops-compare-version/SKILL.md
+  PARITY_TEMPLATE: src/shared/templates/reports/parity-test-report-template.md
+  SCHEMA_FILE: src/shared/schemas/wave-comparison.schema.json
+  CHECKS_SUITE: evidence_capture
+
+stages:
+  - stage: StructuralValidation
+    displayName: "1 — Structural Validation"
+    jobs:
+      - job: ValidateAgentFile
+        displayName: "Validate compare-version-agent.md"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "=== [CHK-01] Verifying required sections ==="
+              for section in \
+                "STEP 1" "STEP 2" "STEP 3" "STEP 4" "STEP 5" "STEP 6" "STEP 7" \
+                "Input Contract" "Output Contract" "Thresholds" "Regras de Execução"; do
+                if grep -q "$section" "$(AGENT_FILE)"; then
+                  echo "  ✅  $section"
+                else
+                  echo "  ❌  MISSING: $section"
+                  exit 1
+                fi
+              done
+            displayName: "[CHK-01] Required sections present"
+
+          - script: |
+              echo "=== [CHK-02] Golden dataset as primary payload source ==="
+              if grep -q "golden-dataset.json" "$(AGENT_FILE)"; then
+                echo "  ✅  golden-dataset.json referenced"
+              else
+                echo "  ❌  golden-dataset.json NOT found in agent file"
+                exit 1
+              fi
+
+              if grep -q "PRIMÁRIO\|fonte primária\|primary" "$(AGENT_FILE)"; then
+                echo "  ✅  golden dataset declared as primary source"
+              else
+                echo "  ❌  golden dataset not explicitly declared as primary source"
+                exit 1
+              fi
+            displayName: "[CHK-02] Golden dataset as primary source"
+
+          - script: |
+              echo "=== [CHK-03] Simultaneous execution declared ==="
+              if grep -qiE "simult[aâ]ne|fan-out|Thread A|Thread B|paralelo" "$(AGENT_FILE)"; then
+                echo "  ✅  simultaneous / fan-out execution found"
+              else
+                echo "  ❌  simultaneous execution pattern NOT found"
+                exit 1
+              fi
+            displayName: "[CHK-03] Simultaneous execution (fan-out)"
+
+          - script: |
+              echo "=== [CHK-04] Timeout guard present ==="
+              if grep -qE "timeout|30 s|timeout_ms" "$(AGENT_FILE)"; then
+                echo "  ✅  timeout guard referenced"
+              else
+                echo "  ❌  timeout guard NOT found"
+                exit 1
+              fi
+            displayName: "[CHK-04] Timeout guard"
+
+          - script: |
+              echo "=== [CHK-05] BC scoring in STEP 7 ==="
+              if grep -q "bc_parity_pct\|score.*bounded context\|score.*BC\|por Bounded Context" "$(AGENT_FILE)"; then
+                echo "  ✅  BC-level parity scoring found"
+              else
+                echo "  ❌  BC parity scoring NOT found in STEP 7"
+                exit 1
+              fi
+            displayName: "[CHK-05] BC parity scoring in STEP 7"
+
+          - script: |
+              echo "=== [CHK-06] parity-test-report in output contract ==="
+              if grep -q "parity-test-report.md\|parity_report" "$(AGENT_FILE)"; then
+                echo "  ✅  parity-test-report.md in output contract"
+              else
+                echo "  ❌  parity-test-report.md NOT in output contract"
+                exit 1
+              fi
+            displayName: "[CHK-06] parity-test-report in output contract"
+
+          - script: |
+              echo "=== [CHK-07] parity-test-report-template.md referenced ==="
+              if grep -q "parity-test-report-template.md" "$(AGENT_FILE)"; then
+                echo "  ✅  parity-test-report-template.md referenced in Templates table"
+              else
+                echo "  ❌  parity-test-report-template.md NOT referenced"
+                exit 1
+              fi
+            displayName: "[CHK-07] Parity template reference"
+
+  - stage: SkillFileValidation
+    displayName: "2 — SKILL.md Validation"
+    dependsOn: StructuralValidation
+    jobs:
+      - job: ValidateSkillFile
+        displayName: "Validate ava-devops-compare-version/SKILL.md"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "=== [CHK-08] SKILL description updated ==="
+              if grep -q "golden dataset\|simult\|bounded context\|parity score" "$(SKILL_FILE)"; then
+                echo "  ✅  SKILL.md description reflects new capabilities"
+              else
+                echo "  ❌  SKILL.md description is stale — missing golden dataset / BC score terms"
+                exit 1
+              fi
+            displayName: "[CHK-08] SKILL.md description reflects new capabilities"
+
+          - script: |
+              echo "=== [CHK-09] Activation triggers include new terms ==="
+              for trigger in "golden dataset" "parity score" "parity-test-report" "score por bounded context"; do
+                if grep -qi "$trigger" "$(SKILL_FILE)"; then
+                  echo "  ✅  trigger: $trigger"
+                else
+                  echo "  ❌  MISSING trigger: $trigger"
+                  exit 1
+                fi
+              done
+            displayName: "[CHK-09] Activation triggers updated"
+
+          - script: |
+              echo "=== [CHK-10] golden-dataset.json path in SKILL.md ==="
+              if grep -q "golden-dataset.json" "$(SKILL_FILE)"; then
+                echo "  ✅  golden-dataset.json path present"
+              else
+                echo "  ❌  golden-dataset.json path NOT found in SKILL.md"
+                exit 1
+              fi
+            displayName: "[CHK-10] golden-dataset.json path in SKILL.md"
+
+  - stage: TemplateValidation
+    displayName: "3 — Parity Template Validation"
+    dependsOn: SkillFileValidation
+    jobs:
+      - job: ValidateParityTemplate
+        displayName: "Validate parity-test-report-template.md"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "=== [CHK-11] Parity template file exists ==="
+              if [ -f "$(PARITY_TEMPLATE)" ]; then
+                echo "  ✅  parity-test-report-template.md exists"
+              else
+                echo "  ❌  parity-test-report-template.md NOT found at $(PARITY_TEMPLATE)"
+                exit 1
+              fi
+            displayName: "[CHK-11] Parity template exists"
+
+          - script: |
+              echo "=== [CHK-12] Parity template required sections ==="
+              for section in \
+                "Score de Paridade por Bounded Context" \
+                "Detalhamento por Bounded Context" \
+                "Índice de Paridade Global" \
+                "Veredicto Consolidado por Bounded Context" \
+                "BC_PARITY_PCT" \
+                "GLOBAL_PARITY_PCT" \
+                "GLOBAL_VERDICT" \
+                "BC_STATUS" \
+                "TIMEOUT"; do
+                if grep -q "$section" "$(PARITY_TEMPLATE)"; then
+                  echo "  ✅  $section"
+                else
+                  echo "  ❌  MISSING section/variable: $section"
+                  exit 1
+                fi
+              done
+            displayName: "[CHK-12] Parity template required sections and variables"
+
+          - script: |
+              echo "=== [CHK-13] Frontmatter fields ==="
+              for field in "report_id" "trace_id" "golden_dataset_version" "wave_id"; do
+                if grep -q "$field" "$(PARITY_TEMPLATE)"; then
+                  echo "  ✅  frontmatter: $field"
+                else
+                  echo "  ❌  MISSING frontmatter field: $field"
+                  exit 1
+                fi
+              done
+            displayName: "[CHK-13] Frontmatter fields"
+
+  - stage: Summary
+    displayName: "4 — Summary"
+    dependsOn:
+      - StructuralValidation
+      - SkillFileValidation
+      - TemplateValidation
+    condition: always()
+    jobs:
+      - job: PrintSummary
+        displayName: "Print validation summary"
+        steps:
+          - script: |
+              echo "============================================"
+              echo "  ava-devops-compare-version — Prompt CI"
+              echo "============================================"
+              echo "  CHK-01 to CHK-07 : compare-version-agent.md"
+              echo "  CHK-08 to CHK-10 : SKILL.md"
+              echo "  CHK-11 to CHK-13 : parity-test-report-template.md"
+              echo "============================================"
+              echo "  All checks must pass for branch merge."
+              echo "============================================"
+            displayName: "Validation summary"

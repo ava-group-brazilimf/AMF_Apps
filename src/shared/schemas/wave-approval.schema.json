@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WaveApproval",
+  "description": "Schema de aprovação humana de wave de migração",
+  "type": "object",
+  "required": ["trace_id", "wave_id", "status", "reviewer"],
+  "properties": {
+    "trace_id": { "type": "string" },
+    "wave_id": { "type": "string" },
+    "wave_name": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["approved", "rejected", "revision_requested"]
+    },
+    "reviewer": { "type": "string" },
+    "reviewer_role": { "type": "string" },
+    "comments": { "type": "string" },
+    "approved_at": { "type": "string", "format": "date-time" },
+    "criteria_validation": {
+      "type": "object",
+      "properties": {
+        "test_coverage_pct": { "type": "number" },
+        "sonar_gate_pass": { "type": "boolean" },
+        "parity_pct": { "type": "number" },
+        "performance_ok": { "type": "boolean" },
+        "cliente_validated": { "type": "boolean" }
+      }
+    }
+  }
+}

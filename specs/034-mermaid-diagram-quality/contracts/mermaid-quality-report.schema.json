@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric.local/schemas/mermaid-quality-report.schema.json",
+  "title": "Mermaid Quality Report",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "feature",
+    "projectName",
+    "traceId",
+    "generatedAt",
+    "acceptanceBaselineVersion",
+    "rendererVersion",
+    "defaultRenderingProfile",
+    "effectiveRenderingProfile",
+    "artifactsAnalyzed",
+    "diagramsAnalyzed",
+    "blockingFindings",
+    "warningFindings",
+    "findings"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "minLength": 1 },
+    "feature": { "const": "mermaid-diagram-quality" },
+    "projectName": { "type": "string", "minLength": 1 },
+    "traceId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "acceptanceBaselineVersion": { "const": "11.14.0" },
+    "rendererVersion": { "type": "string", "minLength": 1 },
+    "defaultRenderingProfile": { "$ref": "#/$defs/renderingProfile" },
+    "effectiveRenderingProfile": { "$ref": "#/$defs/renderingProfile" },
+    "artifactsAnalyzed": { "type": "integer", "minimum": 0 },
+    "diagramsAnalyzed": { "type": "integer", "minimum": 0 },
+    "blockingFindings": { "type": "integer", "minimum": 0 },
+    "warningFindings": { "type": "integer", "minimum": 0 },
+    "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" } }
+  },
+  "$defs": {
+    "renderingProfile": {
+      "type": "object",
+      "required": [
+        "viewportWidth",
+        "viewportHeight",
+        "zoomLevel",
+        "fontFamily",
+        "fontSizePx",
+        "theme",
+        "deviceScaleFactor"
+      ],
+      "properties": {
+        "viewportWidth": { "type": "integer", "minimum": 320, "maximum": 7680 },
+        "viewportHeight": {
+          "type": "integer",
+          "minimum": 240,
+          "maximum": 4320
+        },
+        "zoomLevel": { "type": "number", "minimum": 0.25, "maximum": 4 },
+        "fontFamily": { "type": "string", "minLength": 1 },
+        "fontSizePx": { "type": "integer", "minimum": 8, "maximum": 32 },
+        "theme": { "type": "string", "minLength": 1 },
+        "deviceScaleFactor": { "type": "number", "minimum": 1, "maximum": 4 }
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "id",
+        "severity",
+        "category",
+        "artifactPath",
+        "diagramId",
+        "diagramType",
+        "description",
+        "impact",
+        "rootCause",
+        "evidence",
+        "recommendation"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "severity": { "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"] },
+        "category": {
+          "enum": [
+            "SYNTAX",
+            "COMPATIBILITY",
+            "SANITIZATION",
+            "RENDERING",
+            "READABILITY",
+            "OVERLAP",
+            "CROSSING",
+            "CONGESTION",
+            "SPACING",
+            "LABEL_LENGTH",
+            "DEFAULT_VIEW_READABILITY",
+            "CONFIGURATION"
+          ]
+        },
+        "artifactPath": { "type": "string", "minLength": 1 },
+        "artifactName": { "type": "string", "minLength": 1 },
+        "diagramId": { "type": "string", "minLength": 1 },
+        "diagramName": { "type": "string", "minLength": 1 },
+        "diagramType": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "impact": { "type": "string", "minLength": 1 },
+        "rootCause": { "type": "string", "minLength": 1 },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "recommendation": { "type": "string", "minLength": 1 },
+        "overlapTargetType": {
+          "enum": [
+            "CONTAINER",
+            "COMPONENT",
+            "BOUNDARY",
+            "CARD",
+            "SYSTEM",
+            "EXTERNAL_SYSTEM",
+            "VISIBLE_ELEMENT"
+          ]
+        },
+        "correctedMermaidExample": { "type": "string", "minLength": 1 },
+        "notSafelyCorrectableReason": { "type": "string", "minLength": 1 },
+        "geometryEvidence": { "$ref": "#/$defs/geometryEvidence" }
+      },
+      "oneOf": [
+        {
+          "required": ["correctedMermaidExample"],
+          "not": { "required": ["notSafelyCorrectableReason"] }
+        },
+        {
+          "required": ["notSafelyCorrectableReason"],
+          "not": { "required": ["correctedMermaidExample"] }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "required": ["category"],
+            "properties": {
+              "category": {
+                "enum": ["OVERLAP", "CROSSING", "SPACING"]
+              }
+            }
+          },
+          "then": {
+            "required": ["geometryEvidence"]
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "effectiveRenderingProfile",
+        "structuralEvidence",
+        "rendererStatus"
+      ],
+      "properties": {
+        "line": { "type": "integer", "minimum": 0 },
+        "column": { "type": "integer", "minimum": 0 },
+        "effectiveRenderingProfile": { "$ref": "#/$defs/renderingProfile" },
+        "screenshotPath": { "type": "string" },
+        "structuralEvidence": { "type": "string" },
+        "rendererStatus": {
+          "enum": ["AVAILABLE", "RENDERER_UNAVAILABLE", "NOT_RUN", "FAILED"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "geometryEvidence": {
+      "type": "object",
+      "required": [
+        "coordinateSystem",
+        "labelElementId",
+        "targetElementId",
+        "labelBoundingBox",
+        "targetBoundingBox",
+        "intersectionAreaPx",
+        "overlapPercent",
+        "spacingDistancePx"
+      ],
+      "properties": {
+        "coordinateSystem": { "const": "svg" },
+        "labelElementId": { "type": "string" },
+        "targetElementId": { "type": "string" },
+        "labelBoundingBox": { "$ref": "#/$defs/boundingBox" },
+        "targetBoundingBox": { "$ref": "#/$defs/boundingBox" },
+        "intersectionAreaPx": { "type": "number", "minimum": 0 },
+        "overlapPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "spacingDistancePx": { "type": "number", "minimum": 0 },
+        "involvedEdgeIds": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "boundingBox": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "minimum": 0 },
+        "height": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

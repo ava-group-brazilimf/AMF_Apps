@@ -1,0 +1,275 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "prototype-conversion-map.schema.json",
+  "title": "PrototypeConversionMap",
+  "description": "Schema for prototype-conversion-map.json, produced by ava-stack-angular-frontend and ava-stack-react-frontend from the ava-prototype (F3) artifacts. Written twice: phase='planned' right after parsing (with expected_artifacts filled and generated=false), and phase='verified' after generation with the assertion block completed.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "generated_by",
+    "agent_version",
+    "framework",
+    "project_name",
+    "trace_id",
+    "generated_at",
+    "phase",
+    "prototype",
+    "shell",
+    "counts",
+    "screens",
+    "assertion",
+    "prototype_fidelity"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "artifact_id": { "const": "prototype-conversion-map" },
+    "generated_by": {
+      "type": "string",
+      "enum": ["ava-stack-angular-frontend", "ava-stack-react-frontend"]
+    },
+    "agent_version": { "$ref": "#/definitions/semver" },
+    "framework": { "type": "string", "enum": ["angular", "react"] },
+    "project_name": { "type": "string", "minLength": 1 },
+    "trace_id": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "phase": { "type": "string", "enum": ["planned", "verified"] },
+
+    "prototype": {
+      "type": "object",
+      "required": ["available", "design_tokens_source"],
+      "additionalProperties": false,
+      "properties": {
+        "available": { "type": "boolean" },
+        "index_html": { "$ref": "#/definitions/nullablePath" },
+        "screen_list": { "$ref": "#/definitions/nullablePath" },
+        "design_tokens": { "$ref": "#/definitions/nullablePath" },
+        "design_tokens_source": {
+          "type": "string",
+          "enum": ["design-tokens.json", "index-html", "default"],
+          "description": "Which level of the G-DT fallback chain supplied the token values."
+        },
+        "figma_spec": { "$ref": "#/definitions/nullablePath" },
+        "warnings_section_present": { "type": "boolean" },
+        "source_warnings": {
+          "type": "array",
+          "description": "Rows copied from the '## Warnings' section of screen-list.md, so the F3 quality caveat survives into F4.",
+          "items": {
+            "type": "object",
+            "required": ["artifact", "impact"],
+            "additionalProperties": false,
+            "properties": {
+              "artifact": { "type": "string" },
+              "impact": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "shell": {
+      "type": "object",
+      "required": ["topbar", "sidebar", "content", "nav_items", "global_dialogs"],
+      "additionalProperties": false,
+      "properties": {
+        "topbar": { "type": "boolean" },
+        "sidebar": { "type": "boolean" },
+        "content": { "type": "boolean" },
+        "nav_items": {
+          "type": "array",
+          "description": "Derived from the prototype sidebar, in its original order. Drives the generated navigation.",
+          "items": {
+            "type": "object",
+            "required": ["label", "target_view"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string" },
+              "target_view": { "type": "string" },
+              "bc": { "type": ["string", "null"] },
+              "group": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "global_dialogs": {
+          "type": "object",
+          "required": ["error_modal", "confirm_modal", "toast_host"],
+          "additionalProperties": false,
+          "properties": {
+            "error_modal": { "type": "boolean" },
+            "confirm_modal": { "type": "boolean" },
+            "toast_host": { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "counts": {
+      "type": "object",
+      "required": ["expected_conversions", "generated_conversions"],
+      "additionalProperties": false,
+      "properties": {
+        "screen_list_rows": { "$ref": "#/definitions/count" },
+        "status_included": { "$ref": "#/definitions/count" },
+        "status_deferred": { "$ref": "#/definitions/count" },
+        "status_excluded": { "$ref": "#/definitions/count" },
+        "html_views": { "$ref": "#/definitions/count" },
+        "expected_conversions": { "$ref": "#/definitions/count" },
+        "generated_conversions": { "$ref": "#/definitions/count" },
+        "orphan_html_views": { "$ref": "#/definitions/count" },
+        "missing_html_for_included": { "$ref": "#/definitions/count" }
+      }
+    },
+
+    "screens": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/screen" }
+    },
+
+    "assertion": {
+      "type": "object",
+      "required": ["assertion_id", "status", "expected", "generated", "coverage_pct", "missing", "retry_count"],
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": { "const": "prototype-screen-conversion" },
+        "status": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "SKIPPED"],
+          "description": "SKIPPED when the prototype is absent (P2C-W001) — a known degradation, not a failure."
+        },
+        "expected": { "$ref": "#/definitions/count" },
+        "generated": { "$ref": "#/definitions/count" },
+        "coverage_pct": { "$ref": "#/definitions/percentage" },
+        "missing": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Entries formatted as '{screen_id} :: {path}'."
+        },
+        "retry_count": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "evaluated_at": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "prototype_fidelity": { "$ref": "#/definitions/fidelity" },
+
+    "unused_operations": {
+      "type": "array",
+      "description": "Contract operations no screen references. Not an error — the service method is still generated.",
+      "items": { "type": "string" }
+    }
+  },
+
+  "definitions": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "count": { "type": "integer", "minimum": 0 },
+    "percentage": { "type": "number", "minimum": 0, "maximum": 100 },
+    "nullablePath": { "type": ["string", "null"] },
+    "fidelity": {
+      "type": "string",
+      "enum": ["full", "partial", "degraded", "none"],
+      "description": "full = assertion PASS with 100% coverage and no metadata-only screens; partial = PASS but degraded inputs; degraded = assertion FAIL after 3 retries; none = P2C-W001."
+    },
+
+    "screen": {
+      "type": "object",
+      "required": [
+        "screen_id",
+        "screen_name",
+        "bc",
+        "status",
+        "effective_status",
+        "source",
+        "archetype",
+        "expected_artifacts",
+        "generated"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "screen_id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "screen_name": {
+          "type": "string",
+          "description": "Literal value of the prototype metadata 'Screen:' field. Rendered verbatim in the page header and asserted by the generated spec."
+        },
+        "view_id": { "type": ["string", "null"] },
+        "bc": { "type": "string" },
+        "bc_label": { "type": ["string", "null"] },
+        "status": { "type": "string", "enum": ["included", "excluded", "deferred", "unknown"] },
+        "effective_status": { "type": "string", "enum": ["included", "excluded", "deferred"] },
+        "source": { "type": "string", "enum": ["both", "screen-list-only", "html-only"] },
+        "join_key_used": { "type": ["string", "null"], "enum": ["slug", "name", "endpoint", "fuzzy", null] },
+        "is_initial_view": { "type": "boolean" },
+        "asis_ref": { "type": ["string", "null"] },
+        "asis_justification": { "type": ["string", "null"] },
+        "ux_rules": { "type": "array", "items": { "type": "string", "pattern": "^H([1-9]|10)$" } },
+        "archetype": { "type": "string", "enum": ["list", "form", "list-detail", "dashboard", "content"] },
+        "api": { "$ref": "#/definitions/screenApi" },
+        "constructs": { "type": "object" },
+        "business_rules": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^(BR|FBR)-\\d{4}$" }
+        },
+        "dropped_constructs": { "type": "array", "items": { "type": "string" } },
+        "expected_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["path", "kind", "blocking"],
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "kind": { "type": "string", "enum": ["page", "tpl", "style", "spec", "schema", "hook"] },
+              "blocking": { "type": "boolean" }
+            }
+          }
+        },
+        "generated": { "type": "boolean" },
+        "fidelity": { "type": "string", "enum": ["full", "metadata-only"] }
+      }
+    },
+
+    "screenApi": {
+      "type": "object",
+      "required": ["declared", "contract_status"],
+      "additionalProperties": false,
+      "properties": {
+        "declared": {
+          "type": ["string", "null"],
+          "description": "Raw 'METHOD /path' from the prototype metadata. Documentation, not truth — the contract wins."
+        },
+        "contract_status": {
+          "type": "string",
+          "enum": [
+            "MATCHED",
+            "MATCHED_BY_PATH",
+            "MATCHED_BY_OPERATION",
+            "MISSING_IN_CONTRACT",
+            "NO_CONTRACT",
+            "NO_ENDPOINT"
+          ]
+        },
+        "resolved": {
+          "type": ["object", "null"],
+          "required": ["method", "path"],
+          "additionalProperties": false,
+          "properties": {
+            "method": { "type": "string", "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+            "path": { "type": "string" },
+            "operation_id": { "type": ["string", "null"] }
+          }
+        },
+        "contract_source": { "$ref": "#/definitions/nullablePath" },
+        "divergence": {
+          "type": ["object", "null"],
+          "required": ["type", "severity"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "type": "string", "enum": ["method", "path", "none"] },
+            "severity": { "type": "string", "enum": ["warning", "high"] },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

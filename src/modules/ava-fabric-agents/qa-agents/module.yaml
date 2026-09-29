@@ -1,0 +1,37 @@
+name: qa-agents
+display_name: "QA Agents"
+version: "1.3.0"
+date: "2026-08-05"
+description: "Agentes especializados em estratégia, design e automação de testes"
+agents:
+  - id: ava-qa-orchestrator
+    file: agents/qa-orchestrator-agent.md
+  - id: ava-qa-gaps-requirements
+    file: agents/gaps-requirements-agent.md
+  - id: ava-qa-behavior-mapping
+    file: agents/behavior-mapping-agent.md
+  # DEPRECATED 2026-08-05: responsibility absorbed by ava-qa-bridge-fastqa-tobe (Momento 1).
+  # Kept registered (spec marked status: DEPRECATED) for historical schema reference only —
+  # no longer dispatched by qa-orchestrator-agent.md or test-plan-tobe.md.
+  - id: ava-qa-scenario-generator
+    file: agents/scenario-generator-agent.md
+  - id: ava-qa-test-case-generator
+    file: agents/test-case-generator-agent.md
+  - id: ava-qa-script-generator
+    file: agents/script-generator-agent.md
+  - id: ava-qa-defect-identifier
+    file: agents/defect-identifier-agent.md
+  - id: ava-qa-exploratory
+    file: agents/exploratory-agent.md
+  - id: ava-qa-evidence-capture
+    file: agents/evidence-capture-agent.md
+  - id: ava-qa-db-integrity-test
+    file: agents/db-integrity-test-agent.md
+  - id: ava-qa-contract-test-generator
+    file: agents/contract-test-generator-agent.md
+  - id: ava-qa-frontend-test-generator
+    file: agents/frontend-test-generator-agent.md
+  - id: ava-qa-bridge-fastqa-tobe
+    file: agents/bridge-fastqa-tobe.md
+  - id: ava-test-plan-tobe
+    file: agents/test-plan-tobe.md

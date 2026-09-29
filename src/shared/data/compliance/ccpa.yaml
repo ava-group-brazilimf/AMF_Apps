@@ -1,0 +1,127 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CCPA/CPRA — California Consumer Privacy Act / California Privacy Rights Act
+# Cal. Civ. Code §§ 1798.100–1798.199.100
+# CCPA effective January 1, 2020 | CPRA amendments effective January 1, 2023
+# Authority: CPPA (California Privacy Protection Agency)
+# Jurisdiction: US (California) — applies to businesses meeting thresholds
+# ─────────────────────────────────────────────────────────────────────────────
+
+id: ccpa
+name: "California Consumer Privacy Act / California Privacy Rights Act"
+jurisdiction:
+  countries: ["US"]
+  states: ["CA"]
+  authority: "CPPA"
+  authority_full_name: "California Privacy Protection Agency"
+  applicability_thresholds:
+    - "Annual gross revenue > $25M"
+    - "Buy/sell/share personal info of ≥100,000 consumers/households"
+    - "Derive ≥50% of annual revenue from selling/sharing personal info"
+
+# Timelines and retention
+retention:
+  default_days: 365                       # 12-month lookback period for consumer requests
+  breach_notification_hours: null         # CCPA does not specify; CA Civil Code §1798.82 applies (expedient)
+  data_subject_response_days: 45          # §1798.130 — respond within 45 days (extendable +45 days)
+
+# Consumer rights (§1798.100–§1798.125)
+data_subject_rights:
+  - id: DSR-01
+    right: "know"
+    description: "Right to know what personal information is collected and how it's used"
+    section: "§1798.100, §1798.110"
+  - id: DSR-02
+    right: "delete"
+    description: "Right to request deletion of personal information"
+    section: "§1798.105"
+  - id: DSR-03
+    right: "opt_out_sale"
+    description: "Right to opt-out of sale or sharing of personal information"
+    section: "§1798.120"
+  - id: DSR-04
+    right: "non_discrimination"
+    description: "Right to non-discrimination for exercising privacy rights"
+    section: "§1798.125"
+  - id: DSR-05
+    right: "correct"
+    description: "Right to correct inaccurate personal information (CPRA)"
+    section: "§1798.106"
+  - id: DSR-06
+    right: "limit_sensitive"
+    description: "Right to limit use and disclosure of sensitive personal information (CPRA)"
+    section: "§1798.121"
+
+# Categories of personal information (§1798.140)
+pii_identifiers:
+  - "Real name, alias, postal address"
+  - "Unique personal identifier"
+  - "Online identifier, IP address"
+  - "Email address, account name"
+  - "Social Security Number"
+  - "Driver's license number"
+  - "Passport number"
+  - "Financial information (bank account, credit card)"
+  - "Medical/health information"
+  - "Biometric information"
+  - "Internet/network activity (browsing, search history)"
+  - "Geolocation data"
+  - "Audio, electronic, visual, thermal, olfactory information"
+  - "Professional or employment-related information"
+  - "Education information"
+  - "Inferences drawn from any of the above"
+
+# Sensitive personal information (CPRA addition, §1798.140(ae))
+sensitive_data:
+  - "Social Security, driver's license, state ID, passport number"
+  - "Account log-in with password or security questions"
+  - "Financial account number with access code"
+  - "Precise geolocation"
+  - "Racial or ethnic origin"
+  - "Religious or philosophical beliefs"
+  - "Union membership"
+  - "Contents of mail, email, text messages (unless business is recipient)"
+  - "Genetic data"
+  - "Biometric data for identification"
+  - "Health data"
+  - "Sex life or sexual orientation"
+
+# Business obligations
+business_obligations:
+  - id: OBL-01
+    obligation: "Privacy notice at or before collection"
+    section: "§1798.100(b)"
+    controls:
+      - "Notice of categories collected"
+      - "Purpose of collection for each category"
+      - "Retention period for each category"
+  - id: OBL-02
+    obligation: "Do Not Sell or Share My Personal Information link"
+    section: "§1798.135"
+    controls:
+      - "Clear and conspicuous link on homepage"
+      - "Honor Global Privacy Control (GPC) signal"
+      - "Process opt-out within 15 business days"
+  - id: OBL-03
+    obligation: "Reasonable security measures"
+    section: "§1798.100(e)"
+    controls:
+      - "Implement reasonable security procedures"
+      - "Encryption of personal information"
+      - "Access controls and monitoring"
+  - id: OBL-04
+    obligation: "Service provider contractual requirements"
+    section: "§1798.140(ag)"
+    controls:
+      - "Written contract prohibiting selling/sharing received data"
+      - "Obligation to assist with consumer requests"
+      - "Notification of sub-processor engagement"
+
+# Sanctions
+sanctions:
+  - type: "civil_penalty"
+    description: "Up to $2,500 per unintentional violation"
+  - type: "civil_penalty_intentional"
+    description: "Up to $7,500 per intentional violation"
+  - type: "private_right_of_action"
+    description: "$100–$750 per consumer per incident for data breaches (§1798.150)"
+    applies_to: "Unauthorized access due to failure to implement reasonable security"

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric.local/schemas/mermaid-quality-gate.schema.json",
+  "title": "Mermaid Quality Gate",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "status",
+    "blocking",
+    "acceptanceBaselineVersion",
+    "checks",
+    "blockingFindings",
+    "warningFindings",
+    "publicationAllowed",
+    "executionEnvironment",
+    "rendererStatus",
+    "humanGateRequired",
+    "localDevelopmentOverride"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["PASS", "FAIL", "APPROVED_WITH_WARNINGS"] },
+    "blocking": { "type": "boolean" },
+    "acceptanceBaselineVersion": { "const": "11.14.0" },
+    "checks": {
+      "type": "object",
+      "required": [
+        "syntaxValidation",
+        "compatibilityValidation",
+        "sanitizationValidation",
+        "renderValidation",
+        "readabilityValidation",
+        "viewerSmokeTest"
+      ],
+      "properties": {
+        "syntaxValidation": { "enum": ["PASS", "FAIL", "WARNING", "NOT_RUN"] },
+        "compatibilityValidation": {
+          "enum": ["PASS", "FAIL", "WARNING", "NOT_RUN"]
+        },
+        "sanitizationValidation": {
+          "enum": ["PASS", "FAIL", "WARNING", "NOT_RUN"]
+        },
+        "renderValidation": {
+          "enum": ["PASS", "FAIL", "WARNING", "RENDERER_UNAVAILABLE", "NOT_RUN"]
+        },
+        "readabilityValidation": {
+          "enum": ["PASS", "FAIL", "WARNING", "NOT_RUN"]
+        },
+        "viewerSmokeTest": {
+          "enum": ["PASS", "FAIL", "WARNING", "RENDERER_UNAVAILABLE", "NOT_RUN"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "blockingFindings": { "type": "integer", "minimum": 0 },
+    "warningFindings": { "type": "integer", "minimum": 0 },
+    "publicationAllowed": { "type": "boolean" },
+    "executionEnvironment": { "enum": ["production", "staging", "local"] },
+    "rendererStatus": {
+      "enum": ["AVAILABLE", "RENDERER_UNAVAILABLE", "NOT_RUN", "FAILED"]
+    },
+    "humanGateRequired": { "type": "boolean" },
+    "localDevelopmentOverride": { "type": "boolean" },
+    "affectedArtifactPaths": { "type": "array", "items": { "type": "string" } },
+    "affectedDiagramIds": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "PASS" } } },
+      "then": {
+        "properties": {
+          "blocking": { "const": false },
+          "publicationAllowed": { "const": true }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "FAIL" } } },
+      "then": { "properties": { "publicationAllowed": { "const": false } } }
+    },
+    {
+      "if": {
+        "properties": {
+          "executionEnvironment": { "enum": ["production", "staging"] },
+          "rendererStatus": {
+            "enum": ["RENDERER_UNAVAILABLE", "NOT_RUN", "FAILED"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blocking": { "const": true },
+          "publicationAllowed": { "const": false },
+          "humanGateRequired": { "const": true }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "executionEnvironment": { "const": "local" },
+          "rendererStatus": { "const": "RENDERER_UNAVAILABLE" },
+          "localDevelopmentOverride": { "const": true }
+        }
+      },
+      "then": { "properties": { "publicationAllowed": { "const": false } } }
+    }
+  ]
+}

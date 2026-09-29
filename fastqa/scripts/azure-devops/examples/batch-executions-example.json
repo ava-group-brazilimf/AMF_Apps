@@ -1,0 +1,50 @@
+{
+  "_comment": "FastQA Batch Executions - EXEMPLO com suporte a preview/confirmação",
+  "_usage": {
+    "preview": "npx tsx upload-batch-test-execution.command.ts --preview-json examples/batch-executions-example.json",
+    "execute": "npx tsx upload-batch-test-execution.command.ts --json-file examples/batch-executions-example.json",
+    "info": "O agent FastQA exibirá o conteúdo formatado e aguardará confirmação antes da execução"
+  },
+  "testPlanId": 29,
+  "executions": [
+    {
+      "testSuiteId": 38,
+      "testCaseId": 14,
+      "result": "Passed",
+      "evidencePath": "C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-14",
+      "comment": "Execução automatizada - Teste de logo no cabeçalho",
+      "attachToWorkItem": true,
+      "autoBug": false,
+      "bugSeverity": "3 - Medium"
+    },
+    {
+      "testSuiteId": 38,
+      "testCaseId": 15,
+      "result": "Failed",
+      "evidencePath": "C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-15",
+      "comment": "Falha na validação do formulário de login",
+      "attachToWorkItem": false,
+      "autoBug": true,
+      "bugSeverity": "2 - High"
+    },
+    {
+      "testSuiteId": 38,
+      "testCaseId": 16,
+      "result": "Blocked",
+      "evidencePath": "C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-16",
+      "comment": "Teste bloqueado por dependência externa",
+      "attachToWorkItem": true,
+      "autoBug": false,
+      "bugSeverity": "4 - Low"
+    },
+    {
+      "testSuiteId": 38,
+      "testCaseId": 17,
+      "result": "Passed",
+      "evidencePath": "C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-17",
+      "comment": "Validação de campos obrigatórios - OK",
+      "attachToWorkItem": false,
+      "autoBug": false
+    }
+  ]
+}

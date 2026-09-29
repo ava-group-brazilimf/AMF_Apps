@@ -1,0 +1,6 @@
+{
+  "scenario": "unsupported-keyword",
+  "rootCause": "UNSUPPORTED_C4_SYNTAX",
+  "stage": "C4_CAPABILITY_PROBE",
+  "publicationAllowed": false
+}

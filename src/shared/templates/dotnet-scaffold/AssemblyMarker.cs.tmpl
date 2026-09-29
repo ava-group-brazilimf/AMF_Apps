@@ -1,0 +1,13 @@
+// %%COPYRIGHT%%
+
+namespace %%NAMESPACE%%;
+
+/// <summary>
+/// Âncora de assembly do projeto. Existe para que a camada compile vazia e para
+/// dar um tipo estável a scanners de DI e testes. Substituível pelo codegen.
+/// </summary>
+public static class AssemblyMarker
+{
+    /// <summary>Nome do assembly desta camada.</summary>
+    public const string Name = "%%NAMESPACE%%";
+}

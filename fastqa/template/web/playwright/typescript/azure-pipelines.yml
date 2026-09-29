@@ -1,0 +1,31 @@
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: "16.x"
+  displayName: "Install Node.js"
+
+- script: |
+    npm ci
+  displayName: "Install dependencies"
+
+- script: |
+    npx playwright install chromium
+  displayName: "Install Playwright Browsers"
+
+- script: |
+    npx playwright test
+  env:
+    TOKEN: $(AZDO_TOKEN)
+  displayName: "Run Playwright tests"
+  
+- publish: $(System.DefaultWorkingDirectory)/target/playwright-report
+  artifact: playwright-report
+  condition: always()
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/target/results.xml'

@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric.local/schemas/blueprint-compatibility-report.schema.json",
+  "title": "Blueprint Mermaid Compatibility Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "traceId",
+    "projectName",
+    "artifactPath",
+    "diagramId",
+    "rendererVersion",
+    "rendererSource",
+    "detectedDialect",
+    "c4Detected",
+    "c4SupportedByRenderer",
+    "staticValidationStatus",
+    "runtimeRenderStatus",
+    "rootCause",
+    "stage",
+    "confidence",
+    "construct",
+    "diagnosticEvidence",
+    "hashes",
+    "exactErrorMessage",
+    "recommendedFix",
+    "publicationAllowed"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "traceId": { "type": "string", "minLength": 1 },
+    "projectName": { "type": "string", "minLength": 1 },
+    "artifactPath": { "type": "string", "minLength": 1 },
+    "diagramId": { "type": "string", "minLength": 1 },
+    "artifactRole": { "enum": ["asis", "tobe"] },
+    "producingAgent": { "type": "string", "minLength": 1 },
+    "producingAgentRole": { "type": "string", "minLength": 1 },
+    "sourceContractPath": { "type": "string", "minLength": 1 },
+    "artifactContractPath": { "type": "string", "minLength": 1 },
+    "generationPhase": { "type": "string", "minLength": 1 },
+    "rendererVersion": { "type": "string", "minLength": 1 },
+    "rendererSource": { "type": "string", "minLength": 1 },
+    "detectedDialect": { "type": "string", "minLength": 1 },
+    "c4Detected": { "type": "boolean" },
+    "c4SupportedByRenderer": { "type": ["boolean", "null"] },
+    "staticValidationStatus": { "enum": ["PASS", "FAIL", "INCONCLUSIVE"] },
+    "runtimeRenderStatus": { "enum": ["PASS", "FAIL", "NOT_RUN"] },
+    "rootCause": {
+      "enum": [
+        "VALID_MERMAID",
+        "INVALID_MERMAID",
+        "UNSUPPORTED_DIALECT",
+        "UNSUPPORTED_C4_SYNTAX",
+        "RENDERER_CONFIGURATION_FAILURE",
+        "MERMAID_VERSION_INCOMPATIBILITY",
+        "RENDERING_FAILURE",
+        "MERMAID_C4_RENDERER_DEFECT",
+        "VERSION_METADATA_UNAVAILABLE",
+        "SOURCE_INTEGRITY_MISMATCH",
+        "EVIDENCE_UNAVAILABLE"
+      ]
+    },
+    "stage": {
+      "enum": [
+        "STATIC_VALIDATION",
+        "RUNTIME_VERSION_PROBE",
+        "C4_CAPABILITY_PROBE",
+        "RUNTIME_RENDER",
+        "C4_LAYOUT_VALIDATION",
+        "C4_LAYOUT_RENDER",
+        "C4_SEGMENTED_RENDER",
+        "SOURCE_INTEGRITY",
+        "PUBLICATION_GATE",
+        "SUMMARY_SMOKE_TEST"
+      ]
+    },
+    "confidence": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+    "construct": { "type": "string" },
+    "diagnosticEvidence": {
+      "type": "object",
+      "properties": {
+        "versionSource": { "type": "string" },
+        "versionDiscoveryMethod": { "type": "string" },
+        "versionDiscoveryStatus": {
+          "enum": [
+            "CONFIRMED",
+            "INFERRED",
+            "UNAVAILABLE",
+            "MISMATCH",
+            "FOUND",
+            "NOT_RUN"
+          ]
+        },
+        "versionConfidence": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+        "runtimeRenderSucceeded": { "type": "boolean" }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rawArtifact",
+        "sanitizedContent",
+        "staticDiagrams",
+        "renderAllDiagramsInput",
+        "renderStaticDiagramsInput",
+        "rendererInput"
+      ],
+      "properties": {
+        "rawArtifact": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "sanitizedContent": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "staticDiagrams": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "renderAllDiagramsInput": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "renderStaticDiagramsInput": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "rendererInput": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "exactErrorMessage": { "type": "string" },
+    "recommendedFix": { "type": "string" },
+    "publicationAllowed": { "type": "boolean" },
+    "segmentationApplied": { "type": "boolean" },
+    "segmentationReason": { "type": "string" },
+    "originalDiagramRenderStatus": { "type": "string" },
+    "originalRootCause": { "type": "string" },
+    "segmentRenderStatus": { "type": "string" },
+    "generatedSegments": { "type": "array", "items": { "type": "string" } },
+    "relationshipsTotalCount": { "type": "integer", "minimum": 0 },
+    "relationshipsPreservedCount": { "type": "integer", "minimum": 0 },
+    "relationshipsDroppedCount": { "type": "integer", "minimum": 0 }
+  }
+}

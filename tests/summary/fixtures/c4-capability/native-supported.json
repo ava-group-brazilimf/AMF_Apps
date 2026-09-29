@@ -1,0 +1,6 @@
+{
+  "scenario": "native-supported",
+  "rootCause": "VALID_MERMAID",
+  "stage": "RUNTIME_RENDER",
+  "publicationAllowed": true
+}

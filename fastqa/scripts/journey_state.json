@@ -1,0 +1,21 @@
+{
+    "$schema": "journey_state",
+    "active_journey": null,
+    "journey_display_name": null,
+    "current_step_index": 0,
+    "total_steps": 0,
+    "started_at": null,
+    "updated_at": null,
+    "steps": [],
+    "steps_completed": [],
+    "artifacts_produced": [],
+    "context": {
+        "pbi_id": null,
+        "pbi_title": null,
+        "test_plan_id": null,
+        "pipeline_id": null,
+        "build_id": null,
+        "repo_name": null
+    },
+    "history": []
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://imfai.avanade.com/schemas/033/agent-wrapper.schema.json",
+  "title": "GitHub Copilot CLI custom agent wrapper (.github/agents/*.agent.md)",
+  "description": "Frontmatter YAML de um wrapper gerado por src/shared/tools/generate_agent_wrappers.py. Campos e restricoes verificados empiricamente no spike M0 (docs/copilot-cli-runtime-facts.md, Copilot CLI 1.0.77). NAO confundir com o frontmatter das specs canonicas em src/modules/**/agents/*.md, que segue o Artigo II da Constituicao.",
+  "type": "object",
+  "required": ["name", "description", "tools", "model", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^ava-[a-z0-9-]+$",
+      "description": "Herdado do frontmatter da spec canonica. Constituicao Artigo II."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20,
+      "description": "OBRIGATORIO pelo CLI. Em pt-BR (Artigo V). Dirige a selecao por inferencia quando o agente e invocado por delegacao nativa."
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "view",
+          "create",
+          "edit",
+          "glob",
+          "grep",
+          "powershell",
+          "read_powershell",
+          "stop_powershell",
+          "web_fetch",
+          "web_search"
+        ]
+      },
+      "description": "ENFORCADO de verdade pelo CLI (M0 1.5): um agente sem 'view' nao consegue ler arquivo. Derivado de allowed-tools da spec canonica via TOOL_NAME_MAP. Atencao: a tool de shell chama-se 'powershell', NAO 'bash'."
+    },
+    "model": {
+      "type": "string",
+      "const": "claude-sonnet-4",
+      "description": "Pinado, nunca 'auto'. Sem pin o sub-agente cai em gpt-5.4 e a chamada retorna 404 contra o provider BYOK (M0, bug P-5.1)."
+    },
+    "target": {
+      "type": "string",
+      "const": "github-copilot"
+    },
+    "user-invocable": {
+      "type": "boolean",
+      "const": true,
+      "description": "Habilita o picker /agent e a flag --agent. Modo hibrido: producao usa o runner, uso interativo usa o picker."
+    },
+    "disable-model-invocation": {
+      "type": "boolean",
+      "description": "Omitido (default false) para que a delegacao nativa continue possivel."
+    },
+    "mcp-servers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Nao usado nesta spec. Reservado para plugar um retrieval server por agente em escala extrema, sem mudar os corpos."
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["version", "phase", "module"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[A-Za-z0-9.-]+)?$",
+          "description": "Copiada do frontmatter da spec canonica, que continua sendo a autoridade da versao (Artigo II). Vive aqui porque a chave de topo 'version:' e DESCARTADA pelo parser do CLI."
+        },
+        "phase": {
+          "type": "string",
+          "enum": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", ""],
+          "description": "Derivada por agent_registry.PHASE_BY_MODULE, cuja autoridade e a Constituicao v1.4.0. String vazia para master-orchestrator."
+        },
+        "module": { "type": "string" },
+        "spec": {
+          "type": "string",
+          "description": "Caminho repo-relativo da spec canonica que o corpo manda ler."
+        }
+      }
+    }
+  },
+  "$comment": "CAMPOS PROIBIDOS — o parser do CLI emite 'unknown fields ignored' e os descarta em silencio, deixando o agente sem restricao de tool e sem versao: 'version' (usar metadata.version), 'allowed-tools' (usar tools), 'phase', 'module', 'inputs', 'outputs', 'dependencies', 'handoffs'. RESTRICAO DE CORPO: o markdown apos o frontmatter tem cap de 30.000 caracteres; 37 das 107 specs canonicas estouram esse limite, e por isso o wrapper e um ponteiro fino (~2 KB) e nao uma copia da spec."
+}

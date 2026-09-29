@@ -1,0 +1,43 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DatePipe } from '@angular/common';
+
+/** Landing do bounded context %%bc_title%%.
+ *
+ * Placeholder compilável: existe para que a rota lazy de `app.routes.ts` resolva.
+ * O codegen de features substitui o conteúdo — mas deve preservar as duas regras
+ * demonstradas aqui:
+ *
+ *   1. `ChangeDetectionStrategy.OnPush` em todo componente gerado.
+ *   2. TODO pipe usado no template está declarado em `imports`. Em componente
+ *      standalone não há `CommonModule` implícito: usar `| date` sem importar
+ *      `DatePipe` é erro de compilação AOT (NG8004), não aviso.
+ */
+@Component({
+  selector: 'app-%%bc_kebab%%-home',
+  standalone: true,
+  imports: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <section class="bc-home">
+      <h2>%%bc_title%%</h2>
+      <p>
+        Bounded context <code>%%bc_kebab%%</code> — estrutura gerada em
+        {{ generatedAt | date: 'dd/MM/yyyy' }}.
+      </p>
+      <p class="bc-hint">Aguardando geração das features deste contexto.</p>
+    </section>
+  `,
+  styles: [
+    `
+      .bc-home {
+        max-width: 48rem;
+      }
+      .bc-hint {
+        color: #7b8794;
+      }
+    `,
+  ],
+})
+export class %%bc_pascal%%HomeComponent {
+  protected readonly generatedAt = new Date();
+}

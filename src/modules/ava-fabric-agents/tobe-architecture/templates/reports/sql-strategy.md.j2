@@ -1,0 +1,443 @@
+{# =====================================================================
+   Template corporativo: Política de Banco de Dados TO-BE — SQL Strategy
+   Owner   : Arquitetura Corporativa
+   Versão  : sincronizada com src/shared/data/policies/sql-strategy.version
+   Render  : ava-tobe-database-policy (Fase 1.4 da esteira TO-BE)
+
+   Variáveis esperadas no contexto de render:
+     project_name              : str
+     policy_version            : str  (lido de sql-strategy.version)
+     generated_at              : str ISO-8601
+     trace_id                  : str (UUID v4)
+     tech_lead_name            : str
+     persistence.engine        : str  (sqlserver|postgresql|mysql|cosmosdb)
+     persistence.orm           : str  (efcore|...)
+     bounded_contexts          : list[{name, schema_write, schema_read, aggregates, projections}]
+     stored_procedures         : list[{id, name, bounded_context, tipo, handler, responsibility, refactor_notes}]
+                                 tipo ∈ {DS, AGG, APP, EH, APP+AGG}
+     triggers                  : list[{id, name, table, replacement, notes}]
+     coverage                  : {sp_total, sp_migrated, trigger_total, trigger_migrated, views_writeside, views_readside}
+     fontes_ausentes           : list[str]   (marca seções incompletas)
+   ===================================================================== #}
+# Política de Banco de Dados TO-BE — SQL Strategy
+
+| Campo | Valor |
+|---|---|
+| Documento | Política de Banco de Dados TO-BE |
+| Projeto | {{ project_name }} |
+| Versão | {{ policy_version }} |
+| Status | Aprovado para adoção corporativa |
+| Audiência | Arquitetos, Tech Leads, DBAs, Plataforma de Dados, SecInfo, SRE |
+| Stack TO-BE | {{ persistence.engine }} / {{ persistence.orm }} |
+| Padrão arquitetural | DDD + CQRS |
+| Gerado em | {{ generated_at }} |
+| TraceID | `{{ trace_id }}` |
+| Tech Lead | {{ tech_lead_name }} |
+| Repositório alvo | `projects/{{ project_name }}/outputs/tobe/db/sql-strategy.md` |
+
+> ⚠️ Documento **gerado automaticamente** pelo agente `ava-tobe-database-policy` a partir do template corporativo `sql-strategy.md.j2` (versão {{ policy_version }}). Não editar manualmente — alterações serão sobrescritas na próxima execução da esteira TO-BE. Mudanças na política → bump em `src/shared/data/policies/sql-strategy.version` + atualização do template.
+
+{% if fontes_ausentes %}
+> 🟠 **Fontes AS-IS ausentes nesta execução** — seções marcadas com `[FONTE AUSENTE]` exigem população manual ou nova execução do AS-IS:
+{% for f in fontes_ausentes %}> - `{{ f }}`
+{% endfor %}
+{% endif %}
+
+---
+
+## 1. Introdução
+
+Este documento estabelece a **política corporativa de banco de dados** para o estado TO-BE da plataforma {{ project_name }}. Define princípios não-negociáveis, diretrizes técnicas e responsabilidades operacionais que regem o ciclo de vida do schema, a evolução de dados e a separação entre escrita transacional e leitura consultiva.
+
+A política substitui o modelo AS-IS — caracterizado por lógica de negócio embarcada em *Stored Procedures* e *Triggers* — por um modelo orientado a domínio, no qual o banco de dados é tratado como **mecanismo de persistência subordinado ao domínio**, não como núcleo da regra de negócio.
+
+Aplicação: obrigatória para todos os bounded contexts TO-BE listados na Seção 3.2 e para qualquer novo contexto incorporado à plataforma.
+
+---
+
+## 2. Princípios Arquiteturais
+
+| # | Princípio | Implicação |
+|---|---|---|
+| P1 | **Domínio sobre persistência** | Modelos de dados refletem o modelo de domínio. Nenhuma decisão de schema antecede a modelagem do agregado. |
+| P2 | **Separação Read/Write (CQRS)** | Write Side normalizado, governado por agregados; Read Side desnormalizado, otimizado para consulta. |
+| P3 | **Schema-as-Code** | Toda alteração de DDL é versionada, revisada e auditável via migrações em código. |
+| P4 | **Banco passivo** | O banco não executa lógica de negócio. Não há *Stored Procedures de domínio*, não há *Triggers*. |
+| P5 | **Imutabilidade de eventos de domínio** | Eventos publicados pelos agregados substituem efeitos colaterais que antes eram delegados a *triggers*. |
+| P6 | **Consistência por agregado** | Transações limitadas ao escopo de um agregado; consistência entre contextos é eventual (saga). |
+| P7 | **Observabilidade nativa** | Toda operação relevante de dados emite telemetria integrada à plataforma de observabilidade corporativa. |
+| P8 | **Privacidade por desenho** | Dados pessoais e financeiros classificados; políticas de retenção e anonimização aplicadas por contrato (crypto-shredding), não por exceção. |
+
+---
+
+## 3. Estratégia de Banco de Dados TO-BE
+
+### 3.1 Topologia lógica
+
+| Camada | Tecnologia | Função |
+|---|---|---|
+| Write Side (OLTP) | {{ persistence.engine }} gerenciado | Persistência de agregados; consistência forte intra-agregado. |
+| Read Side (Query Models) | {{ persistence.engine }} gerenciado (schema dedicado) | Projeções desnormalizadas mantidas por *projectors* assinantes de eventos. |
+| Event Store / Outbox | Tabela `outbox` no Write DB + broker | Garantia at-least-once de publicação de eventos de domínio. |
+| Cache de leitura | Distribuído (Redis) | Aceleração de projeções de alta frequência; invalidação por evento. |
+
+### 3.2 Modelagem por bounded context
+
+Cada bounded context possui **schema dedicado**, com isolamento físico ou lógico:
+
+{% if bounded_contexts %}
+| Bounded Context | Schema Write | Schema Read | Agregados | Projeções principais |
+|---|---|---|---|---|
+{% for bc in bounded_contexts %}| {{ bc.name }} | `{{ bc.schema_write }}` | `{{ bc.schema_read }}` | {{ bc.aggregates | join(', ') }} | {{ bc.projections | join(', ') }} |
+{% endfor %}
+{% else %}
+> `[FONTE AUSENTE]` — `bounded-context-map.md` TO-BE não disponível nesta execução. População manual obrigatória antes da aprovação.
+{% endif %}
+
+### 3.3 Propriedade dos dados
+
+- **Cada tabela do Write Side pertence a exatamente um bounded context.** Acesso cruzado é vedado.
+- **Compartilhamento entre contextos ocorre via API de domínio ou eventos**, nunca via *JOIN* cruzado em produção.
+- O Read Side pode consolidar dados de múltiplos contextos por replicação assíncrona orientada a eventos.
+
+### 3.4 Connection strings e identidade
+
+- Acesso ao banco somente por **identidades gerenciadas** (Managed Identity / Workload Identity).
+- Credenciais estáticas proibidas; segredos rotativos quando inevitáveis residem em Key Vault corporativo.
+- Princípios distintos para Write Side e Read Side (ver matriz de permissões em 7.1).
+
+---
+
+## 4. Diretrizes Técnicas
+
+### 4.1 Stored Procedures — **Zero SP de domínio**
+
+| Categoria | Definição | Permissão | Localização |
+|---|---|---|---|
+| **SP de domínio** | Contém regra de negócio, decisão condicional sobre dados de domínio, cálculo financeiro, validação cadastral, qualquer lógica que pertença a um agregado ou Domain Service. | **PROIBIDA.** Toda SP AS-IS desta categoria é migrada conforme Seção 5. | — |
+| **SP de plataforma** | Operação set-based de plano de dados sem leitura de regra de negócio: expurgo de outbox, recompactação, rebuild de índice, *bulk merge* de catálogo, vacuum/maintenance. | **PERMITIDA com restrições.** | Schema `ops_*` ou `plat_*`, segregado dos schemas de negócio. |
+
+**Critérios obrigatórios para SP de plataforma:**
+
+1. Idempotente.
+2. Não consulta tabela de domínio para decidir comportamento.
+3. Coberta por teste de regressão automatizado.
+4. Aprovada por Tech Lead do contexto + DBA Corporativo + Arquitetura Corporativa.
+5. Invocada exclusivamente por jobs operacionais (não por aplicação de negócio).
+6. Documentada em runbook com objetivo, janela e impacto.
+
+**Reporting/BI:** consultas analíticas pesadas **não** usam Write Side. São servidas pelo Read Side ou por *store* analítico separado alimentado por eventos. SP analítica em DW está fora do escopo desta política.
+
+**Período de coexistência (strangler):** SP AS-IS em remoção é marcada `DEPRECATED_<YYYYMMDD>`, redirecionada para a Application Service equivalente via camada anti-corrupção. Remoção física só após dois ciclos sem invocação registrada em telemetria.
+
+### 4.2 Triggers — **PROIBIDAS** (Domain Events como substituto)
+
+- Nenhum *trigger* (DML, DDL, LOGON) é permitido no TO-BE.
+- Substituição: **Domain Events** publicados pelos agregados, **Outbox Pattern** para entrega, **Projectors** mantendo o Read Side, **auditoria temporal** via tabelas system-versioned configuradas por migration.
+
+#### 4.2.1 Contrato corporativo do Outbox (obrigatório)
+
+- Tabela `outbox` no **mesmo banco** do agregado, gravada na **mesma transação** do Write.
+- *Dispatcher* externo com locking não-bloqueante (`FOR UPDATE SKIP LOCKED` em PostgreSQL; `READPAST + UPDLOCK` ou *application lock* em SQL Server) ou *leasing*.
+- Garantia: **at-least-once**. *Exactly-once* é responsabilidade do consumidor via idempotência (4.2.2).
+- Esquema padrão da tabela `outbox`:
+
+  | Coluna | Tipo | Notas |
+  |---|---|---|
+  | `event_id` | `uniqueidentifier` (UUID v7 preferido) | PK; gerado pelo agregado. |
+  | `aggregate_id` | `varchar(64)` | *Partition key* no broker. |
+  | `aggregate_type` | `varchar(128)` | Ex.: nome do agregado raiz. |
+  | `event_type` | `varchar(128)` | Nome canônico do evento. |
+  | `schema_version` | `int` | Versão do contrato (4.2.3). |
+  | `payload` | `varbinary(max)` ou `jsonb` | Serializado conforme registro de schema. |
+  | `occurred_at` | `datetime2(3)` UTC | Timestamp de domínio. |
+  | `dispatched_at` | `datetime2(3)` UTC nullable | Marcado pelo dispatcher. |
+  | `attempt_count` | `int` | Backoff exponencial. |
+  | `correlation_id` / `causation_id` | `uniqueidentifier` | Rastreabilidade. |
+
+#### 4.2.2 Idempotência do projetor (obrigatória)
+
+- Cada projetor mantém tabela `processed_events` (PK `event_id` + `projector_name`).
+- Consumo transacional: aplicar projeção + registrar `event_id` na mesma transação.
+- DoD do Read Side: teste automatizado que reaplica o mesmo evento N vezes verificando idempotência.
+
+#### 4.2.3 Versionamento de eventos
+
+- Eventos são **imutáveis**. Mudança de contrato gera **novo `event_type`** ou **novo `schema_version`** com compatibilidade *backward* mínima.
+- Schema Registry corporativo (JSON Schema ou Avro) é fonte de verdade. Publicação sem schema registrado é rejeitada pelo dispatcher.
+
+#### 4.2.4 Ordem, DLQ e replay
+
+- Ordem garantida **apenas por agregado** (`partition key = aggregate_id`).
+- DLQ obrigatória após N tentativas com backoff exponencial (default N=10). Evento em DLQ → alerta SRE.
+- Runbook de replay obrigatório por projetor.
+
+#### 4.2.5 Saga e processos cross-context
+
+- Processos cross-context usam **saga** (orquestrada ou coreografada) com compensações explícitas.
+- Transações distribuídas (XA, MSDTC, *two-phase commit*) **proibidas**.
+
+### 4.3 Migrations — **EF Core como única fonte de DDL**
+
+Toda evolução de schema é entregue via **Entity Framework Core Migrations**. Scripts SQL avulsos em produção proibidos.
+
+#### 4.3.1 Regras obrigatórias
+
+| Regra | Descrição |
+|---|---|
+| M1 | **Forward-only em produção.** `Down` obrigatório apenas em DEV/CI. Reversão em PRD = nova migration de remediação. |
+| M2 | PRD aplica via **script idempotente gerado em CI** (`dotnet ef migrations script --idempotent`); STG idem. `dotnet ef database update` direto em PRD proibido. |
+| M3 | Quebras de compatibilidade exigem **expand/contract** em duas releases. |
+| M4 | Renomeações de coluna/tabela são tratadas exclusivamente como expand/contract — proibidas em hotfix. |
+| M5 | Cada migration referencia o ID do work item / ADR. Pipeline valida cabeçalho. |
+| M6 | Pipeline aplica migration em STG antes de PRD, com gate manual em PRD. |
+| M7 | Migrações destrutivas (DROP, TRUNCATE) exigem aprovação dupla (Tech Lead + DBA). |
+| M8 | **Schema migration ≠ data migration.** Migration EF não executa `UPDATE` em > 100k linhas. *Backfill* acima do limiar é job dedicado, idempotente, com checkpoint, *resume* e métrica de progresso. |
+| M9 | **Online schema change.** `ADD COLUMN NULL` permitido. `ADD COLUMN NOT NULL` proibido (usar expand/contract). `ALTER COLUMN` em tabela > 5 GB exige procedimento de *shadow table* + cutover documentado em runbook. |
+| M10 | **Conflito de migrations entre branches** detectado em CI: `dotnet ef migrations has-pending-model-changes` + comparação de script idempotente esperado. |
+| M11 | **Squash de migrations** por *major release*: baseline consolidado, descarte de histórico anterior. |
+| M12 | **Drift detection** diário: schema real vs. baseline da última migration. Drift → incidente S2. |
+
+#### 4.3.2 Objetos não modelados pelo EF
+
+*Row-Level Security*, particionamento, *indexed views*, *columnstore*, *full-text*, *Service Broker*, *masking*, *certificates* → definidos via **`migrationBuilder.Sql()`** com SQL versionado em `Migrations/Sql/<id>_<nome>.sql`.
+
+**Convenção de nome:** `YYYYMMDDHHMM_<contexto>_<verbo>_<entidade>`.
+
+### 4.4 Views — **somente leitura, exclusivas do Read Side**
+
+- *Views* permitidas **apenas no Read Side (CQRS)**.
+- Vedado: views no Write Side, views atualizáveis, views como mecanismo de regra de negócio.
+- Toda view definida via migration EF Core, prefixada `vw_`, documentada com lista de eventos que disparam atualização.
+
+#### 4.4.1 Estratégia de materialização
+
+| Estratégia | Quando usar | Restrição |
+|---|---|---|
+| **Projeção mantida por projetor** (default) | Caso geral. | Idempotência obrigatória (4.2.2). |
+| *View* virtual sobre tabelas do Read Side | Composição leve. | Sem lógica de negócio. |
+| *Indexed/materialized view* do SGBD | **Exceção justificada por ADR.** | Nunca substitui projetor para SLA agressivo. |
+
+#### 4.4.2 Versionamento de contrato de leitura
+
+- Mudança incompatível → **nova versão**: `vw_<nome>_v2`. Versão anterior mantida em depreciação anunciada.
+- Tipos do Read Side derivados do **contrato do evento**, não da tabela do Write.
+
+#### 4.4.3 SLA de *staleness*
+
+Cada projeção declara *staleness budget*. Métrica `event_to_projection_lag_seconds` por projetor com alerta ao exceder.
+
+### 4.5 Índices, constraints e tipos
+
+- Índices via migrations. Revisão trimestral de índices não usados.
+- *Foreign keys* obrigatórias intra-contexto; proibidas entre contextos.
+- Tipos monetários: `decimal(18,4)` mínimo. Datas em `datetime2(3)` UTC. Tipos legados (`text`, `image`, `ntext`) proibidos. Collation única corporativa.
+- *Soft delete* só via ADR; padrão é exclusão lógica via evento de domínio.
+- **Concorrência otimista obrigatória:** `RowVersion`/`xmin` em toda entidade do Write Side.
+
+### 4.6 Acesso a dados na aplicação
+
+- Repositórios expõem agregados, não tabelas.
+- Leitura cruzada exclusivamente pelo Read Side.
+- *Raw SQL* no Write Side só por ADR.
+- **Long-running transactions banidas.** Statement timeout configurado.
+- *Read replicas* permitidas para offload, com *replication lag* exposto.
+
+### 4.7 Enforcement automatizado (gates obrigatórios)
+
+| Gate | Estágio | Falha em caso de |
+|---|---|---|
+| Lint de migration | PR | `CREATE\s+PROCEDURE` fora de `ops_*`/`plat_*`; `CREATE\s+TRIGGER` em qualquer schema; `CREATE\s+VIEW` fora de schemas `*_read`. |
+| Cabeçalho de migration | PR | Sem referência a work item/ADR. |
+| Conflito de migration | PR | `has-pending-model-changes` ou divergência do script idempotente. |
+| Tamanho de data migration | PR | `UPDATE/DELETE` afetando > 100k linhas. |
+| Scan diário do banco real | Diário | `sys.procedures`/`sys.triggers` divergente; abre incidente. |
+| Drift detection | Diário | Schema real ≠ baseline; incidente S2. |
+
+---
+
+## 5. Mapeamento AS-IS → TO-BE
+
+> **Convenção de classificação:** **DS** = Domain Service; **AGG** = método de agregado; **APP** = Application Service / Command Handler; **EH** = Event Handler / projetor.
+
+### 5.1 Stored Procedures → Domain Services
+
+{% if stored_procedures %}
+| # | Stored Procedure AS-IS | Bounded Context TO-BE | Tipo | Domain Service / Comando | Responsabilidade de domínio | Observações de refatoração |
+|---|---|---|---|---|---|---|
+{% for sp in stored_procedures %}| {{ sp.id }} | `{{ sp.name }}` | {{ sp.bounded_context }} | {{ sp.tipo }} | {{ sp.handler }} | {{ sp.responsibility }} | {{ sp.refactor_notes }} |
+{% endfor %}
+{% else %}
+> `[FONTE AUSENTE]` — `outputs/asis/db/stored-procedures-map.md` não disponível. Mapeamento exige extração do dicionário do banco AS-IS antes da aprovação desta política.
+{% endif %}
+
+### 5.2 Triggers → Domain Events
+
+{% if triggers %}
+| # | Trigger AS-IS | Tabela | Substituição TO-BE | Observações |
+|---|---|---|---|---|
+{% for tr in triggers %}| {{ tr.id }} | `{{ tr.name }}` | `{{ tr.table }}` | {{ tr.replacement }} | {{ tr.notes }} |
+{% endfor %}
+{% else %}
+> `[FONTE AUSENTE]` — `outputs/asis/db/triggers-map.md` não disponível. Mapeamento exige extração do dicionário do banco AS-IS antes da aprovação.
+{% endif %}
+
+### 5.3 Resumo de cobertura
+
+| Categoria | AS-IS | TO-BE | Status |
+|---|---:|---|---|
+| Stored Procedures de negócio | {{ coverage.sp_total | default('?') }} | 0 | {% if coverage.sp_total == coverage.sp_migrated %}✅{% else %}🟠 {{ coverage.sp_migrated | default(0) }}/{{ coverage.sp_total | default('?') }} migradas{% endif %} |
+| Triggers de negócio | {{ coverage.trigger_total | default('?') }} | 0 | {% if coverage.trigger_total == coverage.trigger_migrated %}✅{% else %}🟠 {{ coverage.trigger_migrated | default(0) }}/{{ coverage.trigger_total | default('?') }} substituídas{% endif %} |
+| Views Write Side | n/a | {{ coverage.views_writeside | default(0) }} | {% if (coverage.views_writeside | default(0)) == 0 %}✅ Vedadas{% else %}❌ Violação{% endif %} |
+| Views Read Side | — | {{ coverage.views_readside | default(0) }} | ✅ Permitidas |
+| DDL fora de migration | recorrente | 0 | ✅ Bloqueado por pipeline |
+
+---
+
+## 6. Estratégia de Backup e Retenção
+
+### 6.1 Classificação de dados
+
+| Classe | Critério | RPO | RTO |
+|---|---|---|---|
+| C1 — Transacional crítico | Tabelas de agregados financeiros / operacionais core | ≤ 5 min | ≤ 1 h |
+| C2 — Cadastro mestre | Entidades de catálogo e parceiros | ≤ 15 min | ≤ 4 h |
+| C3 — Read models / projeções | Schemas `*_read` | n/a (rebuild via eventos) | ≤ 8 h |
+| C4 — Auditoria / temporal / outbox | Tabelas system-versioned, `outbox`, event store | ≤ 15 min | ≤ 24 h |
+
+> Atribuição C1/C2 por tabela: derivada de `outputs/asis/db/schema-inventory.md` (Risk level) + bounded-context-map TO-BE. Documentada em `outputs/tobe/db/data-classification.md` (gerado pelo `database-design-tobe`).
+
+### 6.2 Política de backup
+
+| Item | Política |
+|---|---|
+| Backup full | Diário, janela noturna por ambiente. |
+| Backup diferencial | A cada 6 h para C1 e C4. |
+| Backup de log | A cada 5 min para C1; 15 min para C2 e C4. |
+| **PITR** | **Obrigatório** em C1/C4, alinhado ao RPO. Validação mensal. |
+| Geo-redundância | Obrigatória para C1 e C4. |
+| Criptografia em repouso | TDE + CMK HSM-backed para C1/C4, **rotação anual**. SoD entre operação de banco e gestão de chave. |
+| Criptografia em trânsito | TLS 1.2+ obrigatório. |
+| Imutabilidade | C1 e C4 com immutability lock por 30 dias mínimos. |
+| **Validação semanal automatizada** | Restore + checksum + smoke test em C1/C4. Falha → S2. |
+| Restore drill (full DR) | Trimestral em região secundária. |
+| **Restore granular** | Procedimento documentado para incidente pontual. |
+
+### 6.3 Retenção
+
+| Classe | Online | Arquivamento | Expurgo |
+|---|---|---|---|
+| C1 | 24 meses | 5 anos | Mínimo legal/fiscal aplicável. |
+| C2 | 24 meses | 5 anos | Anonimização de PII após ciclo (ver 6.5). |
+| C3 | 90 dias | n/a | Reconstruível por replay. |
+| C4 — Auditoria/temporal | 12 meses | 7 anos | Imutável. |
+| C4 — Outbox | 30 dias online | 12 meses arquivamento | Não-despachado mantido até confirmação. |
+| C4 — Event store (se adotado) | 24 meses | 7 anos | Imutável; snapshots para acelerar reconstrução. |
+
+### 6.4 Reconstrução do Read Side
+
+- Read Side **deve** ser reconstruível a partir do Write Side e do event log/outbox arquivado.
+- Runbook obrigatório; tempo máximo validado a cada release.
+
+### 6.5 LGPD — Direito ao esquecimento
+
+| Etapa | Responsável | SLA |
+|---|---|---|
+| Catálogo de PII por contexto | Domain Team | A cada release |
+| Comando `EsquecerTitular` | Application Service do contexto âncora | D+0 |
+| Identificação cross-context + eventos `TitularEsquecido` | Application Service | D+0 |
+| Anonimização Write/Read | Domain Team / Projetor | D+5 úteis |
+| Crypto-shredding (descarte da chave do titular) | Plataforma de Dados + SecInfo | D+10 úteis |
+| Confirmação ao titular | Privacy Office | D+15 úteis |
+
+### 6.6 Test data em ambientes inferiores
+
+- Lower envs **nunca** recebem PRD bruto. Masking determinístico ou *synthetic data* obrigatórios.
+
+---
+
+## 7. Considerações de Governança e Evolução
+
+### 7.1 Segurança de plataforma
+
+| Item | Política |
+|---|---|
+| Acesso de rede | Sem endpoint público. Private Endpoint / VNet integration. *Deny-by-default*. |
+| Autenticação | Identidades gerenciadas. Credenciais estáticas proibidas. |
+| **Matriz de permissões** | `app_write` (CRUD no contexto, sem DDL); `app_read` (SELECT no Read Side); `migrator` (DDL, identidade efêmera do pipeline); `dba_break_glass` (auditado, JIT via PIM, MFA). |
+| Menor privilégio | Aplicação sem `db_owner`. DDL exclusivamente por `migrator`. |
+| Auditoria de acesso | Log de DDL/DML privilegiado retido conforme C4. |
+
+### 7.2 Responsabilidades operacionais
+
+| Papel | Responsabilidade |
+|---|---|
+| Domain Team | Modelagem do agregado, autoria das migrations, definição de eventos, manutenção do Read Side, catálogo de PII. |
+| Tech Lead do contexto | Aprovação de migration, ADR de schema, revisão de quebras, aprovação de SP de plataforma. |
+| Plataforma de Dados / DBA Corporativo | Operação de instâncias, backup/restore/PITR, validação semanal e drill trimestral, *tuning*, capacidade, valida online change e data migration, drift detection. |
+| Arquitetura Corporativa | Custódia desta política, exceções, revisão semestral, custódia do Schema Registry. |
+| Segurança da Informação | Classificação, criptografia, rotação CMK/HSM, auditoria de crypto-shredding. |
+| Privacy Office | Recepção e confirmação de solicitações LGPD. |
+| SRE / Observabilidade | Métricas, alertas RPO/RTO, *staleness*, *lag* de Outbox, eventos em DLQ. |
+
+### 7.3 Processo de mudança
+
+1. ADR registrando motivação, alternativas e impacto (quando aplicável conforme 7.4).
+2. Migration em branch dedicada, `Up` testado em DEV/CI; `Down` apenas em DEV/CI.
+3. Revisão dupla: Tech Lead + DBA (obrigatória para C1/C4, destrutivas, online change > 5 GB, data migration > 100k linhas).
+4. Aplicação automatizada em DEV → STG (gate de validação) → PRD (gate manual).
+5. Pós-implantação: telemetria, drift, RPO efetivo, integridade do Read Side, *lag* de projeção.
+
+### 7.4 Exceções
+
+- Desvios que **exigem ADR**: indexed/materialized view, event sourcing em substituição a temporal tables, soft delete, raw SQL no Write Side, multi-tenancy fora do padrão.
+- Desvios **proibidos** (incidente, não admitem ADR): nova SP de domínio, qualquer trigger, view no Write Side, DDL fora de migration, transação distribuída XA/MSDTC.
+- Exceções não documentadas → incidente S2 e reversão.
+
+### 7.5 Performance e governança operacional
+
+| Item | Política |
+|---|---|
+| Performance budget por consulta | SLA p95/p99 declarado. Violação abre tarefa de tuning a partir do slow query log. |
+| Slow query log | Habilitado, retenção alinhada a C4. |
+| Governança de índices | Revisão trimestral de índices não usados. |
+| Statistics e manutenção | Job operacional padronizado documentado em runbook. |
+| Tiering hot/cold | Dados > 24 meses migrados para tabela arquivo; operação corporativa. |
+
+### 7.6 Métricas de aderência
+
+| Métrica | Alvo |
+|---|---|
+| SPs de domínio em produção | 0 |
+| Triggers em produção | 0 |
+| Views fora de schemas `*_read` | 0 |
+| DDL fora de migration EF (drift) | 0 |
+| Migrations rejeitadas / total | < 10% |
+| Tempo médio de aplicação em PRD | < 5 min |
+| Cobertura de testes de migration `Up` | 100% |
+| Cobertura de teste de idempotência por projetor | 100% |
+| Eventos em DLQ (24 h) | 0 sustentado |
+| *Lag* p95 de projeção dentro do budget | 100% das projeções |
+| Validação semanal de backup C1/C4 | 4/4 por mês |
+| Restore drill no trimestre | 1/1 |
+| SLA LGPD (15 dias úteis) | 100% |
+
+### 7.7 Revisão da política
+
+- Revisão semestral por Arquitetura Corporativa.
+- Extraordinária: novo bounded context, mudança de SGBD, mudança regulatória, incidente ≥ S2 relacionado a dados, alteração no contrato do Outbox ou no Schema Registry.
+
+---
+
+## 8. Conclusão
+
+Esta política — versão {{ policy_version }} — consolida o TO-BE de {{ project_name }} como uma plataforma na qual o **banco de dados é infraestrutura subordinada ao domínio**. *Stored Procedures* de domínio e *triggers* são integralmente substituídos por Domain Services, eventos de domínio publicados via Outbox transacional e projetores idempotentes. A evolução de schema é exclusivamente conduzida por Entity Framework Core Migrations sob regime *forward-only* em produção, com gates automatizados, drift detection e separação entre *schema migration* e *data migration*. *Views* permanecem restritas ao Read Side, governadas por SLA de *staleness* e versionamento de contrato. Backup adota PITR, validação semanal automatizada e *crypto-shredding* para conciliar imutabilidade com o direito ao esquecimento.
+
+O cumprimento desta política é **mandatório**. Desvios admitem exceção apenas pelos caminhos explícitos da Seção 7.4; o restante é tratado como incidente.
+
+---
+
+**Aprovação requerida:** Arquitetura Corporativa, Plataforma de Dados, Segurança da Informação.
+**Próxima revisão programada:** semestral a partir da data de aprovação.
+
+<sub>Gerado por `ava-tobe-database-policy` — template `sql-strategy.md.j2` v{{ policy_version }} — TraceID `{{ trace_id }}` — {{ generated_at }}</sub>

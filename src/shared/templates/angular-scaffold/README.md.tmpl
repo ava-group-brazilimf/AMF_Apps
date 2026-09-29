@@ -1,0 +1,47 @@
+# %%app_title%% — Frontend Angular
+
+Workspace Angular gerado pelo scaffold determinístico da AVA Fabric
+(`src/shared/tools/f4s_angular_scaffold.py`, spec 042).
+
+## Comandos
+
+```bash
+npm install              # primeira vez (gera package-lock.json)
+npm ci                   # execuções seguintes (reproduz o lockfile)
+npm run build            # build de produção (defaultConfiguration)
+npm start                # dev-server em http://localhost:4200
+npm test                 # testes unitários (Karma + Jasmine)
+```
+
+## Verificação determinística
+
+```bash
+python src/shared/utils/verify_angular_app.py --root <este-diretório> --json
+```
+
+Executa install → build → boot → health e devolve um veredito único. É o mesmo gate
+que a esteira F4S aplica antes de commitar.
+
+## Estrutura
+
+```
+src/app/
+  core/          # auth, interceptors, guards — singletons da aplicação
+  shared/        # componentes, pipes e diretivas reutilizáveis
+  features/      # um diretório por bounded context
+```
+
+## O que este scaffold deliberadamente NÃO faz
+
+- **Não carrega tema do Angular Material.** O caminho do arquivo de tema muda entre
+  majors; referência a arquivo inexistente em `angular.json` quebra o build. O tema entra
+  junto com o primeiro componente Material gerado.
+- **Não instala NgRx nem MSAL.** São matrizes de versão de outros fornecedores, com
+  peer-dependencies próprias. Entram junto com o código que os usa.
+
+## Regras que o codegen de features deve preservar
+
+1. `tsconfig.app.json` é **self-contained** — nunca acrescentar `extends`.
+2. `polyfills: ["zone.js"]` nunca sai de `angular.json`.
+3. Todo pipe usado no template de um componente standalone precisa estar em `imports`.
+4. `angular.json` nunca referencia arquivo que não existe na árvore.

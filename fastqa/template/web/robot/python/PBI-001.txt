@@ -1,0 +1,45 @@
+📋 PBI: SauceDemo
+Validação E2E do Fluxo de Compra após Login no SauceDemo
+👤 User Story
+Como um usuário autenticado no SauceDemo,
+Quero navegar pelo catálogo, adicionar produtos ao carrinho e concluir o checkout,
+Para que eu possa finalizar uma compra de ponta a ponta com sucesso.
+📝 Descrição
+
+Após o login válido no SauceDemo (https://www.saucedemo.com/), deve ser validado o fluxo completo E2E da aplicação:
+Acesso ao inventário de produtos.
+Adição e remoção de itens no carrinho.
+Abertura e validação do carrinho.
+Preenchimento do checkout com dados obrigatórios.
+Finalização da compra com mensagem de sucesso.
+
+🔗 Dependências
+
+Disponibilidade do site SauceDemo.
+Credenciais válidas:
+Usuário: standard_user
+Senha: secret_sauce
+
+📌 Notas Técnicas
+URL base: https://www.saucedemo.com/
+Fluxo alvo:
+Login
+Inventário
+Carrinho
+Checkout: Your Information
+Checkout: Overview
+Checkout Complete
+✅ Checklist de Validação
+Login com sucesso e acesso ao inventário.
+Lista de produtos exibida após autenticação.
+Produto adicionado ao carrinho com atualização do badge de quantidade.
+Produto removido do carrinho com atualização correta da quantidade.
+Navegação para o carrinho funcionando.
+Botão Checkout redireciona para etapa de informações.
+Campos obrigatórios (First Name, Last Name, Postal Code) validados.
+Botão Continue avança para visão geral do pedido.
+Informações do pedido (itens, preços, total) exibidas corretamente.
+Botão Finish conclui compra com sucesso.
+Mensagem de confirmação exibida na tela final.
+Botão Back Home retorna ao inventário.
+Logout encerra sessão e impede acesso direto ao inventário sem novo login.

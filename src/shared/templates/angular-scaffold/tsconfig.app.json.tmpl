@@ -1,0 +1,44 @@
+{
+  "//": "GUARDRAIL — este arquivo é SELF-CONTAINED por design: NÃO use `extends`.",
+  "//1": "O builder esbuild do Angular 17+ executa o TypeScript a partir de um working",
+  "//2": "directory diferente, e um `extends` relativo falha com \"Cannot find base config",
+  "//3": "file 'tsconfig.json'\". Toda `compilerOptions` é replicada de tsconfig.json.",
+  "//4": "`files` é obrigatório: sem ele o ngtsc compila zero arquivos.",
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": ["ES2022", "dom"],
+    "baseUrl": "./",
+    "paths": {
+      "@core/*": ["src/app/core/*"],
+      "@shared/*": ["src/app/shared/*"],
+      "@features/*": ["src/app/features/*"],
+      "@env/*": ["src/environments/*"],
+      "@ngrx/store/src/models": ["./node_modules/@ngrx/store/src/models"]
+    },
+    "types": []
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"]
+}

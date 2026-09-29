@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migration Factory Dashboard</title>
+<style>
+:root{
+  color-scheme:light;
+  --r:#ff5800; --k:#fff; --d1:#f5f5f7; --d2:#fff; --d3:#f0f0f4;
+  --bg:#f4f4f7; --fg:#1a1a1a; --dim:rgba(26,26,26,.72); --muted:rgba(26,26,26,.55);
+  --wb:rgba(0,0,0,.08); --wb2:rgba(0,0,0,.14);
+  --ok:#00963c; --warn:#cc7a00; --bad:#c62828; --info:#1565c0;
+  --rad:7px; --rad2:11px;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px -18px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark;
+  --k:#0a0a0a; --d1:#141414; --d2:#1c1c1c; --d3:#242424;
+  --bg:#0d0d0d; --fg:#fff; --dim:rgba(255,255,255,.72); --muted:rgba(255,255,255,.55);
+  --wb:rgba(255,255,255,.10); --wb2:rgba(255,255,255,.16);
+  --ok:#3ec46f; --warn:#e8a33d; --bad:#ef5350; --info:#4a9eea;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px -18px rgba(0,0,0,.9);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-size:14px;line-height:1.45}
+.mono{font-family:Consolas,"Cascadia Mono",ui-monospace,monospace}
+.top{display:flex;align-items:center;gap:14px;height:56px;padding:0 22px;
+  background:var(--d2);border-bottom:1px solid var(--wb)}
+.top .brand{width:10px;height:26px;border-radius:3px;background:var(--r);flex:none}
+.top h1{font-size:15px;font-weight:600;margin:0}
+.top .sub{font-size:11px;color:var(--muted)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}
+.btn{background:var(--d2);border:1px solid var(--wb2);border-radius:var(--rad);
+  padding:5px 12px;font:inherit;font-size:12px;color:var(--fg);cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--d3)}
+main{max-width:1400px;margin:0 auto;padding:20px 22px 64px}
+h2{font-size:15px;font-weight:600;margin:26px 0 10px}
+h2:first-child{margin-top:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.card{background:var(--d2);border:1px solid var(--wb);border-radius:var(--rad2);
+  padding:13px 15px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--r)}
+.card.na::before{background:var(--muted)}
+.card .lab{font-size:11px;color:var(--muted);margin:0 0 4px}
+.card .val{font-size:22px;font-weight:600;margin:0;letter-spacing:-.02em;line-height:1.15}
+.card .val.na{font-size:14px;font-weight:500;color:var(--muted)}
+.card .hint{font-size:10.5px;color:var(--muted);margin:4px 0 0}
+.panel{background:var(--d2);border:1px solid var(--wb);border-radius:var(--rad2);
+  padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:640px}
+th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);padding:0 10px 8px 0;border-bottom:1px solid var(--wb2);white-space:nowrap}
+td{padding:7px 10px 7px 0;border-bottom:1px solid var(--wb);vertical-align:middle}
+td.num{text-align:right;font-family:Consolas,monospace;font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:500;
+  padding:2px 9px;border-radius:99px;background:var(--d3);border:1px solid var(--wb);white-space:nowrap}
+.pill.s-available{color:var(--ok);border-color:var(--ok)}
+.pill.s-partially_available{color:var(--warn);border-color:var(--warn)}
+.pill.s-metrics_unavailable{color:var(--muted)}
+.pill.s-empty_file,.pill.s-invalid_json,.pill.s-incompatible_schema,.pill.s-read_error{
+  color:var(--bad);border-color:var(--bad)}
+.note{display:flex;gap:10px;padding:12px 15px;border-radius:var(--rad2);
+  background:var(--d3);border:1px solid var(--wb);border-left:3px solid var(--info);
+  font-size:12.5px;margin-bottom:14px}
+.note.err{border-left-color:var(--bad)}
+.note.warn{border-left-color:var(--warn)}
+.note ul{margin:6px 0 0;padding-left:18px}
+.na{color:var(--muted)}
+.proj{margin-bottom:14px}
+.proj summary{cursor:pointer;padding:12px 16px;background:var(--d2);border:1px solid var(--wb);
+  border-radius:var(--rad2);display:flex;align-items:center;gap:12px;font-weight:600;font-size:13.5px;
+  box-shadow:var(--shadow);list-style:none}
+.proj summary::-webkit-details-marker{display:none}
+.proj summary::before{content:"▸";color:var(--r);font-size:11px}
+.proj[open] summary::before{content:"▾"}
+.proj summary .sp{margin-left:auto;font-weight:400}
+.proj .body{border:1px solid var(--wb);border-top:none;border-radius:0 0 var(--rad2) var(--rad2);
+  background:var(--d2);padding:14px 16px;overflow-x:auto}
+.empty{color:var(--muted);font-size:12.5px;padding:10px 0}
+footer{max-width:1400px;margin:0 auto;padding:0 22px 40px;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="brand"></span>
+  <div>
+    <h1>Migration Factory Dashboard</h1>
+    <div class="sub">Descoberta dinâmica &middot; <span class="mono">{{ metrics_relative }}</span></div>
+  </div>
+  <div class="right">
+    {% if snapshot %}<span>Leitura: {{ snapshot.generated_at_iso }}</span>{% endif %}
+    <a class="btn" href="/">Atualizar</a>
+  </div>
+</header>
+
+<main>
+{% if error %}
+  <div class="note err">
+    <div>
+      <b>Falha de configuração</b><br>{{ error }}
+      <br><span class="na">Defina MIGRATION_FACTORY_PROJECTS_ROOT ou corrija projects.root_directory em config/app.yaml.</span>
+    </div>
+  </div>
+{% else %}
+
+  {% if snapshot.added_projects or snapshot.removed_projects %}
+  <div class="note">
+    <div>
+      {% if snapshot.added_projects %}<b>Projetos adicionados:</b> {{ snapshot.added_projects|join(", ") }}<br>{% endif %}
+      {% if snapshot.removed_projects %}<b>Projetos removidos:</b> {{ snapshot.removed_projects|join(", ") }}{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if snapshot.warnings %}
+  <div class="note warn">
+    <div><b>{{ snapshot.warnings|length }} projeto(s) com ressalva</b>
+      <ul>{% for w in snapshot.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <h2>Portfólio</h2>
+  <div class="cards">
+    {% for m in snapshot.portfolio_metrics if m.display_type == "card" %}
+    <div class="card {% if not m.available %}na{% endif %}">
+      <p class="lab">{{ m.name }}</p>
+      {% if m.available %}
+        <p class="val">{{ m.value | metric_format(m) }}</p>
+      {% else %}
+        <p class="val na">indisponível</p>
+        <p class="hint">{{ m.reason }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% set portfolio_rows = snapshot.portfolio_metrics | selectattr("display_type", "equalto", "table") | list %}
+  {% if portfolio_rows %}
+  <div class="panel" style="margin-top:14px">
+    <table>
+      <thead><tr><th>Métrica</th><th>Valor</th><th>Descrição</th></tr></thead>
+      <tbody>
+      {% for m in portfolio_rows %}
+        <tr>
+          <td>{{ m.name }}</td>
+          <td class="mono">{% if m.available %}{{ m.value | metric_format(m) }}{% else %}<span class="na">indisponível</span>{% endif %}</td>
+          <td class="na">{{ m.description }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <h2>Projetos ({{ snapshot.projects|length }})</h2>
+  {% if not snapshot.projects %}
+    <p class="empty">Nenhum projeto encontrado no diretório configurado.</p>
+  {% endif %}
+
+  {% for p in snapshot.projects %}
+  <details class="proj" {% if p.record.is_usable %}open{% endif %}>
+    <summary>
+      <span class="mono">{{ p.record.project_name }}</span>
+      <span class="sp"><span class="pill s-{{ p.record.status }}">{{ p.record.status }}</span></span>
+    </summary>
+    <div class="body">
+      {% if p.record.errors %}
+        <div class="note {% if p.record.is_usable %}warn{% else %}err{% endif %}" style="margin-bottom:12px">
+          <div><ul style="margin:0">{% for e in p.record.errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+        </div>
+      {% endif %}
+
+      {% set cards = p.metrics | selectattr("display_type", "equalto", "card") | list %}
+      {% if cards %}
+      <div class="cards" style="margin-bottom:12px">
+        {% for m in cards %}
+        <div class="card {% if not m.available %}na{% endif %}">
+          <p class="lab">{{ m.name }}</p>
+          {% if m.available %}<p class="val">{{ m.value | metric_format(m) }}</p>
+          {% else %}<p class="val na">indisponível</p>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <table>
+        <thead><tr><th>Métrica</th><th>Valor</th><th>Categoria</th><th>Observação</th></tr></thead>
+        <tbody>
+        {% for m in p.metrics if m.display_type == "table" %}
+          <tr>
+            <td>{{ m.name }}</td>
+            <td class="mono">{% if m.available %}{{ m.value | metric_format(m) }}{% else %}<span class="na">indisponível</span>{% endif %}</td>
+            <td class="na">{{ m.category }}</td>
+            <td class="na">{{ m.reason or "" }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="empty">Arquivo: <span class="mono">{{ p.record.metrics_relative_path }}</span>
+        {% if p.record.metrics_last_modified %}&middot; modificado em
+        {{ p.record.metrics_last_modified.strftime("%Y-%m-%dT%H:%M:%SZ") }}{% endif %}</p>
+    </div>
+  </details>
+  {% endfor %}
+{% endif %}
+</main>
+
+<footer>
+  Diretório raiz definido por <span class="mono">{{ root_source }}</span> &middot;
+  atualização por <span class="mono">{{ refresh_strategy }}</span> &middot;
+  arquivos de origem acessados somente para leitura &middot;
+  APIs: <span class="mono">/api/projects</span>, <span class="mono">/api/metrics</span>,
+  <span class="mono">POST /api/refresh</span>
+</footer>
+</body>
+</html>

@@ -1,0 +1,2637 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migration Factory Control Tower</title>
+<style>
+/* ═══ AVANADE DESIGN TOKENS ══════════════════════════════════════════ */
+:root{
+  color-scheme: light;
+  /* Brand — Avanade Orange */
+  --r:#ff5800; --rd:#cc4400; --rl:#ff7a44;
+  /* Surfaces */
+  --k:#ffffff; --d1:#f5f5f7; --d2:#ffffff; --d3:#f0f0f4; --d4:#e8e8ec;
+  --bg-page:#f4f4f7;
+  /* Neutral / text */
+  --g1:#cccccc; --g2:#888891; --g3:#555559;
+  --fg:#1a1a1a; --fg-dim:rgba(26,26,26,.72); --fg-muted:rgba(26,26,26,.55); --fg-faint:rgba(26,26,26,.40);
+  /* Borders */
+  --wb:rgba(0,0,0,.08); --wb2:rgba(0,0,0,.14); --rb:rgba(255,88,0,.12);
+  --hover-bg:rgba(0,0,0,.04);
+  /* Semantic (reservado para estado, nunca para série) */
+  --ok:#00963c; --warn:#cc7a00; --bad:#c62828; --info:#1565c0;
+  --ok-bg:rgba(0,150,60,.10); --warn-bg:rgba(204,122,0,.12); --bad-bg:rgba(198,40,40,.10);
+  /* Séries categóricas — validadas p/ CVD sobre a superfície clara */
+  --s1:#d24800; --s2:#1565c0; --s3:#008a5e;
+  /* Rampa sequencial (magnitude) — hue único da marca */
+  --q0:#fdf0e8; --q1:#fbd3bb; --q2:#f5a97e; --q3:#e97a3f; --q4:#d24800; --q5:#8f3100;
+  --grid:#e3e3e9; --axis:#c9c9d2;
+  --shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -18px rgba(0,0,0,.35);
+  --rad:7px; --rad2:11px; --tr:.16s ease;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --k:#0a0a0a; --d1:#141414; --d2:#1c1c1c; --d3:#242424; --d4:#2e2e2e;
+    --bg-page:#0d0d0d;
+    --g1:#3d3d3d; --g2:#6b6b6b; --g3:#9e9e9e;
+    --fg:#ffffff; --fg-dim:rgba(255,255,255,.72); --fg-muted:rgba(255,255,255,.55); --fg-faint:rgba(255,255,255,.45);
+    --wb:rgba(255,255,255,.10); --wb2:rgba(255,255,255,.16); --rb:rgba(255,88,0,.22);
+    --hover-bg:rgba(255,255,255,.05);
+    --ok:#3ec46f; --warn:#e8a33d; --bad:#ef5350; --info:#4a9eea;
+    --ok-bg:rgba(62,196,111,.14); --warn-bg:rgba(232,163,61,.16); --bad-bg:rgba(239,83,80,.14);
+    --s1:#e5622c; --s2:#2e86d8; --s3:#1f9c72;
+    --q0:#2a1a10; --q1:#4a2a16; --q2:#7d431f; --q3:#b05a26; --q4:#e5622c; --q5:#ff8c5a;
+    --grid:#262626; --axis:#3a3a3a;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --k:#0a0a0a; --d1:#141414; --d2:#1c1c1c; --d3:#242424; --d4:#2e2e2e;
+  --bg-page:#0d0d0d;
+  --g1:#3d3d3d; --g2:#6b6b6b; --g3:#9e9e9e;
+  --fg:#ffffff; --fg-dim:rgba(255,255,255,.72); --fg-muted:rgba(255,255,255,.55); --fg-faint:rgba(255,255,255,.45);
+  --wb:rgba(255,255,255,.10); --wb2:rgba(255,255,255,.16); --rb:rgba(255,88,0,.22);
+  --hover-bg:rgba(255,255,255,.05);
+  --ok:#3ec46f; --warn:#e8a33d; --bad:#ef5350; --info:#4a9eea;
+  --ok-bg:rgba(62,196,111,.14); --warn-bg:rgba(232,163,61,.16); --bad-bg:rgba(239,83,80,.14);
+  --s1:#e5622c; --s2:#2e86d8; --s3:#1f9c72;
+  --q0:#2a1a10; --q1:#4a2a16; --q2:#7d431f; --q3:#b05a26; --q4:#e5622c; --q5:#ff8c5a;
+  --grid:#262626; --axis:#3a3a3a;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg-page); color:var(--fg);
+  font-family:"Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:Consolas,"Cascadia Mono",ui-monospace,monospace}
+button{font:inherit;color:inherit}
+
+/* ═══ TOPBAR ═════════════════════════════════════════════════════════ */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:16px;
+  height:56px; padding:0 22px;
+  background:var(--d2); border-bottom:1px solid var(--wb);
+}
+.tm-logo{display:flex;align-items:center;flex-shrink:0}
+.tm-logo svg{height:26px;width:auto;display:block}
+.tm-title{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.tm-title b{font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.tm-title span{font-size:11px;color:var(--fg-muted);white-space:nowrap}
+.tm-sep{width:1px;height:26px;background:var(--wb2);flex:none}
+.tm-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tm-stamp{font-size:11px;color:var(--fg-faint);white-space:nowrap}
+#theme-btn{
+  background:none;border:1px solid var(--wb);border-radius:var(--rad);
+  padding:5px 11px;cursor:pointer;display:flex;align-items:center;gap:6px;
+  font-size:11px;transition:background var(--tr);
+}
+#theme-btn:hover{background:var(--hover-bg)}
+.langsw{display:flex;border:1px solid var(--wb);border-radius:var(--rad);overflow:hidden;flex:none}
+.langsw button{
+  appearance:none;background:none;border:none;padding:5px 10px;cursor:pointer;
+  font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--fg-muted);
+  transition:background var(--tr),color var(--tr);
+}
+.langsw button+button{border-left:1px solid var(--wb)}
+.langsw button:hover{background:var(--hover-bg);color:var(--fg)}
+.langsw button[aria-pressed="true"]{background:var(--r);color:#fff}
+.langsw button:focus-visible{outline:2px solid var(--r);outline-offset:-2px}
+
+/* ═══ TABS ═══════════════════════════════════════════════════════════ */
+.tabstrip{
+  position:sticky; top:56px; z-index:39;
+  display:flex; gap:2px; padding:0 22px; overflow-x:auto;
+  background:var(--d2); border-bottom:1px solid var(--wb);
+}
+.tab{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  padding:11px 14px 9px;cursor:pointer;white-space:nowrap;
+  font-size:12.5px;font-weight:500;color:var(--fg-muted);transition:color var(--tr);
+}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--r);border-bottom-color:var(--r);font-weight:600}
+.tab:focus-visible,.fbtn:focus-visible,.row:focus-visible,.cell:focus-visible,
+input:focus-visible,select:focus-visible{outline:2px solid var(--r);outline-offset:2px}
+
+/* ═══ FILTER BAR ═════════════════════════════════════════════════════ */
+.filterbar{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;
+  padding:12px 22px;background:var(--d1);border-bottom:1px solid var(--wb);
+}
+.fgroup{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fgroup > label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--fg-faint)}
+.fctl{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+select,input[type="date"],input[type="number"]{
+  background:var(--d2);border:1px solid var(--wb2);border-radius:var(--rad);
+  padding:5px 8px;font-size:12px;color:var(--fg);min-width:0;
+}
+input[type="number"]{width:88px;text-align:right;font-family:Consolas,monospace}
+.fbtn{
+  background:var(--d2);border:1px solid var(--wb2);border-radius:99px;
+  padding:4px 11px;font-size:11.5px;cursor:pointer;color:var(--fg-dim);
+  transition:background var(--tr),border-color var(--tr);
+}
+.fbtn:hover{background:var(--hover-bg)}
+.fbtn[aria-pressed="true"]{background:var(--r);border-color:var(--r);color:#fff;font-weight:600}
+.fbtn.ghost{border-style:dashed}
+.fscope{margin-left:auto;font-size:11.5px;color:var(--fg-muted);white-space:nowrap;align-self:center}
+.fscope b{color:var(--fg);font-weight:600}
+
+/* ═══ LAYOUT ═════════════════════════════════════════════════════════ */
+.page{padding:20px 22px 64px;max-width:1560px;margin:0 auto}
+.pagehead{margin:0 0 16px}
+.pagehead h1{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 3px}
+.pagehead p{margin:0;font-size:12.5px;color:var(--fg-muted);max-width:88ch}
+.grid{display:grid;gap:14px;margin-bottom:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(390px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.span2{grid-column:1/-1}
+
+/* ═══ KPI CARDS ══════════════════════════════════════════════════════ */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-bottom:16px}
+.kpi{
+  background:var(--d2);border:1px solid var(--wb);border-radius:var(--rad2);
+  padding:13px 15px 14px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.kpi::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--r);opacity:.85}
+.kpi.k-ok::before{background:var(--ok)} .kpi.k-warn::before{background:var(--warn)}
+.kpi.k-bad::before{background:var(--bad)} .kpi.k-mute::before{background:var(--g2)}
+.kpi .lab{font-size:11px;color:var(--fg-muted);margin:0 0 4px;line-height:1.25}
+.kpi .val{font-size:23px;font-weight:600;letter-spacing:-.02em;margin:0;line-height:1.1}
+.kpi .sub{font-size:10.5px;color:var(--fg-faint);margin:4px 0 0;line-height:1.3}
+
+/* ═══ CARDS ══════════════════════════════════════════════════════════ */
+.card{
+  background:var(--d2);border:1px solid var(--wb);border-radius:var(--rad2);
+  padding:16px 18px 14px;box-shadow:var(--shadow);min-width:0;
+}
+.card-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-bottom:2px}
+.card h2{font-size:13.5px;font-weight:600;letter-spacing:-.01em;margin:0}
+.card .sub{font-size:11.5px;color:var(--fg-muted);margin:2px 0 14px;max-width:80ch}
+.legend{display:flex;flex-wrap:wrap;gap:5px 14px;margin-left:auto}
+.legend .item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg-dim)}
+.legend .sw{width:10px;height:10px;border-radius:2px;flex:none}
+.legend .sw.line{height:2px;border-radius:1px;width:14px}
+.legend .gl{width:13px;height:13px;border-radius:3px;flex:none;display:grid;place-items:center;font-size:8px;font-weight:700;color:#fff;line-height:1}
+
+/* ═══ BAR CHART ══════════════════════════════════════════════════════ */
+.plot{position:relative}
+.gridlines{position:absolute;top:0;bottom:0;pointer-events:none}
+.gridlines span{position:absolute;top:0;bottom:0;width:1px;background:var(--grid)}
+.gridlines span.zero{background:var(--axis)}
+.rows{position:relative;display:flex;flex-direction:column;gap:3px}
+.row{
+  display:grid;grid-template-columns:var(--labw,150px) 1fr var(--valw,80px);
+  align-items:center;gap:12px;min-height:24px;padding:1px 0;border-radius:5px;
+}
+.row:hover{background:var(--hover-bg)}
+.row.clickable{cursor:pointer}
+.row .rlab{font-family:Consolas,monospace;font-size:10.5px;color:var(--fg-dim);line-height:1.25;overflow-wrap:anywhere}
+.row .rlab .flag{display:block;font-size:9.5px;color:var(--fg-faint)}
+.track{display:flex;align-items:center;min-width:0}
+.bar{display:flex;gap:2px;height:15px;min-width:0;flex:none}
+.seg{height:100%;min-width:2px}
+.seg:last-child{border-radius:0 4px 4px 0}
+.rval{font-size:11px;color:var(--fg-dim);text-align:right;font-family:Consolas,monospace;white-space:nowrap}
+.rval.hi{color:var(--fg);font-weight:600}
+.axis{position:relative;height:20px;margin-top:8px;border-top:1px solid var(--axis)}
+.axis span{
+  position:absolute;top:4px;transform:translateX(-50%);font-size:10px;
+  color:var(--fg-faint);font-family:Consolas,monospace;white-space:nowrap;
+}
+.axis span.first{transform:none} .axis span.last{transform:translateX(-100%)}
+.thresh{position:absolute;top:0;bottom:0;width:1px;background:var(--warn);opacity:.7}
+.thresh::after{
+  content:attr(data-label);position:absolute;top:-13px;left:3px;
+  font-size:9.5px;color:var(--warn);white-space:nowrap;font-family:Consolas,monospace;
+}
+
+/* ═══ SVG CHARTS ═════════════════════════════════════════════════════ */
+.svgwrap{width:100%;overflow-x:auto}
+svg.chart{display:block;max-width:100%;height:auto;overflow:visible}
+svg.chart .gl{stroke:var(--grid);stroke-width:1}
+svg.chart .ax{stroke:var(--axis);stroke-width:1}
+svg.chart .tick{fill:var(--fg-faint);font-size:10px;font-family:Consolas,monospace}
+svg.chart .area{opacity:.12}
+svg.chart .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+svg.chart .dot{stroke:var(--d2);stroke-width:2}
+svg.chart .hair{stroke:var(--fg-faint);stroke-width:1;stroke-dasharray:none;opacity:.55}
+
+/* ═══ HEATMAP ════════════════════════════════════════════════════════ */
+.hm{display:grid;gap:2px;min-width:0}
+.hm .cell{
+  height:24px;border-radius:3px;display:grid;place-items:center;
+  font-size:9.5px;font-family:Consolas,monospace;cursor:default;
+}
+.hm .hlab{
+  font-size:10px;font-family:Consolas,monospace;color:var(--fg-dim);
+  display:flex;align-items:center;justify-content:flex-end;padding-right:8px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hm .clab{
+  font-size:9.5px;font-family:Consolas,monospace;color:var(--fg-faint);
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  height:118px;display:flex;align-items:flex-end;justify-content:center;
+  white-space:nowrap;overflow:hidden;
+}
+.rampkey{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--fg-muted);margin-top:10px}
+.rampkey .steps{display:flex;gap:2px}
+.rampkey .steps i{width:20px;height:9px;border-radius:2px;display:block}
+
+/* ═══ GANTT ══════════════════════════════════════════════════════════ */
+.gantt{display:flex;flex-direction:column;gap:3px}
+.gantt .grow{display:grid;grid-template-columns:210px 1fr 74px;gap:10px;align-items:center;min-height:22px;border-radius:5px}
+.gantt .grow:hover{background:var(--hover-bg)}
+.gantt .gtrack{position:relative;height:15px;background:var(--d3);border-radius:3px;overflow:hidden}
+.gantt .gbar{position:absolute;top:0;bottom:0;border-radius:3px;min-width:2px}
+
+/* ═══ TABLES ═════════════════════════════════════════════════════════ */
+.tblwrap{overflow-x:auto;margin:0 -2px;padding:0 2px}
+table.tbl{border-collapse:collapse;width:100%;font-size:12px;min-width:640px}
+.tbl th{
+  text-align:left;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--fg-faint);padding:0 10px 8px 0;border-bottom:1px solid var(--axis);white-space:nowrap;
+}
+.tbl td{padding:7px 10px 7px 0;border-bottom:1px solid var(--grid);vertical-align:middle}
+.tbl tbody tr:hover{background:var(--hover-bg)}
+.tbl tbody tr.clickable{cursor:pointer}
+.tbl .num{text-align:right;font-family:Consolas,monospace;font-variant-numeric:tabular-nums}
+.tbl .mn{font-family:Consolas,monospace;font-size:11px}
+.tbl tfoot td{border-bottom:none;border-top:1px solid var(--axis);font-weight:600;padding-top:9px}
+.dash{color:var(--fg-faint)}
+
+/* ═══ PILLS / ALERTS ═════════════════════════════════════════════════ */
+.pill{
+  display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:500;
+  padding:2px 8px 2px 5px;border-radius:99px;white-space:nowrap;
+  background:var(--d3);border:1px solid var(--wb);color:var(--fg-dim);
+}
+.pill .ic{width:12px;height:12px;border-radius:3px;display:grid;place-items:center;font-size:8px;font-weight:700;color:#fff;line-height:1;flex:none}
+.ic.ok{background:var(--ok)} .ic.warn{background:var(--warn);color:#3a2600}
+.ic.bad{background:var(--bad)} .ic.mute{background:var(--g2)}
+.ic.live{background:var(--r);animation:pulse 1.6s ease-in-out infinite}
+.pill.p-live{border-color:var(--r);color:var(--r)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.livebar{
+  display:flex;align-items:center;gap:9px;padding:9px 14px;margin-bottom:14px;
+  border-radius:var(--rad2);background:var(--rb);border:1px solid var(--r);
+  font-size:12.5px;color:var(--fg);
+}
+.livebar .dot{width:9px;height:9px;border-radius:50%;background:var(--r);
+  animation:pulse 1.6s ease-in-out infinite;flex:none}
+.livebar .names{font-family:Consolas,monospace;font-size:11.5px;color:var(--fg-dim)}
+.livebar .next{margin-left:auto;font-size:11px;color:var(--fg-muted);white-space:nowrap}
+.tm-live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--r);font-weight:600}
+.tm-live .dot{width:8px;height:8px;border-radius:50%;background:var(--r);
+  animation:pulse 1.6s ease-in-out infinite}
+.chg{border-left-color:var(--r)!important}
+.alist{display:flex;flex-direction:column;gap:8px}
+.alert{
+  display:flex;gap:10px;align-items:flex-start;padding:10px 13px;border-radius:var(--rad);
+  background:var(--d3);border:1px solid var(--wb);border-left:3px solid var(--g2);font-size:12.5px;
+}
+.alert.a-warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.alert.a-bad{border-left-color:var(--bad);background:var(--bad-bg)}
+.alert.a-ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.alert.a-info{border-left-color:var(--info)}
+.alert .atx{min-width:0}
+.alert b{font-weight:600}
+.alert .ameta{display:block;font-size:11px;color:var(--fg-muted);margin-top:2px}
+.empty{font-size:12px;color:var(--fg-faint);padding:8px 0}
+
+/* ═══ INSIGHTS ═══════════════════════════════════════════════════════ */
+.insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.ins{background:var(--d3);border:1px solid var(--wb);border-radius:var(--rad);padding:12px 14px}
+.ins .it{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--r);margin:0 0 5px}
+.ins .iv{font-size:14px;font-weight:600;margin:0 0 3px;line-height:1.3}
+.ins .id{font-size:11.5px;color:var(--fg-muted);margin:0;line-height:1.4}
+
+/* ═══ MODEL COST TAB ═════════════════════════════════════════════════ */
+.banner{
+  display:flex;gap:11px;align-items:flex-start;padding:12px 15px;border-radius:var(--rad2);
+  background:var(--warn-bg);border:1px solid var(--wb);border-left:3px solid var(--warn);
+  font-size:12.5px;margin-bottom:14px;
+}
+.banner p{margin:0 0 5px} .banner p:last-child{margin:0}
+.mtbl input[type="number"]{width:96px}
+.mtbl td{vertical-align:middle}
+.badge{font-size:9.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:var(--rb);color:var(--r);white-space:nowrap}
+.badge.mute{background:var(--d4);color:var(--fg-faint)}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+
+/* ═══ TOOLTIP ════════════════════════════════════════════════════════ */
+#tip{
+  position:fixed;z-index:60;pointer-events:none;opacity:0;transform:translate(-50%,-100%);
+  background:var(--d2);border:1px solid var(--wb2);border-radius:var(--rad);
+  box-shadow:0 4px 20px -6px rgba(0,0,0,.4);padding:8px 11px;min-width:150px;max-width:320px;
+  transition:opacity .1s;
+}
+#tip .tt{font-size:10.5px;color:var(--fg-muted);margin-bottom:5px;font-family:Consolas,monospace;overflow-wrap:anywhere}
+#tip .tr{display:flex;align-items:center;gap:7px;font-size:11.5px;margin-top:2px}
+#tip .tk{width:11px;height:2px;border-radius:1px;flex:none}
+#tip .tn{color:var(--fg-dim)}
+#tip .tv{margin-left:auto;font-weight:600;font-family:Consolas,monospace;color:var(--fg)}
+
+@media (max-width:820px){
+  .page{padding:16px 14px 56px}
+  .topbar,.tabstrip,.filterbar{padding-left:14px;padding-right:14px}
+  .row{grid-template-columns:1fr auto;gap:2px 8px}
+  .row .rlab{grid-column:1/-1}
+  .gridlines{display:none}
+  .gantt .grow{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.topbar,.tabstrip,.filterbar{position:static}.card,.kpi{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="tm-logo"><svg
+          width="117"
+          height="44"
+          viewBox="0 0 117 44"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M45.4224 27.819C45.0131 27.9328 44.5465 27.9891 44.024 27.9891C42.7047 27.9891 42.0455 27.5126 42.0455 26.5595C42.0455 25.5613 42.773 25.0618 44.2285 25.0618C44.8195 25.0618 45.2176 25.096 45.4224 25.1641V27.819ZM43.5803 19.6499C43.0117 19.6499 42.4599 19.7009 41.926 19.803C41.3913 19.9052 40.9649 20.0472 40.6467 20.2285L40.8172 21.8282C41.295 21.6922 41.7212 21.5959 42.0965 21.539C42.4716 21.4827 42.8523 21.4538 43.2392 21.4538C44.6943 21.4538 45.4223 22.0102 45.4223 23.1216V23.4961C45.0812 23.428 44.6035 23.3941 43.9898 23.3941C42.7158 23.3941 41.7096 23.6781 40.971 24.2451C40.2317 24.8125 39.8623 25.5954 39.8623 26.5934C39.8623 28.6357 41.261 29.6569 44.0579 29.6569C45.1947 29.6569 46.3774 29.4867 47.6053 29.1462V23.2918C47.6053 20.8642 46.2633 19.6499 43.5803 19.6499Z"
+            fill="#FF5800"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M48.5947 19.8882H51.0165L53.3703 27.2403L55.7579 19.8882H58.0775L54.4617 29.4186H52.2102L48.5947 19.8882Z"
+            fill="#FF5800"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M64.1487 27.819C63.7394 27.9328 63.2731 27.9891 62.7503 27.9891C61.4313 27.9891 60.7718 27.5126 60.7718 26.5595C60.7718 25.5613 61.4993 25.0618 62.955 25.0618C63.5459 25.0618 63.944 25.096 64.1487 25.1641V27.819ZM62.3078 19.6499C61.7392 19.6499 61.1875 19.7009 60.6535 19.803C60.1191 19.9052 59.6925 20.0472 59.3742 20.2285L59.545 21.8282C60.0225 21.6922 60.4487 21.5959 60.824 21.539C61.1993 21.4827 61.5799 21.4538 61.9668 21.4538C63.4219 21.4538 64.1498 22.0102 64.1498 23.1216V23.4961C63.8088 23.428 63.3312 23.3941 62.7174 23.3941C61.4434 23.3941 60.4371 23.6781 59.6984 24.2451C58.9592 24.8125 58.5898 25.5954 58.5898 26.5934C58.5898 28.6357 59.9885 29.6569 62.7854 29.6569C63.9222 29.6569 65.1052 29.4867 66.3329 29.1462V23.2918C66.3329 20.8642 64.9908 19.6499 62.3078 19.6499Z"
+            fill="#FF5800"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M74.777 23.8028C74.777 22.9408 74.6117 22.3449 74.2823 22.0158C73.9524 21.6873 73.3667 21.5224 72.5257 21.5224C72.3209 21.5224 72.0764 21.5451 71.7922 21.5903C71.5076 21.6362 71.2407 21.6925 70.9905 21.7604V29.4189H68.7734V20.365C69.3414 20.1385 69.9897 19.9625 70.7177 19.8374C71.4452 19.713 72.1504 19.6504 72.8327 19.6504C75.6068 19.6504 76.994 20.8984 76.994 23.3943V29.4189H74.777V23.8028Z"
+            fill="#FF5800"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M84.2928 27.819C83.8835 27.9328 83.4171 27.9891 82.8943 27.9891C81.5751 27.9891 80.9161 27.5126 80.9161 26.5595C80.9161 25.5613 81.6434 25.0618 83.0991 25.0618C83.6899 25.0618 84.088 25.096 84.2928 25.1641V27.819ZM82.4524 19.6499C81.8837 19.6499 81.332 19.7009 80.798 19.803C80.2636 19.9052 79.837 20.0472 79.5188 20.2285L79.6895 21.8282C80.1671 21.6922 80.5933 21.5959 80.9686 21.539C81.3438 21.4827 81.7244 21.4538 82.1113 21.4538C83.5664 21.4538 84.2944 22.0102 84.2944 23.1216V23.4961C83.9533 23.428 83.4757 23.3941 82.8619 23.3941C81.5879 23.3941 80.5819 23.6781 79.8431 24.2451C79.1037 24.8125 78.7344 25.5954 78.7344 26.5934C78.7344 28.6357 80.133 29.6569 82.9299 29.6569C84.067 29.6569 85.2497 29.4867 86.4774 29.1462V23.2918C86.4774 20.8642 85.1354 19.6499 82.4524 19.6499Z"
+            fill="#FF5800"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M94.7312 27.6828C94.4806 27.7737 94.0261 27.819 93.3668 27.819C91.479 27.819 90.5357 26.7866 90.5357 24.7215C90.5357 23.678 90.7798 22.8723 91.2689 22.3049C91.7577 21.7379 92.4459 21.4539 93.3326 21.4539C93.8786 21.4539 94.3443 21.5336 94.7312 21.6922V27.6828ZM94.7321 16.2124V19.8543C94.3228 19.7183 93.7882 19.6502 93.1289 19.6502C91.6732 19.6502 90.4907 20.1212 89.5812 21.0627C88.6715 22.0044 88.2168 23.2358 88.2168 24.7558C88.2168 26.3442 88.6605 27.5585 89.5472 28.3977C90.4341 29.2373 91.7302 29.6569 93.4357 29.6569C94.5045 29.6569 95.6756 29.4868 96.9492 29.1465V16.2124H94.7321Z"
+            fill="#FF5800"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M101.008 23.6663C101.077 22.9403 101.298 22.3729 101.673 21.9645C102.049 21.5561 102.531 21.3517 103.123 21.3517C103.714 21.3517 104.192 21.5561 104.556 21.9645C104.919 22.3729 105.101 22.9403 105.101 23.6663H101.008ZM107.25 24.1428C107.25 22.759 106.886 21.6638 106.159 20.8581C105.431 20.0531 104.441 19.6499 103.191 19.6499C101.827 19.6499 100.74 20.1041 99.9335 21.0114C99.126 21.9191 98.7227 23.1558 98.7227 24.7214C98.7227 26.2872 99.1544 27.5013 100.019 28.3635C100.883 29.2261 102.111 29.6569 103.703 29.6569C104.748 29.6569 105.738 29.4749 106.67 29.1122L106.431 27.4444C105.635 27.7166 104.782 27.8528 103.873 27.8528C102.008 27.8528 101.053 27.0136 101.008 25.3341H107.25V24.1428Z"
+            fill="#FF5800"
+          />
+          <path
+            d="M16.2811 15.8119C15.5272 17.2558 14.9409 18.4277 14.4593 19.2856C13.9987 20.1436 13.559 20.8551 13.182 21.3992C12.7842 21.9433 12.3864 22.3827 11.9466 22.7176C11.5069 23.0524 10.9625 23.4291 10.2924 23.8476L9.91553 23.2826C10.3343 22.9687 10.7112 22.6548 11.0462 22.3618C11.3813 22.0688 11.7372 21.6294 12.1351 21.0853C12.5329 20.5412 12.9727 19.8297 13.4752 18.909C13.9777 18.0091 14.6059 16.7745 15.3597 15.2468C15.9041 14.1377 16.4067 13.217 16.8883 12.5055C17.3699 11.794 17.8306 11.229 18.2912 10.8314C18.7309 10.4129 19.1707 10.1408 19.5894 9.9734C20.0082 9.80599 20.427 9.74321 20.8667 9.76414C21.2855 9.78506 21.6834 9.8897 22.1022 10.078C22.5 10.2664 22.9607 10.643 23.4213 11.1871C23.9029 11.7312 24.4473 12.5264 25.0336 13.5518C25.6199 14.5772 26.3319 15.9374 27.1485 17.6115C27.672 18.6997 28.1745 19.5995 28.6352 20.332C29.0959 21.0644 29.5775 21.6503 30.08 22.1316C30.5825 22.6129 31.106 22.9896 31.6923 23.2826C32.2786 23.5755 32.9277 23.8267 33.6815 24.0568L34.1422 24.852C33.2418 24.7474 32.4252 24.58 31.7133 24.3289C31.0013 24.0778 30.3522 23.6802 29.745 23.157C29.1377 22.6339 28.5514 21.9642 27.9861 21.1481C27.4207 20.332 26.8344 19.2856 26.2272 18.051C25.4734 16.5443 24.8452 15.3306 24.3217 14.3889C23.7982 13.4472 23.3376 12.7148 22.9397 12.1916C22.5419 11.6684 22.165 11.3127 21.8509 11.1244C21.5368 10.936 21.2018 10.8314 20.8877 10.8314C20.5317 10.8105 20.1967 10.8942 19.8617 11.0406C19.5266 11.1871 19.1916 11.4592 18.8147 11.8568C18.4587 12.2544 18.0609 12.7566 17.663 13.4053C17.2024 14.0331 16.7627 14.8492 16.2811 15.8119Z"
+            fill="url(#paint0_linear_1_3501)"
+          />
+          <path
+            d="M27.3581 25.3331C28.4679 25.375 29.5567 25.3122 30.6246 25.1657C31.6925 25.0192 32.6557 24.789 33.4724 24.4961L33.5771 25.082C32.0904 26.0237 29.9965 26.4632 27.3162 26.3585C26.1018 26.3167 25.0548 26.1702 24.1754 25.94C23.2959 25.7098 22.5212 25.4168 21.8302 25.082C21.3276 24.8518 20.8251 24.6007 20.3644 24.3496C19.9038 24.0985 19.4222 23.8683 18.9405 23.6381C18.4589 23.4079 17.9564 23.2405 17.4539 23.094C16.9513 22.9475 16.4069 22.8638 15.8415 22.8429C15.004 22.822 14.1455 22.8847 13.287 23.0312C12.4285 23.1777 11.5699 23.4288 10.7324 23.7427L10.3555 23.3033L11.0465 22.9685C11.7165 22.5709 12.4703 22.2779 13.3498 22.0686C14.2083 21.8594 15.0668 21.7756 15.8834 21.7966C16.5325 21.8175 17.1398 21.9012 17.6842 22.0477C18.2286 22.1942 18.7521 22.3825 19.2337 22.6127C19.7153 22.8429 20.2178 23.0731 20.6994 23.3451C21.181 23.6172 21.7045 23.8683 22.228 24.0985C22.919 24.4124 23.6309 24.6635 24.4057 24.8937C25.2223 25.1657 26.2065 25.2913 27.3581 25.3331Z"
+            fill="url(#paint1_linear_1_3501)"
+          />
+          <path
+            d="M28.9493 17.3601C28.5514 17.3392 28.1955 17.4438 27.8395 17.6322C27.4835 17.8205 27.0857 18.1972 26.6041 18.7204C26.1434 19.2435 25.599 19.9759 24.9708 20.8967C24.3427 21.8175 23.5888 23.0103 22.6675 24.496C21.4321 26.505 20.2804 27.9489 19.2125 28.8278C18.1446 29.7067 17.0349 30.1462 15.8623 30.1043C14.6269 30.0624 13.4543 29.4347 12.3864 28.2628C11.2975 27.07 10.4809 25.4168 9.91553 23.3242L10.9415 23.5334C11.5069 25.2075 12.2398 26.5468 13.1192 27.5304C13.9987 28.5348 14.92 29.0371 15.9041 29.0789C16.8045 29.1208 17.7259 28.7232 18.6681 27.928C19.5894 27.1328 20.6155 25.8353 21.7462 24.0147C22.7513 22.4034 23.6098 21.085 24.3008 20.0806C24.9918 19.0761 25.599 18.2809 26.1015 17.7368C26.625 17.1718 27.1066 16.7951 27.5464 16.6068C27.9861 16.4185 28.4677 16.3348 28.9912 16.3557C30.1638 16.3975 31.2107 17.0881 32.1111 18.4483C33.0115 19.8085 33.8281 21.8802 34.5401 24.6634L33.4093 24.2031C32.7183 21.9012 32.0064 20.1852 31.2735 19.097C30.5407 17.9461 29.7659 17.3811 28.9493 17.3601Z"
+            fill="url(#paint2_linear_1_3501)"
+          />
+          <path
+            d="M24.9714 33.0762C25.5158 33.0971 26.0602 32.9088 26.5837 32.5321C27.1281 32.1554 27.7982 31.423 28.6148 30.3348C29.243 29.5187 29.7665 28.8281 30.1853 28.284C30.6041 27.74 30.981 27.2587 31.3369 26.8611C31.6929 26.4425 32.0698 26.0449 32.4467 25.6683C32.8236 25.2916 33.3052 24.8312 33.8706 24.2871L34.5197 24.6429C33.9962 25.2288 33.5565 25.731 33.2215 26.1496C32.8655 26.5681 32.5305 26.9866 32.1745 27.4261C31.8395 27.8655 31.4626 28.3468 31.0438 28.8909C30.625 29.435 30.1015 30.1256 29.4733 30.9626C28.6148 32.1345 27.8401 32.9506 27.1491 33.4529C26.479 33.9342 25.7252 34.1644 24.9295 34.1434C24.4898 34.1225 24.092 34.0597 23.7569 33.9132C23.401 33.7877 23.0031 33.5366 22.5215 33.1599C22.0609 32.7832 21.5164 32.2601 20.8883 31.5695C20.2601 30.8789 19.4644 30 18.5012 28.8909C17.7683 28.0539 17.1192 27.3633 16.5329 26.7983C15.9466 26.2333 15.3603 25.7729 14.774 25.4381C14.1877 25.0823 13.5805 24.8103 12.9314 24.6219C12.2822 24.4336 11.5284 24.2871 10.6699 24.1825L10.9212 23.4082C11.8006 23.4919 12.5963 23.5965 13.2873 23.743C13.9783 23.8895 14.6274 24.1406 15.2556 24.4964C15.8628 24.8521 16.491 25.3125 17.1192 25.8775C17.7474 26.4635 18.4593 27.1959 19.2341 28.0957C20.1973 29.2048 20.972 30.0628 21.5793 30.7324C22.1865 31.3811 22.689 31.8834 23.0869 32.2391C23.4847 32.5949 23.8198 32.8251 24.1129 32.9297C24.3851 33.0134 24.6783 33.0762 24.9714 33.0762Z"
+            fill="url(#paint3_linear_1_3501)"
+          />
+          <defs>
+            <linearGradient
+              id="paint0_linear_1_3501"
+              x1="14.3547"
+              y1="28.9476"
+              x2="32.1664"
+              y2="16.6563"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0.2" stop-color="#FF5800" />
+              <stop offset="0.2422" stop-color="#FF5800" />
+              <stop offset="0.3192" stop-color="#FFB414" />
+              <stop offset="0.3963" stop-color="#FFB414" />
+              <stop offset="0.4725" stop-color="#FFB414" />
+              <stop offset="0.5476" stop-color="#FFB414" />
+              <stop offset="0.62" stop-color="#FFB414" />
+              <stop offset="0.6597" stop-color="#FFB414" />
+              <stop offset="0.7244" stop-color="#FFB414" />
+              <stop offset="0.8061" stop-color="#FF5800" />
+              <stop offset="0.9" stop-color="#FF5800" />
+            </linearGradient>
+            <linearGradient
+              id="paint1_linear_1_3501"
+              x1="10.3746"
+              y1="26.3957"
+              x2="33.5957"
+              y2="26.3957"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0.09" stop-color="#FF5800" />
+              <stop offset="0.1898" stop-color="#FF5800" />
+              <stop offset="0.3059" stop-color="#FFB414" />
+              <stop offset="0.4034" stop-color="#FFB414" />
+              <stop offset="0.47" stop-color="#FFB414" />
+              <stop offset="0.5314" stop-color="#FFB414" />
+              <stop offset="0.6235" stop-color="#FFB414" />
+              <stop offset="0.7342" stop-color="#FF5800" />
+              <stop offset="0.82" stop-color="#FF5800" />
+            </linearGradient>
+            <linearGradient
+              id="paint2_linear_1_3501"
+              x1="5.94847"
+              y1="27.3198"
+              x2="24.573"
+              y2="40.0004"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0.5" stop-color="#FF5800" />
+              <stop offset="0.64" stop-color="#CE056A" stop-opacity="0.99" />
+              <stop offset="0.7559" stop-color="#CE056A" />
+              <stop
+                offset="0.8091"
+                stop-color="#CE056A"
+                stop-opacity="0.9955"
+              />
+              <stop
+                offset="0.8494"
+                stop-color="#CE056A"
+                stop-opacity="0.9968"
+              />
+              <stop
+                offset="0.8833"
+                stop-color="#CE056A"
+                stop-opacity="0.9978"
+              />
+              <stop
+                offset="0.9131"
+                stop-color="#FF5800"
+                stop-opacity="0.9988"
+              />
+              <stop
+                offset="0.9397"
+                stop-color="#FF5800"
+                stop-opacity="0.9997"
+              />
+              <stop offset="0.95" stop-color="#FF5800" />
+            </linearGradient>
+            <linearGradient
+              id="paint3_linear_1_3501"
+              x1="15.0882"
+              y1="34.9422"
+              x2="32.3785"
+              y2="22.9589"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#FF5800" />
+              <stop offset="0.0624571" stop-color="#FF5800" />
+              <stop offset="0.1272" stop-color="#FF5800" />
+              <stop offset="0.1929" stop-color="#DC4600" />
+              <stop offset="0.259" stop-color="#C80000" />
+              <stop offset="0.3" stop-color="#C80000" />
+              <stop offset="0.48" stop-color="#C80000" />
+              <stop offset="0.91" stop-color="#FF5800" />
+            </linearGradient>
+          </defs>
+        </svg></div>
+  <div class="tm-sep"></div>
+  <div class="tm-title">
+    <b>Migration Factory Control Tower</b>
+    <span id="tm-sub"></span>
+  </div>
+  <div class="tm-right">
+    <span class="tm-live" id="livedot" hidden><span class="dot"></span><span id="livetx"></span></span>
+    <span class="tm-stamp" id="stamp"></span>
+    <button id="btn-refresh" class="fbtn" type="button"></button>
+    <div class="langsw" id="langsw" role="group">
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="pt">PT</button>
+    </div>
+    <button id="theme-btn" type="button"><span id="theme-ic">◐</span><span id="theme-tx"></span></button>
+  </div>
+</header>
+
+<nav class="tabstrip" role="tablist" id="tabs"></nav>
+<div class="filterbar" id="filters"></div>
+<main class="page" id="view" role="tabpanel"></main>
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script>
+"use strict";
+/* Os dados vêm de /api/dashboard-data. O servidor descobre os projetos,
+   lê cada pipeline-runner-metrics.json e calcula as métricas do metrics.yaml —
+   o cliente só desenha. */
+/* i18n
+   Um unico dicionario por idioma. O padrao e `en`; a escolha do usuario
+   fica no mesmo registro de localStorage do tema. Nenhum texto visivel
+   e escrito direto no DOM  tudo passa por t(). */
+const ROOT_SOURCE = {{ root_source|tojson }};
+const LANGS = ["en","pt"];
+const I18N = {
+en:{
+  "app.subtitle":"AVA Migration Factory · dynamic discovery",
+  "lang.aria":"Language", "theme.aria":"Toggle theme",
+  "theme.light":"Light", "theme.dark":"Dark",
+  "tabs.aria":"Dashboard pages",
+  "btn.refresh":"Refresh", "btn.refreshing":"Refreshing…",
+  "stamp.loading":"loading…",
+  "stamp.summary":"{n} executions · read {at}",
+  "topbar.live":"{n} running",
+  "cur.symbol":"$",
+
+  "page.exec":"Executive Overview", "page.perf":"Pipeline Performance",
+  "page.token":"Token Analytics", "page.fin":"FinOps",
+  "page.qual":"Quality & Operations", "page.fact":"Factory Operations",
+  "page.model":"Model Cost",
+
+  "na":"unavailable", "empty.runs":"No executions in the current filter.",
+  "empty.none":"None in the current filter.",
+  "metric.unset":"metric not configured",
+  "load.failed":"Could not load the data",
+
+  "ph.executed":"Executed", "ph.degraded":"Degraded", "ph.aborted":"Aborted", "ph.skipped":"Skipped",
+  "run.completed":"Completed", "run.completed_with_warnings":"With warnings",
+  "run.aborted":"Aborted", "run.running":"Running", "run.interrupted":"Interrupted",
+  "macro.Assessment":"Assessment", "macro.Design":"Design",
+  "macro.Migration":"Migration", "macro.Other":"Other",
+  "band.high":"High", "band.mid":"Medium", "band.low":"Low",
+
+  "tip.executions":"Executions", "tip.share":"Share", "tip.value":"Value",
+  "tip.unmeasured":"not measured", "tip.execution":"Execution",
+  "tip.avgTime":"Average time", "tip.totalTime":"Total time", "tip.time":"Time",
+  "tip.pctPipeline":"% of pipeline", "tip.occurrences":"Occurrences", "tip.tokens":"Tokens",
+  "tip.input":"Input", "tip.output":"Output", "tip.total":"Total",
+  "tip.pctTotal":"% of total", "tip.cumulative":"Cumulative",
+  "tip.efficiency":"Efficiency", "tip.classification":"Classification",
+  "tip.tokensPerHour":"Tokens/hour", "tip.cost":"Cost",
+  "tip.inputCost":"Input cost", "tip.outputCost":"Output cost",
+  "tip.duration":"Duration", "tip.start":"Start", "tip.end":"End", "tip.state":"State",
+  "tip.median":"Median", "tip.minMax":"Min / Max", "tip.samples":"Samples",
+  "tip.health":"Health score", "tip.executedOf":"Executed", "tip.degraded":"Degraded",
+  "tip.bandSuffix":"{band} efficiency",
+
+  "flag.executions":"{n} executions", "flag.degraded":"{n} degraded",
+  "flag.top80":"top 80%", "flag.baseline":"default model",
+  "thresh.20time":"20% of total", "thresh.20tokens":"20% of total",
+  "thresh.20cost":"20% of cost",
+
+  "ov.desc":"Migration Factory performance, throughput and AI cost. Every number respects the filters above.",
+  "ov.sub.scope":"{n} pipeline(s) in scope",
+  "ov.sub.live":"tracked in real time",
+  "ov.sub.clean":"no warnings or failures",
+  "ov.sub.warn":"finished with degraded phases",
+  "ov.sub.bad":"aborted or failed",
+  "ov.sub.rate":"clean executions / total",
+  "ov.sub.avgTime":"average effective phase time",
+  "ov.sub.hours":"summed across all phases",
+  "ov.sub.tokens":"{n} tokens",
+  "ov.sub.pctTotal":"{p} of total",
+  "ov.sub.perPipeline":"per pipeline",
+  "ov.sub.tariff":"rate from settings.token_cost",
+  "ov.sub.rates":"{i}/M input · {o}/M output",
+  "ov.c1":"Executions per day", "ov.c1s":"Daily volume of triggered pipelines.",
+  "ov.c2":"Tokens consumed per day", "ov.c2s":"Input plus output per day.",
+  "ov.c3":"Cost per day", "ov.c3s":"Estimated cost at the current rate.",
+  "ov.c4":"Execution status distribution",
+  "ov.c4s":"From the execution_status attribute of each pipeline-runner-metrics.json.",
+  "ov.donut.center":"executions",
+  "ov.other":"Other",
+  "ov.c5":"Average execution time per project",
+  "ov.c5s":"Effective phase time divided by the project's execution count. Click to filter.",
+  "ov.table":"Executions",
+  "ov.tables":"Click a row to open its waterfall in Pipeline Performance.",
+  "col.project":"Project", "col.execution":"Execution", "col.start":"Start (UTC)",
+  "col.status":"Status", "col.effTime":"Effective time", "col.input":"Input",
+  "col.output":"Output", "col.total":"Total", "col.estCost":"Est. cost",
+  "col.date":"Date", "col.phase":"Phase", "col.state":"State", "col.tokens":"Tokens",
+  "col.endUtc":"Recorded end (UTC)", "col.occurrences":"Occurrences",
+  "col.efficiency":"Efficiency", "col.velocity":"Velocity", "col.vsAvg":"vs average",
+  "col.macro":"Macro phase", "col.phases":"Phases", "col.time":"Time",
+  "col.pctTime":"% time", "col.pctTokens":"% tokens", "col.cost":"Cost",
+  "col.model":"Model", "col.vendor":"Vendor", "col.rate":"Rate",
+  "col.inPerM":"{c}/M input", "col.outPerM":"{c}/M output",
+  "col.volumeCost":"Cost of volume", "col.vsDefault":"vs default",
+  "row.total":"Total",
+
+  "pf.desc":"Where time is spent in the DAG. SpecKit phases (F3S:*) are aggregated into the canonical F3S phase.",
+  "pf.k1":"Longest Phase", "pf.k1s":"{t} accumulated",
+  "pf.k2":"Average Phase Duration", "pf.k2s":"{n} phases measured",
+  "pf.k3":"Pipeline Lead Time", "pf.k3s":"average run window (including idle time)",
+  "pf.k4":"Pipeline Throughput", "pf.k4s":"{n} executions over {d} day(s)", "pf.perDay":"/day",
+  "pf.k5":"Total effective time", "pf.k5s":"summed across all phases",
+  "pf.c1":"Total time per phase",
+  "pf.c1s":"DAG order. The line marks 20% of total time — above it the phase is a structural bottleneck.",
+  "pf.c2":"Top 10 slowest phases", "pf.c2s":"Individual phases (F3S not aggregated), summed across executions.",
+  "pf.heat":"Heatmap — phase × execution",
+  "pf.heats":"Intensity = time spent by the phase in that execution. A neutral cell means the phase is absent or unmeasured.",
+  "pf.heat.time":"Time", "pf.heat.tokens":"Tokens",
+  "pf.wf":"Waterfall timeline — {p}",
+  "pf.wfs":"Each bar is a phase placed on the execution's real clock. Gaps between bars are idle time between resumes.",
+  "pf.drill":"Execution (drill-through)",
+  "pf.noTimes":"This execution has no reconstructed per-phase timestamps.",
+  "pf.dist":"Duration distribution per phase",
+  "pf.dists":"One dot per execution; the vertical bar marks the median. Shows whether the phase is stable or volatile.",
+
+  "tk.title":"Token Analytics — AI Observability",
+  "tk.desc":"LLM consumption per phase and per project, with derived efficiency and velocity.",
+  "tk.sub.projects":"{n} project(s) in scope",
+  "tk.sub.phases":"{n} phase(s) with consumption",
+  "tk.sub.ratio":"input per output token",
+  "tk.sub.velocity":"tokens per second of execution",
+  "tk.sub.throughput":"AI throughput",
+  "tk.c1":"Tokens consumed per phase", "tk.c1s":"Canonical phases, ordered by consumption. The line marks 20% of the total.",
+  "tk.c2":"Efficiency per phase",
+  "tk.c2s":"token_out / token_in. High ≥ 0.40 · Medium 0.15–0.40 · Low < 0.15 — low-efficiency phases spend a lot of context to produce little.",
+  "tk.c3":"Token consumption over time", "tk.c3s":"Input and output over time.",
+  "tk.c4":"Token consumption Pareto",
+  "tk.c4s":"Phases ordered by consumption, with the running total alongside. The first 80% are highlighted.",
+  "tk.c4note":"{cut} of {n} phases account for 80% of all AI consumption.",
+  "tk.c5":"Consumption per project", "tk.c5s":"Input and output per project.",
+  "tk.table":"Most AI-expensive phases", "tk.tables":"token_efficiency, token_velocity and cost per canonical phase.",
+
+  "fin.title":"FinOps — AI cost",
+  "fin.desc":"Cost = (input tokens × input rate) + (output tokens × output rate). The rate comes from settings.token_cost in metrics.yaml and applies to every page.",
+  "fin.sub.tokens":"{n} tokens", "fin.sub.runs":"{n} execution(s)",
+  "fin.sub.hours":"{t} of execution", "fin.sub.projects":"{n} project(s)",
+  "fin.k5":"Cost per Phase", "fin.k5s":"{n} canonical phases (derived)",
+  "fin.k6":"Input cost", "fin.k7":"Output cost", "fin.sub.pct":"{p} of total",
+  "fin.c1":"Cost per project", "fin.c1s":"Click to filter the dashboard by project.",
+  "fin.c2":"Cost per phase", "fin.c2s":"Canonical phase. The line marks 20% of total cost.",
+  "fin.c3":"Daily cost", "fin.c3s":"Estimated cost per day of operation.",
+  "fin.c4":"Cumulative cost", "fin.c4s":"Cumulative curve over the filtered period.",
+  "fin.table":"Top 10 most expensive executions",
+
+  "ql.desc":"Pipeline health: what degraded, what did not run and how that evolves.",
+  "ql.sub.ok":"{ok} of {n}", "ql.sub.warn":"{n} with degraded phases",
+  "ql.sub.bad":"{n} aborted or interrupted", "ql.sub.ofPhases":"of {n} phases",
+  "ql.sub.weighted":"weighted by phase count", "ql.sub.degRate":"degraded / total phases",
+  "ql.k7":"phase_failure_rate", "ql.k7s":"{n} aborted phase(s) (derived)",
+  "ql.k8":"Avg Pipeline Health Score", "ql.k8s":"simple average per execution (derived)",
+  "ql.c1":"Status per phase", "ql.c1s":"Composition of each canonical phase's states across all executions.",
+  "ql.c2":"Health score per execution", "ql.c2s":"Executed phases over configured phases. Click for the waterfall.",
+  "ql.deg":"Degraded and aborted phases",
+  "ql.notel":"Phases without telemetry",
+  "ql.notels":"They ran — as a deterministic tool or in a later resume — but persisted no metrics. Real consumption is higher than shown.",
+  "ql.trend":"Quality trend", "ql.trends":"% of phases executed without degradation, per day.",
+  "ql.cleanPhases":"Clean phases",
+
+  "fa.title":"Migration Factory Operations",
+  "fa.desc":"Phases grouped into the assembly line's macro phases. “Other” gathers F0 and the stack/summary phases that belong to none of the three blocks.",
+  "fa.kpi.sub":"{tok} tokens · {cost}",
+  "fa.c1":"Total time distribution", "fa.c1s":"Each macro phase's share of execution time.",
+  "fa.c2":"Token distribution", "fa.c2s":"AI consumption per macro phase.",
+  "fa.c3":"Cost distribution", "fa.c3s":"Estimated cost per macro phase.",
+  "fa.donut.time":"total time", "fa.donut.tokens":"tokens", "fa.donut.cost":"cost",
+  "fa.c4":"Comparative efficiency per macro phase",
+  "fa.c4s":"token_out / token_in: how much artifact each macro phase produces per unit of context consumed.",
+  "fa.table":"Macro phases in numbers",
+
+  "md.title":"Model cost simulator",
+  "md.desc":"Reprices the Factory's real token consumption with each Foundry model's rate.",
+  "md.warn1":"Only the claude-sonnet-4-6 rate comes pre-filled.",
+  "md.warn1b":" It is the only one documented in the Factory's own execution-report ({i}/M input and {o}/M output). I have no official price for the other deployments in your Foundry, and I will not invent a number that would turn into a budget decision.",
+  "md.warn2":"Enter the rates in the fields below — they are stored in this browser and feed the comparison immediately. Models without a rate stay out of the charts.",
+  "md.k1":"Repriced volume", "md.k1s":"{i} in · {o} out",
+  "md.k2":"Executions in scope", "md.k2s":"per the current filters",
+  "md.k3":"Cost on the default model",
+  "md.k4":"Rates provided", "md.k4s":"models ready to compare", "md.k4v":"{n} of {t}",
+  "md.rates":"Rates per model", "md.ratess":"Values in US$ per million tokens. Leave blank whatever you do not want to compare.",
+  "md.badge.default":"default", "md.badge.set":"provided", "md.badge.none":"no rate",
+  "md.aria.in":"{m} input cost", "md.aria.out":"{m} output cost",
+  "md.cmp":"Same volume, compared across models",
+  "md.cmps":"The real consumption of {n} tokens repriced on every model with a rate.",
+  "md.tip.rate":"Rate", "md.tip.ratev":"{i} / {o} per M",
+  "md.cheapest":"Lowest cost for the volume",
+  "md.cheapests":"{c} against {b} on {m} — a difference of {d} ({p}) for the same token consumption.",
+  "md.caveat":"Caveat", "md.caveatTitle":"Cost is not quality",
+  "md.caveats":"The switch only pays off if the model keeps the degraded-phase rate. Today the Factory runs {p} clean executions on the default model.",
+  "md.needMore":"Enter a rate for at least one more model to see the comparison.",
+  "md.perProject":"Cost per project on each model", "md.perProjects":"The same rate applied to each project's real consumption.",
+
+  "al.title":"Automatic alerts", "al.sub":"Triggered by rule over the data in the current filter.",
+  "al.none":"No alerts in the current filter.",
+  "al.slowPhase":"Phase {k} consumes {p} of total time",
+  "al.slowPhaseM":"{t} accumulated over {n} occurrence(s) — structural bottleneck of the pipeline",
+  "al.hotPhase":"Phase {k} consumes {p} of the tokens",
+  "al.hotPhaseM":"{n} tokens — candidate for reducing injected context",
+  "al.aborted":"Execution aborted — {p}",
+  "al.abortedM":"{id} · {d} · {a} aborted phase(s), {g} degraded",
+  "al.warned":"Execution with warnings — {p}",
+  "al.warnedM":"{n} degraded phase(s) out of {t} · {d}",
+  "al.costly":"Cost above average — {p}",
+  "al.costlyM":"{c} against an average of {a} ({p} above)",
+  "al.noTel":"{n} phase(s) without persisted telemetry",
+  "al.noTelM":"They ran but did not record exec_metrics — the Factory's real consumption is higher than shown",
+  "al.dup":"Duplicate file ignored: {a}",
+  "al.dupM":"Same execution as {o} ({id}) — counted only once",
+
+  "in.title":"Executive insights", "in.sub":"Conclusions derived automatically from the filtered data.",
+  "in.bottleneck":"Main bottleneck",
+  "in.bottleneckD":"{t} — {p} of all pipeline time, over {n} occurrence(s).",
+  "in.costliest":"Most expensive project",
+  "in.costliestD":"{c} over {n} execution(s) · {tok} tokens.",
+  "in.efficient":"Most efficient project",
+  "in.efficientD":"{v} tokens/hour — highest AI throughput per execution time.",
+  "in.hungry":"Highest AI consumption",
+  "in.hungryD":"{tok} tokens ({p} of the total) · {c}.",
+  "in.worst":"Lowest efficiency",
+  "in.worstD":"Output/input ratio of {e} — consumes {i} of context to produce {o}. Candidate for cutting injected context.",
+  "in.trend":"Cost trend",
+  "in.trendD":"From {a} on {da} to {b} on {db}, comparing the first and last day with executions.",
+  "in.rec":"Recommendations", "in.recN":"{n} action(s)", "in.recNone":"No critical action",
+  "in.recNoneD":"No phase exceeds the time, cost or efficiency thresholds.",
+  "in.recSplit":"parallelize or split {k}",
+  "in.recContext":"reduce injected context in {k}",
+  "in.recInstrument":"instrument the {n} phases without exec_metrics",
+
+  "fl.project":"Project", "fl.all":"All", "fl.date":"Execution date",
+  "fl.from":"Start date", "fl.to":"End date", "fl.clear":"Clear",
+  "fl.mode":"Execution mode", "fl.status":"Execution status",
+  "fl.rate":"Rate (metrics.yaml)", "fl.rateV":"{i} /M input · {o} /M output",
+  "fl.scope":"Scope: ", "fl.scopeOf":" of {n} projects · ", "fl.scopeTokens":" tokens",
+
+  "live.one":"1 execution in progress", "live.many":"{n} executions in progress",
+  "live.tracking":"tracking…", "live.next":"next read in {n}s",
+  "live.changed":"Status changed — {id}",
+  "live.outOfScope":"left the scope", "live.enteredScope":"entered the scope as {s}",
+
+  "m.total_executions":"Total Executions",
+  "m.executions_in_progress":"Running Now",
+  "m.successful_executions":"Successful Executions",
+  "m.executions_with_warnings":"Executions with Warnings",
+  "m.failed_executions":"Failed Executions",
+  "m.success_rate":"Success Rate",
+  "m.warning_rate":"Warning Rate",
+  "m.failure_rate":"Failure Rate",
+  "m.average_execution_time":"Average Execution Time",
+  "m.total_execution_hours":"Total Execution Hours",
+  "m.portfolio_total_tokens":"Total Tokens",
+  "m.portfolio_input_tokens":"Total Input Tokens",
+  "m.portfolio_output_tokens":"Total Output Tokens",
+  "m.average_tokens_per_execution":"Avg Tokens per Execution",
+  "m.average_tokens_per_phase":"Avg Tokens per Phase",
+  "m.average_cost_per_execution":"Avg Cost per Execution",
+  "m.portfolio_total_cost":"Total Estimated Cost",
+  "m.portfolio_input_output_ratio":"Input / Output Ratio",
+  "m.portfolio_token_velocity":"Token Velocity",
+  "m.portfolio_tokens_per_hour":"Tokens per Hour",
+  "m.cost_per_hour":"Cost per Hour",
+  "m.cost_per_project":"Cost per Project",
+  "m.portfolio_degraded_phases":"Degraded Phase Count",
+  "m.portfolio_weighted_health":"Weighted Health Score",
+  "m.phase_degraded_rate":"Phase Degraded Rate"
+},
+pt:{
+  "app.subtitle":"AVA Migration Factory · descoberta dinâmica",
+  "lang.aria":"Idioma", "theme.aria":"Alternar tema",
+  "theme.light":"Claro", "theme.dark":"Escuro",
+  "tabs.aria":"Páginas do dashboard",
+  "btn.refresh":"Atualizar", "btn.refreshing":"Atualizando…",
+  "stamp.loading":"carregando…",
+  "stamp.summary":"{n} execuções · leitura {at}",
+  "topbar.live":"{n} em execução",
+  "cur.symbol":"US$ ",
+
+  "page.exec":"Visão Executiva", "page.perf":"Desempenho do Pipeline",
+  "page.token":"Análise de Tokens", "page.fin":"FinOps",
+  "page.qual":"Qualidade & Operações", "page.fact":"Operações da Factory",
+  "page.model":"Custo por Modelo",
+
+  "na":"indisponível", "empty.runs":"Nenhuma execução no filtro atual.",
+  "empty.none":"Nenhuma no filtro atual.",
+  "metric.unset":"métrica não configurada",
+  "load.failed":"Não foi possível carregar os dados",
+
+  "ph.executed":"Executada", "ph.degraded":"Degradada", "ph.aborted":"Abortada", "ph.skipped":"Pulada",
+  "run.completed":"Concluída", "run.completed_with_warnings":"Com avisos",
+  "run.aborted":"Abortada", "run.running":"Em execução", "run.interrupted":"Interrompida",
+  "macro.Assessment":"Assessment", "macro.Design":"Design",
+  "macro.Migration":"Migration", "macro.Other":"Outras",
+  "band.high":"Alta", "band.mid":"Média", "band.low":"Baixa",
+
+  "tip.executions":"Execuções", "tip.share":"Participação", "tip.value":"Valor",
+  "tip.unmeasured":"sem medição", "tip.execution":"Execução",
+  "tip.avgTime":"Tempo médio", "tip.totalTime":"Tempo total", "tip.time":"Tempo",
+  "tip.pctPipeline":"% do pipeline", "tip.occurrences":"Ocorrências", "tip.tokens":"Tokens",
+  "tip.input":"Entrada", "tip.output":"Saída", "tip.total":"Total",
+  "tip.pctTotal":"% do total", "tip.cumulative":"Acumulado",
+  "tip.efficiency":"Eficiência", "tip.classification":"Classificação",
+  "tip.tokensPerHour":"Tokens/hora", "tip.cost":"Custo",
+  "tip.inputCost":"Custo entrada", "tip.outputCost":"Custo saída",
+  "tip.duration":"Duração", "tip.start":"Início", "tip.end":"Fim", "tip.state":"Estado",
+  "tip.median":"Mediana", "tip.minMax":"Mín / Máx", "tip.samples":"Amostras",
+  "tip.health":"Health score", "tip.executedOf":"Executadas", "tip.degraded":"Degradadas",
+  "tip.bandSuffix":"{band} eficiência",
+
+  "flag.executions":"{n} execuções", "flag.degraded":"{n} degradada(s)",
+  "flag.top80":"top 80%", "flag.baseline":"modelo padrão",
+  "thresh.20time":"20% do total", "thresh.20tokens":"20% do total",
+  "thresh.20cost":"20% do custo",
+
+  "ov.desc":"Desempenho, throughput e custo de IA da Migration Factory. Todos os números respeitam os filtros acima.",
+  "ov.sub.scope":"{n} pipeline(s) no escopo",
+  "ov.sub.live":"acompanhadas em tempo real",
+  "ov.sub.clean":"sem avisos ou falhas",
+  "ov.sub.warn":"concluíram com fases degradadas",
+  "ov.sub.bad":"abortadas ou com falha",
+  "ov.sub.rate":"execuções limpas / total",
+  "ov.sub.avgTime":"tempo efetivo médio de fase",
+  "ov.sub.hours":"somado em todas as fases",
+  "ov.sub.tokens":"{n} tokens",
+  "ov.sub.pctTotal":"{p} do total",
+  "ov.sub.perPipeline":"por pipeline",
+  "ov.sub.tariff":"tarifa de settings.token_cost",
+  "ov.sub.rates":"{i}/M entrada · {o}/M saída",
+  "ov.c1":"Evolução de execuções por dia", "ov.c1s":"Volume diário de pipelines disparados.",
+  "ov.c2":"Evolução de tokens consumidos por dia", "ov.c2s":"Soma de entrada e saída por dia.",
+  "ov.c3":"Evolução de custo por dia", "ov.c3s":"Custo estimado com a tarifa corrente.",
+  "ov.c4":"Distribuição de status das execuções",
+  "ov.c4s":"Pelo atributo execution_status de cada pipeline-runner-metrics.json.",
+  "ov.donut.center":"execuções",
+  "ov.other":"Outros",
+  "ov.c5":"Tempo médio de execução por projeto",
+  "ov.c5s":"Tempo efetivo de fase dividido pelo nº de execuções do projeto. Clique para filtrar.",
+  "ov.table":"Execuções",
+  "ov.tables":"Clique em uma linha para abrir o waterfall dela em Desempenho do Pipeline.",
+  "col.project":"Projeto", "col.execution":"Execução", "col.start":"Início (UTC)",
+  "col.status":"Status", "col.effTime":"Tempo efetivo", "col.input":"Entrada",
+  "col.output":"Saída", "col.total":"Total", "col.estCost":"Custo est.",
+  "col.date":"Data", "col.phase":"Fase", "col.state":"Estado", "col.tokens":"Tokens",
+  "col.endUtc":"Fim registrado (UTC)", "col.occurrences":"Ocorrências",
+  "col.efficiency":"Eficiência", "col.velocity":"Velocidade", "col.vsAvg":"vs média",
+  "col.macro":"Macrofase", "col.phases":"Fases", "col.time":"Tempo",
+  "col.pctTime":"% tempo", "col.pctTokens":"% tokens", "col.cost":"Custo",
+  "col.model":"Modelo", "col.vendor":"Vendor", "col.rate":"Tarifa",
+  "col.inPerM":"{c}/M entrada", "col.outPerM":"{c}/M saída",
+  "col.volumeCost":"Custo do volume", "col.vsDefault":"vs padrão",
+  "row.total":"Total",
+
+  "pf.desc":"Onde o tempo é gasto no DAG. Fases do SpecKit (F3S:*) são agregadas na fase canônica F3S.",
+  "pf.k1":"Fase mais longa", "pf.k1s":"{t} acumulados",
+  "pf.k2":"Duração média de fase", "pf.k2s":"{n} fases medidas",
+  "pf.k3":"Lead time do pipeline", "pf.k3s":"janela média do run (com ociosidade)",
+  "pf.k4":"Throughput do pipeline", "pf.k4s":"{n} execuções em {d} dia(s)", "pf.perDay":"/dia",
+  "pf.k5":"Tempo efetivo total", "pf.k5s":"somado em todas as fases",
+  "pf.c1":"Tempo total por fase",
+  "pf.c1s":"Ordem do DAG. A linha marca 20% do tempo total — acima dela a fase é um gargalo estrutural.",
+  "pf.c2":"Top 10 fases mais lentas", "pf.c2s":"Fases individuais (sem agregar F3S), somadas entre execuções.",
+  "pf.heat":"Heatmap — fase × execução",
+  "pf.heats":"Intensidade = tempo gasto pela fase naquela execução. Célula neutra significa fase ausente ou sem medição.",
+  "pf.heat.time":"Tempo", "pf.heat.tokens":"Tokens",
+  "pf.wf":"Waterfall timeline — {p}",
+  "pf.wfs":"Cada barra é uma fase posicionada no relógio real da execução. Vãos entre barras são ociosidade entre resumes.",
+  "pf.drill":"Execução (drill-through)",
+  "pf.noTimes":"Esta execução não tem horários reconstruídos por fase.",
+  "pf.dist":"Distribuição de duração por fase",
+  "pf.dists":"Um ponto por execução; a barra vertical marca a mediana. Mostra se a fase é estável ou volátil.",
+
+  "tk.title":"Análise de Tokens — Observabilidade de IA",
+  "tk.desc":"Consumo de LLM por fase e por projeto, com eficiência e velocidade derivadas.",
+  "tk.sub.projects":"{n} projeto(s) no escopo",
+  "tk.sub.phases":"{n} fase(s) com consumo",
+  "tk.sub.ratio":"entrada por token de saída",
+  "tk.sub.velocity":"tokens por segundo de execução",
+  "tk.sub.throughput":"throughput de IA",
+  "tk.c1":"Tokens consumidos por fase", "tk.c1s":"Fases canônicas, ordenadas por consumo. A linha marca 20% do total.",
+  "tk.c2":"Eficiência por fase",
+  "tk.c2s":"token_out / token_in. Alta ≥ 0,40 · Média 0,15–0,40 · Baixa < 0,15 — fases de baixa eficiência gastam muito contexto para gerar pouco.",
+  "tk.c3":"Evolução do consumo de tokens", "tk.c3s":"Entrada e saída ao longo do tempo.",
+  "tk.c4":"Pareto de consumo de tokens",
+  "tk.c4s":"Fases ordenadas por consumo, com o acumulado ao lado. Destacadas as que somam os primeiros 80%.",
+  "tk.c4note":"{cut} de {n} fases concentram 80% de todo o consumo de IA.",
+  "tk.c5":"Distribuição de consumo por projeto", "tk.c5s":"Entrada e saída por projeto.",
+  "tk.table":"Fases mais caras em IA", "tk.tables":"token_efficiency, token_velocity e custo por fase canônica.",
+
+  "fin.title":"FinOps — custo de IA",
+  "fin.desc":"Custo = (tokens de entrada × tarifa in) + (tokens de saída × tarifa out). A tarifa vem de settings.token_cost no metrics.yaml e vale para todas as páginas.",
+  "fin.sub.tokens":"{n} tokens", "fin.sub.runs":"{n} execução(ões)",
+  "fin.sub.hours":"{t} de execução", "fin.sub.projects":"{n} projeto(s)",
+  "fin.k5":"Custo por fase", "fin.k5s":"{n} fases canônicas (derivado)",
+  "fin.k6":"Custo de entrada", "fin.k7":"Custo de saída", "fin.sub.pct":"{p} do total",
+  "fin.c1":"Custo por projeto", "fin.c1s":"Clique para filtrar o dashboard por projeto.",
+  "fin.c2":"Custo por fase", "fin.c2s":"Fase canônica. A linha marca 20% do custo total.",
+  "fin.c3":"Evolução do custo diário", "fin.c3s":"Custo estimado por dia de operação.",
+  "fin.c4":"Custo acumulado", "fin.c4s":"Curva acumulada no período filtrado.",
+  "fin.table":"Top 10 execuções mais caras",
+
+  "ql.desc":"Saúde do pipeline: o que degradou, o que não rodou e como isso evolui.",
+  "ql.sub.ok":"{ok} de {n}", "ql.sub.warn":"{n} com fases degradadas",
+  "ql.sub.bad":"{n} abortada(s) ou interrompida(s)", "ql.sub.ofPhases":"de {n} fases",
+  "ql.sub.weighted":"ponderado pelo nº de fases", "ql.sub.degRate":"degradadas / total de fases",
+  "ql.k7":"phase_failure_rate", "ql.k7s":"{n} fase(s) abortada(s) (derivado)",
+  "ql.k8":"Health score médio do pipeline", "ql.k8s":"média simples por execução (derivado)",
+  "ql.c1":"Status por fase", "ql.c1s":"Composição de estados de cada fase canônica em todas as execuções.",
+  "ql.c2":"Health score por execução", "ql.c2s":"Fases executadas sobre fases configuradas. Clique para o waterfall.",
+  "ql.deg":"Fases degradadas e abortadas",
+  "ql.notel":"Fases sem telemetria",
+  "ql.notels":"Rodaram — como ferramenta determinística ou em resume posterior — mas não tiveram métricas persistidas. O consumo real é maior que o exibido.",
+  "ql.trend":"Tendência de qualidade", "ql.trends":"% de fases executadas sem degradação, por dia.",
+  "ql.cleanPhases":"Fases limpas",
+
+  "fa.title":"Operações da Migration Factory",
+  "fa.desc":"As fases agrupadas nas macrofases da esteira. “Outras” reúne F0 e as fases de stack/summary que não pertencem aos três blocos.",
+  "fa.kpi.sub":"{tok} tokens · {cost}",
+  "fa.c1":"Distribuição do tempo total", "fa.c1s":"Participação de cada macrofase no tempo de execução.",
+  "fa.c2":"Distribuição dos tokens", "fa.c2s":"Consumo de IA por macrofase.",
+  "fa.c3":"Distribuição dos custos", "fa.c3s":"Custo estimado por macrofase.",
+  "fa.donut.time":"tempo total", "fa.donut.tokens":"tokens", "fa.donut.cost":"custo",
+  "fa.c4":"Eficiência comparativa por macrofase",
+  "fa.c4s":"token_out / token_in: quanto de artefato cada macrofase gera por unidade de contexto consumido.",
+  "fa.table":"Macrofases em números",
+
+  "md.title":"Simulador de custo por modelo",
+  "md.desc":"Reprecifica o consumo real de tokens da Factory com a tarifa de cada modelo do Foundry.",
+  "md.warn1":"Só a tarifa do claude-sonnet-4-6 vem preenchida.",
+  "md.warn1b":" É a única documentada nos próprios execution-report da Factory ({i}/M entrada e {o}/M saída). Não tenho preço oficial dos outros deployments do seu Foundry, e não vou inventar número que viraria decisão de budget.",
+  "md.warn2":"Informe as tarifas nos campos abaixo — elas ficam salvas neste navegador e alimentam a comparação na hora. Modelos sem tarifa ficam fora dos gráficos.",
+  "md.k1":"Volume reprecificado", "md.k1s":"{i} in · {o} out",
+  "md.k2":"Execuções no escopo", "md.k2s":"conforme filtros",
+  "md.k3":"Custo no modelo padrão",
+  "md.k4":"Tarifas informadas", "md.k4s":"modelos prontos p/ comparar", "md.k4v":"{n} de {t}",
+  "md.rates":"Tarifas por modelo", "md.ratess":"Valores em US$ por 1 milhão de tokens. Deixe em branco o que você não quiser comparar.",
+  "md.badge.default":"padrão", "md.badge.set":"informada", "md.badge.none":"sem tarifa",
+  "md.aria.in":"{m} custo de entrada", "md.aria.out":"{m} custo de saída",
+  "md.cmp":"Custo comparado do mesmo volume",
+  "md.cmps":"O consumo real de {n} tokens reprecificado em cada modelo com tarifa informada.",
+  "md.tip.rate":"Tarifa", "md.tip.ratev":"{i} / {o} por M",
+  "md.cheapest":"Menor custo do volume",
+  "md.cheapests":"{c} contra {b} no {m} — diferença de {d} ({p}) para o mesmo consumo de tokens.",
+  "md.caveat":"Ressalva", "md.caveatTitle":"Custo não é qualidade",
+  "md.caveats":"A troca só vale se o modelo mantiver a taxa de fases degradadas. Hoje a Factory roda {p} de execuções limpas com o modelo padrão.",
+  "md.needMore":"Informe a tarifa de pelo menos mais um modelo para ver a comparação.",
+  "md.perProject":"Custo por projeto em cada modelo", "md.perProjects":"Mesma tarifa aplicada ao consumo real de cada projeto.",
+
+  "al.title":"Alertas automáticos", "al.sub":"Disparados por regra sobre os dados no filtro atual.",
+  "al.none":"Nenhum alerta no filtro atual.",
+  "al.slowPhase":"Fase {k} consome {p} do tempo total",
+  "al.slowPhaseM":"{t} acumulados em {n} ocorrência(s) — gargalo estrutural do pipeline",
+  "al.hotPhase":"Fase {k} consome {p} dos tokens",
+  "al.hotPhaseM":"{n} tokens — candidata a redução de contexto injetado",
+  "al.aborted":"Execução abortada — {p}",
+  "al.abortedM":"{id} · {d} · {a} fase(s) abortada(s), {g} degradada(s)",
+  "al.warned":"Execução com avisos — {p}",
+  "al.warnedM":"{n} fase(s) degradada(s) em {t} · {d}",
+  "al.costly":"Custo acima da média — {p}",
+  "al.costlyM":"{c} contra média de {a} ({p} acima)",
+  "al.noTel":"{n} fase(s) sem telemetria persistida",
+  "al.noTelM":"Rodaram mas não gravaram exec_metrics — o consumo real da Factory é maior que o exibido",
+  "al.dup":"Arquivo duplicado ignorado: {a}",
+  "al.dupM":"Mesma execução de {o} ({id}) — contada uma única vez",
+
+  "in.title":"Insights executivos", "in.sub":"Conclusões derivadas automaticamente dos dados filtrados.",
+  "in.bottleneck":"Principal gargalo",
+  "in.bottleneckD":"{t} — {p} de todo o tempo de pipeline, em {n} ocorrência(s).",
+  "in.costliest":"Projeto mais caro",
+  "in.costliestD":"{c} em {n} execução(ões) · {tok} tokens.",
+  "in.efficient":"Projeto mais eficiente",
+  "in.efficientD":"{v} tokens/hora — maior throughput de IA por tempo de execução.",
+  "in.hungry":"Maior consumo de IA",
+  "in.hungryD":"{tok} tokens ({p} do total) · {c}.",
+  "in.worst":"Menor eficiência",
+  "in.worstD":"Razão saída/entrada de {e} — consome {i} de contexto para gerar {o}. Candidata a corte de contexto injetado.",
+  "in.trend":"Tendência de custo",
+  "in.trendD":"De {a} em {da} para {b} em {db}, comparando o primeiro e o último dia com execução.",
+  "in.rec":"Recomendações", "in.recN":"{n} ação(ões)", "in.recNone":"Sem ação crítica",
+  "in.recNoneD":"Nenhuma fase ultrapassa os limiares de tempo, custo ou eficiência.",
+  "in.recSplit":"paralelizar ou dividir {k}",
+  "in.recContext":"reduzir contexto injetado em {k}",
+  "in.recInstrument":"instrumentar as {n} fases sem exec_metrics",
+
+  "fl.project":"Projeto", "fl.all":"Todos", "fl.date":"Data de execução",
+  "fl.from":"Data inicial", "fl.to":"Data final", "fl.clear":"Limpar",
+  "fl.mode":"Modo de execução", "fl.status":"Status da execução",
+  "fl.rate":"Tarifa (metrics.yaml)", "fl.rateV":"{i} /M entrada · {o} /M saída",
+  "fl.scope":"Escopo: ", "fl.scopeOf":" de {n} projetos · ", "fl.scopeTokens":" tokens",
+
+  "live.one":"1 execução em andamento", "live.many":"{n} execuções em andamento",
+  "live.tracking":"acompanhando…", "live.next":"próxima leitura em {n}s",
+  "live.changed":"Status mudou — {id}",
+  "live.outOfScope":"saiu do escopo", "live.enteredScope":"entrou no escopo como {s}",
+
+  "m.total_executions":"Total de Execuções",
+  "m.executions_in_progress":"Em Execução Agora",
+  "m.successful_executions":"Execuções Bem-Sucedidas",
+  "m.executions_with_warnings":"Execuções com Avisos",
+  "m.failed_executions":"Execuções com Falha",
+  "m.success_rate":"Taxa de Sucesso",
+  "m.warning_rate":"Taxa de Avisos",
+  "m.failure_rate":"Taxa de Falhas",
+  "m.average_execution_time":"Tempo Médio de Execução",
+  "m.total_execution_hours":"Horas Totais de Execução",
+  "m.portfolio_total_tokens":"Tokens Totais",
+  "m.portfolio_input_tokens":"Tokens de Entrada",
+  "m.portfolio_output_tokens":"Tokens de Saída",
+  "m.average_tokens_per_execution":"Média de Tokens por Execução",
+  "m.average_tokens_per_phase":"Média de Tokens por Fase",
+  "m.average_cost_per_execution":"Custo Médio por Execução",
+  "m.portfolio_total_cost":"Custo Estimado Total",
+  "m.portfolio_input_output_ratio":"Razão Entrada / Saída",
+  "m.portfolio_token_velocity":"Velocidade de Tokens",
+  "m.portfolio_tokens_per_hour":"Tokens por Hora",
+  "m.cost_per_hour":"Custo por Hora",
+  "m.cost_per_project":"Custo por Projeto",
+  "m.portfolio_degraded_phases":"Fases Degradadas",
+  "m.portfolio_weighted_health":"Health Score Ponderado",
+  "m.phase_degraded_rate":"Taxa de Fases Degradadas"
+}
+};
+
+/* Idioma corrente. Padrao `en` - o dashboard abre em ingles para qualquer
+   navegador; a escolha do usuario sobrepoe e persiste. */
+let LANG = "en";
+try{ const boot=JSON.parse(localStorage.getItem("mfct.v2")||"{}");
+     if(LANGS.indexOf(boot.lang)>=0) LANG=boot.lang; }catch(e){}
+
+/* t("chave", {var:valor}) - cai para `en` e depois para a propria chave,
+   de modo que uma traducao faltando nunca apaga um rotulo da tela. */
+function t(key, vars){
+  let out = I18N[LANG][key];
+  if(out===undefined) out = I18N.en[key];
+  if(out===undefined) return key;
+  if(vars) for(const k in vars) out = out.split("{"+k+"}").join(vars[k]);
+  return out;
+}
+const LOC = () => LANG==="pt" ? "pt-BR" : "en-US";
+const CUR = () => t("cur.symbol");
+
+let DATA = {runs:[],portfolio_metrics:[],projects:[],
+            facets:{projects:[],statuses:[],modes:[]},
+            duplicates:[],warnings:[],settings:{},generated_at:"",total_projects:0};
+
+/* ═══════════════════ helpers ═══════════════════ */
+const nf   = n => Math.round(n).toLocaleString(LOC());
+const nf1  = n => n.toLocaleString(LOC(),{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2  = n => n.toLocaleString(LOC(),{minimumFractionDigits:2,maximumFractionDigits:2});
+const usd  = v => CUR() + nf2(v);
+const usd0 = v => CUR() + nf(v);
+const pct  = v => nf1(v) + "%";
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function hms(s){ s=Math.round(s);
+  return String(Math.floor(s/3600)).padStart(2,"0")+":"+String(Math.floor(s%3600/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function dur(s){ s=Math.round(s);
+  if(!s) return "0s";
+  if(s<60) return s+"s";
+  const m=Math.floor(s/60); if(m<60) return (s%60)? m+"m "+(s%60)+"s" : m+"m";
+  return Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m"; }
+function compact(n){
+  if(!n) return "0";
+  if(n>=1e9) return nf2(n/1e9)+" B";
+  if(n>=1e6) return nf2(n/1e6)+" M";
+  if(n>=1e3) return nf(n/1e3)+" k";
+  return nf(n); }
+function el(t,c,x){ const n=document.createElement(t); if(c) n.className=c; if(x!==undefined) n.textContent=x; return n; }
+function frag(){ return document.createDocumentFragment(); }
+function dmy(iso){ const [y,m,d]=iso.slice(0,10).split("-");
+  return LANG==="pt" ? d+"/"+m : m+"/"+d; }
+function ts(v){ return v ? v.replace("T"," ").replace("Z","") : "—"; }
+
+const TIME_STEPS=[10,15,30,60,120,300,600,900,1800,3600,7200,10800,21600,43200,86400,172800];
+function ticks(v,kind){
+  const raw=Math.max(v,1e-9)/5; let step;
+  if(kind==="time"){ step=TIME_STEPS.find(s=>s>=raw)||Math.ceil(raw/86400)*86400; }
+  else{ const e=Math.pow(10,Math.floor(Math.log10(Math.max(raw,1e-9))));
+        step=[1,2,2.5,5,10].map(m=>m*e).find(s=>s>=raw)||10*e;
+        if(kind==="count") step=Math.max(1,Math.round(step)); }
+  const max=Math.max(Math.ceil(Math.max(v,1e-9)/step)*step,step), list=[];
+  for(let v=0;v<=max+1e-9;v+=step) list.push(v);
+  return {max,list}; }
+
+/* ═══════════════════ modelo de dados ═══════════════════ */
+const MACRO = [
+  {key:"Assessment", phases:["F1","F1a","F1b","F1c","F1d","F1e","F1f"]},
+  {key:"Design",     phases:["F2a","F2b","F2c","F2d"]},
+  {key:"Migration",  phases:["F3","F3S","F4","F4S"]}
+];
+const MACRO_OF = (()=>{ const m={}; MACRO.forEach(g=>g.phases.forEach(p=>m[p]=g.key)); return m; })();
+const canon = name => name.split(":")[0];
+const macroOf = name => MACRO_OF[canon(name)] || "Other";
+const macroLabel = key => t("macro."+key);
+
+const ST = {
+  executed:{key:"ph.executed", glyph:"✓", cls:"ok"},
+  degraded:{key:"ph.degraded", glyph:"!", cls:"warn"},
+  aborted :{key:"ph.aborted",  glyph:"×", cls:"bad"},
+  skipped :{key:"ph.skipped",  glyph:"–", cls:"mute"}
+};
+const RUNST = {
+  completed:{key:"run.completed",                           cls:"ok",   glyph:"✓"},
+  completed_with_warnings:{key:"run.completed_with_warnings", cls:"warn", glyph:"!"},
+  aborted:{key:"run.aborted",                               cls:"bad",  glyph:"×"},
+  running:{key:"run.running",                               cls:"live", glyph:"●"},
+  interrupted:{key:"run.interrupted",                       cls:"mute", glyph:"–"}
+};
+/* Rotulo de um estado — de fase (ST) ou de execucao (RUNST). Um status
+   desconhecido volta cru, que ainda diz mais ao operador do que vazio. */
+const stLabel  = s => ST[s]    ? t(ST[s].key)    : s;
+const runLabel = s => RUNST[s] ? t(RUNST[s].key) : s;
+
+/* fase que rodou mas não teve métrica persistida */
+const noTel = p => p.status==="executed" && p.duration_seconds===0 && p.token_usage.total_tokens===0;
+
+let RUNS = [];
+let METRICS = {};                 // métricas de portfólio do metrics.yaml, por id
+
+function buildRuns(){
+  RUNS = (DATA.runs || []).map(r=>{
+    const ph = r.phase_metrics || [];
+    const tk = r.token_metrics || {};
+    return {
+      raw:r, id:r.execution_id, project:r.project_name || r.project_id,
+      projectId:r.project_id, archive:r.project_id,
+      mode:r.execution_mode, status:r.execution_status,
+      date:(r.start_time_utc||"").slice(0,10),
+      start:r.start_time_utc||"", end:r.end_time_utc||"",
+      wall:r.total_duration_seconds||0,
+      effective:ph.reduce((a,p)=>a+(p.duration_seconds||0),0),
+      tin:tk.token_in||0, tout:tk.token_out||0, total:tk.total_tokens||0,
+      phases:ph,
+      nDeg:ph.filter(p=>p.status==="degraded").length,
+      nAb:ph.filter(p=>p.status==="aborted").length,
+      nSk:ph.filter(p=>p.status==="skipped").length,
+      nOk:ph.filter(p=>p.status==="executed").length,
+      nNoTel:ph.filter(noTel).length
+    };
+  }).sort((a,b)=> a.start < b.start ? -1 : 1);
+  METRICS = {};
+  (DATA.portfolio_metrics || []).forEach(m => METRICS[m.id] = m);
+}
+
+/* ═══════════════════ estado / filtros ═══════════════════ */
+const LS="mfct.v2";
+const state = {
+  tab:0, projects:new Set(), dateFrom:"", dateTo:"", mode:"", status:"",
+  drill:null, heatMetric:"time", models:{}, loading:false, error:null,
+  lastStatuses:null,     // execution_status por projeto na leitura anterior
+  changes:[],            // transições detectadas no último refresh
+  timer:null, nextAt:null, tick:null
+};
+try{ const s=JSON.parse(localStorage.getItem(LS)||"{}");
+     if(s.models) state.models=s.models;
+     if(s.theme) document.documentElement.setAttribute("data-theme",s.theme);
+}catch(e){}
+function save(){ try{ localStorage.setItem(LS,JSON.stringify({
+  models:state.models, lang:LANG,
+  theme:document.documentElement.getAttribute("data-theme")||undefined })); }catch(e){} }
+
+/* Tarifa vem do metrics.yaml (settings.token_cost) — não do navegador. */
+function rates(){
+  const c=(DATA.settings||{}).token_cost||{};
+  return {i:Number(c.input_per_million)||0, o:Number(c.output_per_million)||0};
+}
+const cost = (i,o,ri,ro) => {
+  const r=rates();
+  return i*(ri===undefined?r.i:ri)/1e6 + o*(ro===undefined?r.o:ro)/1e6;
+};
+const runCost = r => cost(r.tin,r.tout);
+
+/* O servidor já devolve apenas os runs do filtro corrente. */
+function scope(){ return RUNS; }
+
+/* ── KPI vindo do metrics.yaml ────────────────────────────────────── */
+function M(id){ return METRICS[id]; }
+/* O metrics.yaml e a fonte da metrica, nao do idioma: o nome exibido vem
+   do dicionario quando ha traducao para o id, senao cai no `name` do YAML. */
+function mName(m){ const k="m."+m.id; const v=t(k); return v===k ? m.name : v; }
+function fmtMetric(m){
+  if(!m || !m.available || m.value===null || m.value===undefined) return t("na");
+  const v=m.value, f=m.format;
+  if(f==="integer")    return nf(v);
+  if(f==="decimal")    return nf2(v);
+  if(f==="percentage") return pct(v);
+  if(f==="currency")   return usd(v);
+  if(f==="duration")   return hms(v);
+  if(f==="breakdown" && v && typeof v==="object")
+    return Object.keys(v).map(k=>k+": "+v[k]).join(" · ");
+  return String(v);
+}
+/* [rótulo, valor, sublinha, realce] — o rótulo é o `name` do metrics.yaml */
+function kpiM(id, sub, cls){
+  const m=M(id);
+  if(!m) return [id, "—", t("metric.unset"), "mute"];
+  return [mName(m), fmtMetric(m),
+          sub!==undefined ? sub : (m.description||""),
+          m.available ? (cls||null) : "mute"];
+}
+
+/* agregações reutilizadas */
+function byPhase(runs,keyFn){
+  const m=new Map();
+  runs.forEach(r=>r.phases.forEach(p=>{
+    const k=keyFn(p.phase_name);
+    let o=m.get(k); if(!o){ o={key:k,time:0,tin:0,tout:0,n:0,deg:0,noTel:0,runs:new Set(),durs:[]}; m.set(k,o); }
+    o.time+=p.duration_seconds; o.tin+=p.token_usage.token_in; o.tout+=p.token_usage.token_out;
+    o.n++; o.runs.add(r.id); if(p.status==="degraded") o.deg++; if(noTel(p)) o.noTel++;
+    if(p.duration_seconds>0) o.durs.push(p.duration_seconds);
+  }));
+  return [...m.values()].map(o=>Object.assign(o,{tokens:o.tin+o.tout,cost:cost(o.tin,o.tout)}));
+}
+function byProject(runs){
+  const m=new Map();
+  runs.forEach(r=>{ let o=m.get(r.project);
+    if(!o){ o={key:r.project,time:0,wall:0,tin:0,tout:0,n:0,deg:0,runs:[]}; m.set(r.project,o); }
+    o.time+=r.effective; o.wall+=r.wall; o.tin+=r.tin; o.tout+=r.tout; o.n++; o.deg+=r.nDeg; o.runs.push(r); });
+  return [...m.values()].map(o=>Object.assign(o,{tokens:o.tin+o.tout,cost:cost(o.tin,o.tout)}));
+}
+function byDay(runs){
+  const m=new Map();
+  runs.forEach(r=>{ let o=m.get(r.date);
+    if(!o){ o={key:r.date,n:0,tin:0,tout:0,time:0}; m.set(r.date,o); }
+    o.n++; o.tin+=r.tin; o.tout+=r.tout; o.time+=r.effective; });
+  return [...m.values()].sort((a,b)=>a.key<b.key?-1:1)
+    .map(o=>Object.assign(o,{tokens:o.tin+o.tout,cost:cost(o.tin,o.tout)}));
+}
+const sum = (a,f) => a.reduce((s,x)=>s+f(x),0);
+
+/* ═══════════════════ tooltip ═══════════════════ */
+const tip=document.getElementById("tip");
+function showTip(ev,title,rows){
+  tip.replaceChildren();
+  if(title) tip.appendChild(el("div","tt",title));
+  rows.forEach(r=>{
+    const n=el("div","tr"); const k=el("span","tk"); k.style.background=r.color||"transparent";
+    n.appendChild(k); n.appendChild(el("span","tn",r.name)); n.appendChild(el("span","tv",r.value)); tip.appendChild(n);
+  });
+  tip.style.opacity="1"; moveTip(ev);
+}
+function moveTip(ev){
+  const h=ev.currentTarget||ev.target, b=h.getBoundingClientRect();
+  const x=(ev.clientX&&ev.clientX>0)?ev.clientX:b.left+b.width/2;
+  tip.style.left=Math.min(Math.max(x,120),window.innerWidth-120)+"px";
+  tip.style.top=Math.max(b.top-8,90)+"px";
+}
+function hideTip(){ tip.style.opacity="0"; }
+function bindTip(node,title,rows){
+  node.tabIndex=0;
+  node.addEventListener("pointerenter",e=>showTip(e,title,typeof rows==="function"?rows():rows));
+  node.addEventListener("pointermove",moveTip);
+  node.addEventListener("pointerleave",hideTip);
+  node.addEventListener("focus",e=>showTip(e,title,typeof rows==="function"?rows():rows));
+  node.addEventListener("blur",hideTip);
+}
+
+/* ═══════════════════ gráfico de barras horizontais ═══════════════════ */
+function hbars(items,opts){
+  const o=Object.assign({labelWidth:150,valueWidth:80,fmt:nf,kind:null,threshold:null,onClick:null},opts);
+  const totals=items.map(i=>i.segs.reduce((a,s)=>a+s.v,0));
+  const sc=ticks(Math.max.apply(null,totals.concat([1e-9])),o.kind);
+  const peak=Math.max.apply(null,totals);
+  const labelAll=items.length<=6;
+
+  const plot=el("div","plot");
+  plot.style.setProperty("--labw",o.labelWidth+"px");
+  plot.style.setProperty("--valw",o.valueWidth+"px");
+  const grid=el("div","gridlines");
+  grid.style.left="calc("+o.labelWidth+"px + 12px)";
+  grid.style.right="calc("+o.valueWidth+"px + 12px)";
+  sc.list.forEach((t,i)=>{ const g=el("span",i===0?"zero":""); g.style.left=(t/sc.max*100)+"%"; grid.appendChild(g); });
+  if(o.threshold!==null && o.threshold<=sc.max){
+    const th=el("div","thresh"); th.style.left=(o.threshold/sc.max*100)+"%";
+    th.setAttribute("data-label",o.thresholdLabel||""); grid.appendChild(th);
+  }
+
+  const rows=el("div","rows");
+  items.forEach((it,idx)=>{
+    const total=totals[idx];
+    const row=el("div","row"+(o.onClick?" clickable":""));
+    const lab=el("div","rlab"); lab.appendChild(document.createTextNode(it.label));
+    if(it.flag) lab.appendChild(el("span","flag",it.flag));
+    row.appendChild(lab);
+
+    const track=el("div","track");
+    const drawn=it.segs.filter(s=>s.v>0);
+    if(drawn.length){
+      const bar=el("div","bar"); bar.style.width=(total/sc.max*100)+"%";
+      drawn.forEach(s=>{ const g=el("div","seg"); g.style.background=s.color; g.style.flex=s.v+" 1 0"; bar.appendChild(g); });
+      track.appendChild(bar);
+    } else track.appendChild(el("span","rval","—"));
+    row.appendChild(track);
+
+    const val=el("div","rval"+(total===peak?" hi":""));
+    if(drawn.length && (labelAll||total===peak||it.forceLabel)) val.textContent=o.fmt(total);
+    row.appendChild(val);
+
+    bindTip(row,it.label,it.tipRows||it.segs.map(s=>({color:s.color,name:s.name,value:o.fmt(s.v)})));
+    if(o.onClick){ row.addEventListener("click",()=>o.onClick(it));
+      row.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();o.onClick(it);} }); }
+    rows.appendChild(row);
+  });
+
+  plot.appendChild(grid); plot.appendChild(rows);
+  const axis=el("div","axis");
+  axis.style.marginLeft="calc("+o.labelWidth+"px + 12px)";
+  axis.style.marginRight="calc("+o.valueWidth+"px + 12px)";
+  sc.list.forEach((t,i)=>{
+    const s=el("span",i===0?"first":(i===sc.list.length-1?"last":""),o.axisFmt?o.axisFmt(t):compact(t));
+    s.style.left=(t/sc.max*100)+"%"; axis.appendChild(s);
+  });
+  const box=el("div"); box.appendChild(plot); box.appendChild(axis); return box;
+}
+
+/* ═══════════════════ gráfico de linha / área ═══════════════════ */
+/* Desenha 1 unidade SVG = 1 pixel, medindo o container. Sem isso o viewBox
+   fixo esticaria horizontalmente e deformaria os rótulos dos eixos. */
+function trend(xLabels,series,opts){
+  const o=Object.assign({fmt:compact,kind:null,height:190,area:true},opts);
+  const wrap=el("div","svgwrap");
+  const draw=w=>{ wrap.replaceChildren(drawTrend(Math.max(w||760,320),xLabels,series,o)); };
+  if(typeof ResizeObserver==="function"){
+    let last=0;
+    new ResizeObserver(es=>{
+      const w=Math.round(es[0].contentRect.width);
+      if(w && Math.abs(w-last)>1){ last=w; draw(w); }
+    }).observe(wrap);
+  }
+  draw(760);
+  return wrap;
+}
+function drawTrend(W,xLabels,series,o){
+  const H=o.height,PL=52,PR=16,PT=12,PB=26;
+  const maxV=Math.max.apply(null,series.flatMap(s=>s.points).concat([1e-9]));
+  const sc=ticks(maxV,o.kind);
+  const n=xLabels.length;
+  const X=i=> n<=1 ? PL+(W-PL-PR)/2 : PL+(W-PL-PR)*i/(n-1);
+  const Y=v=> H-PB-(H-PB-PT)*(v/sc.max);
+
+  const NS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("class","chart"); svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width",W); svg.setAttribute("height",H); svg.setAttribute("role","img");
+  const mk=(t,a)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); return e; };
+
+  sc.list.forEach(t=>{
+    svg.appendChild(mk("line",{class:"gl",x1:PL,x2:W-PR,y1:Y(t),y2:Y(t)}));
+    const lb=mk("text",{class:"tick",x:PL-7,y:Y(t)+3.5,"text-anchor":"end"});
+    lb.textContent=o.fmt(t); svg.appendChild(lb);
+  });
+  svg.appendChild(mk("line",{class:"ax",x1:PL,x2:W-PR,y1:Y(0),y2:Y(0)}));
+
+  xLabels.forEach((lb,i)=>{
+    const t=mk("text",{class:"tick",x:X(i),y:H-8,"text-anchor":"middle"});
+    t.textContent=lb; svg.appendChild(t);
+  });
+
+  series.forEach(s=>{
+    const pts=s.points.map((v,i)=>X(i)+","+Y(v)).join(" ");
+    if(o.area && series.length===1){
+      svg.appendChild(mk("polygon",{class:"area",fill:s.color,
+        points:X(0)+","+Y(0)+" "+pts+" "+X(n-1)+","+Y(0)}));
+    }
+    svg.appendChild(mk("polyline",{class:"ln",stroke:s.color,points:pts}));
+    s.points.forEach((v,i)=> svg.appendChild(mk("circle",{class:"dot",cx:X(i),cy:Y(v),r:4,fill:s.color})));
+  });
+
+  const hair=mk("line",{class:"hair",x1:0,x2:0,y1:PT,y2:H-PB,opacity:0}); svg.appendChild(hair);
+  xLabels.forEach((lb,i)=>{
+    const hw=(W-PL-PR)/Math.max(n,1);
+    const hit=mk("rect",{x:X(i)-hw/2,y:PT,width:hw,height:H-PB-PT,fill:"transparent"});
+    hit.style.cursor="crosshair";
+    const rows=()=>series.map(s=>({color:s.color,name:s.name,value:o.fmt(s.points[i])}));
+    hit.addEventListener("pointerenter",e=>{ hair.setAttribute("x1",X(i)); hair.setAttribute("x2",X(i));
+      hair.setAttribute("opacity",1); showTip(e,o.titles?o.titles[i]:lb,rows()); });
+    hit.addEventListener("pointermove",moveTip);
+    hit.addEventListener("pointerleave",()=>{ hair.setAttribute("opacity",0); hideTip(); });
+    svg.appendChild(hit);
+  });
+
+  return svg;
+}
+
+/* ═══════════════════ donut ═══════════════════ */
+function donut(items,centerLabel,centerValue){
+  const NS="http://www.w3.org/2000/svg", S=200, R=76, IR=50, C=S/2;
+  const tot=items.reduce((a,i)=>a+i.value,0)||1;
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("class","chart"); svg.setAttribute("viewBox","0 0 "+S+" "+S);
+  svg.style.maxWidth="220px"; svg.style.margin="0 auto";
+  const mk=(t,a)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); return e; };
+  let ang=-Math.PI/2;
+  items.forEach(it=>{
+    if(it.value<=0) return;
+    const sweep=it.value/tot*Math.PI*2, gap=items.filter(x=>x.value>0).length>1?0.018:0;
+    const a0=ang+gap/2, a1=ang+sweep-gap/2; ang+=sweep;
+    const pt=(r,a)=>[C+r*Math.cos(a),C+r*Math.sin(a)];
+    const [x0,y0]=pt(R,a0),[x1,y1]=pt(R,a1),[x2,y2]=pt(IR,a1),[x3,y3]=pt(IR,a0);
+    const big=(a1-a0)>Math.PI?1:0;
+    const p=mk("path",{fill:it.color,d:["M",x0,y0,"A",R,R,0,big,1,x1,y1,"L",x2,y2,"A",IR,IR,0,big,0,x3,y3,"Z"].join(" ")});
+    bindTip(p,it.label,[{color:it.color,name:t("tip.executions"),value:nf(it.value)},
+                        {color:"transparent",name:t("tip.share"),value:pct(it.value/tot*100)}]);
+    svg.appendChild(p);
+  });
+  const t1=mk("text",{x:C,y:C-2,"text-anchor":"middle"});
+  t1.setAttribute("style","font-size:26px;font-weight:600;fill:var(--fg)"); t1.textContent=centerValue;
+  const t2=mk("text",{x:C,y:C+15,"text-anchor":"middle"});
+  t2.setAttribute("style","font-size:10px;fill:var(--fg-muted)"); t2.textContent=centerLabel;
+  svg.appendChild(t1); svg.appendChild(t2);
+  const wrap=el("div"); wrap.appendChild(svg); return wrap;
+}
+
+/* ═══════════════════ heatmap ═══════════════════ */
+const RAMP=["--q0","--q1","--q2","--q3","--q4","--q5"];
+function rampColor(v,max){
+  if(v<=0) return cssv("--d3");
+  const i=Math.min(RAMP.length-1,1+Math.floor(v/max*(RAMP.length-1.001)));
+  return cssv(RAMP[i]);
+}
+function heatmap(rowKeys,colRuns,valueOf,fmt){
+  const wrap=el("div"); const box=el("div","svgwrap"); const g=el("div","hm");
+  g.style.gridTemplateColumns="132px repeat("+colRuns.length+",minmax(30px,1fr))";
+  g.style.minWidth=(132+colRuns.length*34)+"px";
+  g.appendChild(el("div"));
+  colRuns.forEach(r=>{ const c=el("div","clab",r.project.slice(0,26)); g.appendChild(c); });
+  let max=0;
+  rowKeys.forEach(k=>colRuns.forEach(r=>{ max=Math.max(max,valueOf(k,r)); }));
+  rowKeys.forEach(k=>{
+    g.appendChild(el("div","hlab",k));
+    colRuns.forEach(r=>{
+      const v=valueOf(k,r), c=el("div","cell");
+      c.style.background=rampColor(v,max);
+      if(v>0){ const rel=v/max; c.style.color = rel>0.55 ? "#fff" : "var(--fg-dim)"; c.textContent=fmt(v); }
+      bindTip(c,k+" · "+r.project,[
+        {color:cssv("--s1"),name:t("tip.value"),value:v>0?fmt(v):t("tip.unmeasured")},
+        {color:"transparent",name:t("tip.execution"),value:r.id}]);
+      g.appendChild(c);
+    });
+  });
+  box.appendChild(g); wrap.appendChild(box);
+  const key=el("div","rampkey"); key.appendChild(el("span","","0"));
+  const steps=el("div","steps");
+  RAMP.forEach(v=>{ const i=el("i"); i.style.background=cssv(v); steps.appendChild(i); });
+  key.appendChild(steps); key.appendChild(el("span","",fmt(max)));
+  wrap.appendChild(key); return wrap;
+}
+
+/* ═══════════════════ componentes ═══════════════════ */
+function kpi(label,value,sub,cls){
+  const k=el("div","kpi"+(cls?" k-"+cls:""));
+  k.appendChild(el("p","lab",label)); k.appendChild(el("p","val",value));
+  if(sub) k.appendChild(el("p","sub",sub)); return k;
+}
+function kpiRow(list){ const g=el("div","kpis"); list.forEach(a=>g.appendChild(kpi.apply(null,a))); return g; }
+function card(title,sub,legendItems,cls){
+  const c=el("section","card"+(cls?" "+cls:""));
+  const h=el("div","card-head"); h.appendChild(el("h2","",title));
+  if(legendItems){
+    const l=el("div","legend");
+    legendItems.forEach(e=>{
+      const it=el("div","item");
+      if(e.glyph){ const gl=el("span","gl",e.glyph); gl.style.background=e.color;
+                   if(e.cls==="warn") gl.style.color="#3a2600"; it.appendChild(gl); }
+      else{ const sw=el("span","sw"+(e.line?" line":"")); sw.style.background=e.color; it.appendChild(sw); }
+      it.appendChild(el("span","",e.name)); l.appendChild(it);
+    });
+    h.appendChild(l);
+  }
+  c.appendChild(h); if(sub) c.appendChild(el("p","sub",sub)); return c;
+}
+function pill(kind){
+  const s=ST[kind]||RUNST[kind]||{glyph:"·",cls:"mute"};
+  const p=el("span","pill p-"+s.cls); p.appendChild(el("span","ic "+s.cls,s.glyph));
+  p.appendChild(el("span","",s.key?t(s.key):kind)); return p;
+}
+function table(headers,rowsData,footer,onRowClick){
+  const w=el("div","tblwrap"), t=el("table","tbl"), th=el("thead"), hr=el("tr");
+  headers.forEach(h=>{ const c=el("th","",typeof h==="string"?h:h.t);
+    if(typeof h!=="string"&&h.num) c.style.textAlign="right"; hr.appendChild(c); });
+  th.appendChild(hr); t.appendChild(th);
+  const tb=el("tbody");
+  rowsData.forEach(r=>{
+    const tr=el("tr"+(onRowClick?"":""),onRowClick?"clickable":"");
+    r.cells.forEach(c=>{
+      const td=el("td",c.cls||"");
+      if(c.node) td.appendChild(c.node); else td.appendChild(document.createTextNode(c.v));
+      tr.appendChild(td);
+    });
+    if(onRowClick){ tr.tabIndex=0; tr.addEventListener("click",()=>onRowClick(r.ref));
+      tr.addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();onRowClick(r.ref);} }); }
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+  if(footer){ const tf=el("tfoot"), fr=el("tr");
+    footer.forEach(c=>{ const td=el("td",c.cls||""); td.textContent=c.v; fr.appendChild(td); });
+    tf.appendChild(fr); t.appendChild(tf); }
+  w.appendChild(t); return w;
+}
+function alert_(kind,title,meta){
+  const a=el("div","alert a-"+kind);
+  a.appendChild(el("span","ic "+(kind==="bad"?"bad":kind==="warn"?"warn":kind==="ok"?"ok":"mute"),
+                   kind==="bad"?"×":kind==="warn"?"!":kind==="ok"?"✓":"i"));
+  const tx=el("div","atx"); tx.appendChild(el("b","",title));
+  if(meta) tx.appendChild(el("span","ameta",meta));
+  a.appendChild(tx); return a;
+}
+function insight(tag,value,desc){
+  const i=el("div","ins"); i.appendChild(el("p","it",tag));
+  i.appendChild(el("p","iv",value)); i.appendChild(el("p","id",desc)); return i;
+}
+function pageHead(title,desc){
+  const h=el("div","pagehead"); h.appendChild(el("h1","",title));
+  if(desc) h.appendChild(el("p","",desc)); return h;
+}
+const S1=()=>cssv("--s1"), S2=()=>cssv("--s2"), S3=()=>cssv("--s3");
+
+/* ═══════════════════ PÁGINA 1 — EXECUTIVE OVERVIEW ═══════════════════ */
+function pageOverview(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("page.exec"), t("ov.desc")));
+  f.appendChild(liveBanner());
+  if(!runs.length){ f.appendChild(el("p","empty",t("empty.runs"))); return f; }
+
+  const ok=runs.filter(r=>r.status==="completed").length;
+  const warn=runs.filter(r=>r.status==="completed_with_warnings").length;
+  const bad=runs.filter(r=>r.status==="aborted"||r.status==="failed").length;
+  const live=runs.filter(r=>r.status==="running").length;
+  const other=runs.length-ok-warn-bad-live;
+  const tin=sum(runs,r=>r.tin), tout=sum(runs,r=>r.tout), tot=tin+tout;
+  const eff=sum(runs,r=>r.effective), totalCost=sum(runs,runCost);
+
+  const r=rates();
+  f.appendChild(kpiRow([
+    kpiM("total_executions", t("ov.sub.scope",{n:runs.length})),
+    kpiM("executions_in_progress", t("ov.sub.live"), "warn"),
+    kpiM("successful_executions", t("ov.sub.clean"), "ok"),
+    kpiM("executions_with_warnings", t("ov.sub.warn"), "warn"),
+    kpiM("failed_executions", t("ov.sub.bad"), "bad"),
+    kpiM("success_rate", t("ov.sub.rate"), "ok"),
+    kpiM("average_execution_time", t("ov.sub.avgTime")),
+    kpiM("total_execution_hours", t("ov.sub.hours")),
+    kpiM("portfolio_total_tokens", t("ov.sub.tokens",{n:nf(tot)})),
+    kpiM("portfolio_input_tokens", t("ov.sub.pctTotal",{p:pct(tot?tin/tot*100:0)})),
+    kpiM("portfolio_output_tokens", t("ov.sub.pctTotal",{p:pct(tot?tout/tot*100:0)})),
+    kpiM("average_tokens_per_execution", t("ov.sub.perPipeline")),
+    kpiM("average_cost_per_execution", t("ov.sub.tariff")),
+    kpiM("portfolio_total_cost", t("ov.sub.rates",{i:usd(r.i),o:usd(r.o)}), "ok")
+  ]));
+
+  const days=byDay(runs), xs=days.map(d=>dmy(d.key)), titles=days.map(d=>d.key);
+
+  const g1=el("div","grid g3");
+  const c1=card(t("ov.c1"),t("ov.c1s"));
+  c1.appendChild(trend(xs,[{name:t("tip.executions"),color:S1(),points:days.map(d=>d.n)}],{fmt:v=>nf(v),kind:"count",titles}));
+  g1.appendChild(c1);
+  const c2=card(t("ov.c2"),t("ov.c2s"));
+  c2.appendChild(trend(xs,[{name:t("tip.tokens"),color:S2(),points:days.map(d=>d.tokens)}],{fmt:compact,titles}));
+  g1.appendChild(c2);
+  const c3=card(t("ov.c3"),t("ov.c3s"));
+  c3.appendChild(trend(xs,[{name:t("tip.cost"),color:S3(),points:days.map(d=>d.cost)}],{fmt:usd,titles}));
+  g1.appendChild(c3);
+  f.appendChild(g1);
+
+  const g2=el("div","grid g2");
+  const c4=card(t("ov.c4"), t("ov.c4s"),[
+    {name:runLabel("completed"),color:cssv("--ok"),glyph:"✓",cls:"ok"},
+    {name:runLabel("completed_with_warnings"),color:cssv("--warn"),glyph:"!",cls:"warn"},
+    {name:runLabel("running"),color:cssv("--r"),glyph:"●",cls:"live"},
+    {name:runLabel("aborted"),color:cssv("--bad"),glyph:"×",cls:"bad"}]);
+  c4.appendChild(donut([
+    {label:runLabel("completed"),value:ok,color:cssv("--ok")},
+    {label:runLabel("completed_with_warnings"),value:warn,color:cssv("--warn")},
+    {label:runLabel("running"),value:live,color:cssv("--r")},
+    {label:runLabel("aborted"),value:bad,color:cssv("--bad")},
+    {label:t("ov.other"),value:other,color:cssv("--g2")}
+  ],t("ov.donut.center"),String(runs.length)));
+  g2.appendChild(c4);
+
+  const projs=byProject(runs).sort((a,b)=>b.time/b.n-a.time/a.n);
+  const c5=card(t("ov.c5"),t("ov.c5s"));
+  c5.appendChild(hbars(projs.map(p=>({
+    label:p.key, flag:p.n>1?t("flag.executions",{n:p.n}):null,
+    segs:[{v:p.time/p.n,color:S1(),name:t("tip.avgTime")}],
+    tipRows:[{color:S1(),name:t("tip.avgTime"),value:hms(p.time/p.n)},
+             {color:"transparent",name:t("tip.totalTime"),value:hms(p.time)},
+             {color:"transparent",name:t("tip.executions"),value:nf(p.n)}],
+    ref:p.key
+  })),{labelWidth:190,valueWidth:78,fmt:dur,axisFmt:dur,kind:"time",
+       onClick:it=>{ state.projects=new Set([it.ref]); renderFilters(); render(); }}));
+  g2.appendChild(c5);
+  f.appendChild(g2);
+
+  const cT=card(t("ov.table"),t("ov.tables"));
+  cT.appendChild(table(
+    [t("col.project"),t("col.execution"),{t:t("col.start")},t("col.status"),
+     {t:t("col.effTime"),num:1},{t:t("col.input"),num:1},{t:t("col.output"),num:1},
+     {t:t("col.total"),num:1},{t:t("col.estCost"),num:1}],
+    runs.map(r=>({ref:r,cells:[
+      {v:r.project,cls:"mn"},{v:r.id,cls:"mn"},{v:ts(r.start),cls:"mn"},
+      {node:pill(r.status)},{v:hms(r.effective),cls:"num"},{v:nf(r.tin),cls:"num"},
+      {v:nf(r.tout),cls:"num"},{v:nf(r.total),cls:"num"},{v:usd(runCost(r)),cls:"num"}]})),
+    [{v:t("row.total")},{v:""},{v:""},{v:""},{v:hms(eff),cls:"num"},{v:nf(tin),cls:"num"},
+     {v:nf(tout),cls:"num"},{v:nf(tot),cls:"num"},{v:usd(totalCost),cls:"num"}],
+    r=>{ state.drill=r.id; state.tab=1; render(); }));
+  f.appendChild(cT);
+
+  f.appendChild(buildAlerts(runs));
+  f.appendChild(buildInsights(runs));
+  return f;
+}
+
+/* ═══════════════════ PÁGINA 2 — PIPELINE PERFORMANCE ═══════════════════ */
+function pagePerformance(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("page.perf"), t("pf.desc")));
+  if(!runs.length){ f.appendChild(el("p","empty",t("empty.runs"))); return f; }
+
+  const ph=byPhase(runs,canon).sort((a,b)=>b.time-a.time);
+  const totTime=sum(ph,p=>p.time);
+  const slowest=ph[0];
+  const allDur=runs.flatMap(r=>r.phases.filter(p=>p.duration_seconds>0).map(p=>p.duration_seconds));
+  const leadTime=sum(runs,r=>r.wall)/runs.length;
+
+  f.appendChild(kpiRow([
+    [t("pf.k1"),slowest?slowest.key:"—",slowest?t("pf.k1s",{t:hms(slowest.time)}):"","warn"],
+    [t("pf.k2"),allDur.length?dur(allDur.reduce((a,b)=>a+b,0)/allDur.length):"—",
+      t("pf.k2s",{n:allDur.length})],
+    [t("pf.k3"),hms(leadTime),t("pf.k3s")],
+    [t("pf.k4"),nf2(runs.length/Math.max(byDay(runs).length,1))+" "+t("pf.perDay"),
+      t("pf.k4s",{n:runs.length,d:byDay(runs).length})],
+    [t("pf.k5"),hms(totTime),t("pf.k5s")]
+  ]));
+
+  const g1=el("div","grid g2");
+  const order=["F0","F1","F1a","F1b","F1c","F1d","F1e","F1f","F2a","F2b","F2c","F2d","F3","F3S","F4S","F4"];
+  const idx=new Map(ph.map(p=>[p.key,p]));
+  const canonList=order.filter(k=>idx.has(k)).concat(ph.filter(p=>order.indexOf(p.key)<0).map(p=>p.key));
+  const c1=card(t("pf.c1"),t("pf.c1s"));
+  c1.appendChild(hbars(canonList.map(k=>{ const p=idx.get(k);
+    return {label:k, flag:p.deg?t("flag.degraded",{n:p.deg}):null,
+      segs:[{v:p.time,color:S1(),name:t("tip.time")}],
+      tipRows:[{color:S1(),name:t("tip.totalTime"),value:hms(p.time)},
+               {color:"transparent",name:t("tip.pctPipeline"),value:pct(p.time/totTime*100)},
+               {color:"transparent",name:t("tip.occurrences"),value:nf(p.n)},
+               {color:"transparent",name:t("tip.tokens"),value:compact(p.tokens)}]};
+  }),{labelWidth:64,valueWidth:78,fmt:dur,axisFmt:dur,kind:"time",
+      threshold:totTime*0.2,thresholdLabel:t("thresh.20time")}));
+  g1.appendChild(c1);
+
+  const c2=card(t("pf.c2"),t("pf.c2s"));
+  const detail=byPhase(runs,x=>x).sort((a,b)=>b.time-a.time).slice(0,10);
+  c2.appendChild(hbars(detail.map(p=>({
+    label:p.key, segs:[{v:p.time,color:S1(),name:t("tip.time")}],
+    tipRows:[{color:S1(),name:t("tip.totalTime"),value:hms(p.time)},
+             {color:"transparent",name:t("tip.executions"),value:nf(p.runs.size)},
+             {color:"transparent",name:t("tip.tokens"),value:compact(p.tokens)}]
+  })),{labelWidth:210,valueWidth:78,fmt:dur,axisFmt:dur,kind:"time"}));
+  g1.appendChild(c2);
+  f.appendChild(g1);
+
+  const cH=card(t("pf.heat"), t("pf.heats"));
+  const sel=el("div","fctl"); sel.style.marginBottom="12px";
+  [["time",t("pf.heat.time")],["tokens",t("pf.heat.tokens")]].forEach(([k,lbl])=>{
+    const b=el("button","fbtn",lbl); b.type="button";
+    b.setAttribute("aria-pressed",state.heatMetric===k?"true":"false");
+    b.addEventListener("click",()=>{ state.heatMetric=k; render(); }); sel.appendChild(b);
+  });
+  cH.appendChild(sel);
+  const rowKeys=order.filter(k=>idx.has(k)).concat(ph.filter(p=>order.indexOf(p.key)<0).map(p=>p.key));
+  const metric=state.heatMetric;
+  cH.appendChild(heatmap(rowKeys,runs,(k,r)=>
+      r.phases.filter(p=>canon(p.phase_name)===k)
+              .reduce((a,p)=>a+(metric==="time"?p.duration_seconds:p.token_usage.total_tokens),0),
+    metric==="time"?dur:compact));
+  f.appendChild(cH);
+
+  const g2=el("div","grid g2");
+  const drillRun=runs.find(r=>r.id===state.drill)||runs[0];
+  const cW=card(t("pf.wf",{p:drillRun.project}), t("pf.wfs"));
+  const selR=el("div","fgroup"); selR.style.marginBottom="12px";
+  selR.appendChild(el("label","",t("pf.drill")));
+  const sr=el("select");
+  runs.forEach(r=>{ const o=el("option","",r.project+" · "+r.date); o.value=r.id;
+    if(r.id===drillRun.id) o.selected=true; sr.appendChild(o); });
+  sr.addEventListener("change",()=>{ state.drill=sr.value; render(); });
+  selR.appendChild(sr); cW.appendChild(selR);
+  cW.appendChild(gantt(drillRun));
+  g2.appendChild(cW);
+
+  const cD=card(t("pf.dist"), t("pf.dists"));
+  cD.appendChild(strip(ph.filter(p=>p.durs.length).sort((a,b)=>b.time-a.time).slice(0,12)));
+  g2.appendChild(cD);
+  f.appendChild(g2);
+  return f;
+}
+
+function gantt(run){
+  const withT=run.phases.filter(p=>p.start_time_utc&&p.end_time_utc);
+  if(!withT.length) return el("p","empty",t("pf.noTimes"));
+  const t0=Math.min.apply(null,withT.map(p=>Date.parse(p.start_time_utc)));
+  const t1=Math.max.apply(null,withT.map(p=>Date.parse(p.end_time_utc)));
+  const span=Math.max(t1-t0,1);
+  const box=el("div","gantt");
+  run.phases.forEach(p=>{
+    const row=el("div","grow");
+    const lab=el("div","rlab",p.phase_name); row.appendChild(lab);
+    const tr=el("div","gtrack");
+    if(p.start_time_utc&&p.end_time_utc){
+      const a=Date.parse(p.start_time_utc), b=Date.parse(p.end_time_utc);
+      const bar=el("div","gbar");
+      bar.style.left=((a-t0)/span*100)+"%";
+      bar.style.width=Math.max((b-a)/span*100,0.4)+"%";
+      bar.style.background=p.status==="degraded"?cssv("--warn"):p.status==="aborted"?cssv("--bad"):S1();
+      tr.appendChild(bar);
+    }
+    row.appendChild(tr);
+    const v=el("div","rval",p.duration_seconds?dur(p.duration_seconds):"—"); row.appendChild(v);
+    bindTip(row,p.phase_name,[
+      {color:S1(),name:t("tip.duration"),value:p.duration_seconds?hms(p.duration_seconds):t("tip.unmeasured")},
+      {color:"transparent",name:t("tip.start"),value:ts(p.start_time_utc)},
+      {color:"transparent",name:t("tip.end"),value:ts(p.end_time_utc)},
+      {color:"transparent",name:t("tip.tokens"),value:compact(p.token_usage.total_tokens)},
+      {color:"transparent",name:t("tip.state"),value:stLabel(p.status)}]);
+    box.appendChild(row);
+  });
+  return box;
+}
+
+function strip(phases){
+  const max=Math.max.apply(null,phases.flatMap(p=>p.durs).concat([1]));
+  const sc=ticks(max,"time");
+  const wrap=el("div"), plot=el("div","plot");
+  plot.style.setProperty("--labw","64px"); plot.style.setProperty("--valw","78px");
+  const grid=el("div","gridlines");
+  grid.style.left="calc(64px + 12px)"; grid.style.right="calc(78px + 12px)";
+  sc.list.forEach((t,i)=>{ const g=el("span",i===0?"zero":""); g.style.left=(t/sc.max*100)+"%"; grid.appendChild(g); });
+  const rows=el("div","rows");
+  phases.forEach(p=>{
+    const sorted=[...p.durs].sort((a,b)=>a-b);
+    const med=sorted.length%2 ? sorted[(sorted.length-1)/2] : (sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;
+    const row=el("div","row");
+    row.appendChild(el("div","rlab",p.key));
+    const tr=el("div","track"); tr.style.position="relative"; tr.style.height="18px";
+    p.durs.forEach(d=>{
+      const dot=el("span"); dot.style.cssText="position:absolute;width:9px;height:9px;border-radius:50%;"+
+        "background:"+S2()+";border:2px solid var(--d2);top:4px;transform:translateX(-50%);";
+      dot.style.left=(d/sc.max*100)+"%"; tr.appendChild(dot);
+    });
+    const m=el("span"); m.style.cssText="position:absolute;width:2px;height:16px;background:var(--fg-dim);top:1px;transform:translateX(-50%);";
+    m.style.left=(med/sc.max*100)+"%"; tr.appendChild(m);
+    row.appendChild(tr);
+    row.appendChild(el("div","rval",dur(med)));
+    bindTip(row,p.key,[{color:S2(),name:t("tip.median"),value:hms(med)},
+      {color:"transparent",name:t("tip.minMax"),value:dur(sorted[0])+" / "+dur(sorted[sorted.length-1])},
+      {color:"transparent",name:t("tip.samples"),value:nf(p.durs.length)}]);
+    rows.appendChild(row);
+  });
+  plot.appendChild(grid); plot.appendChild(rows);
+  const axis=el("div","axis");
+  axis.style.marginLeft="calc(64px + 12px)"; axis.style.marginRight="calc(78px + 12px)";
+  sc.list.forEach((t,i)=>{ const s=el("span",i===0?"first":(i===sc.list.length-1?"last":""),dur(t));
+    s.style.left=(t/sc.max*100)+"%"; axis.appendChild(s); });
+  wrap.appendChild(plot); wrap.appendChild(axis); return wrap;
+}
+
+/* ═══════════════════ PÁGINA 3 — TOKEN ANALYTICS ═══════════════════ */
+function pageTokens(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("tk.title"), t("tk.desc")));
+  if(!runs.length){ f.appendChild(el("p","empty",t("empty.runs"))); return f; }
+
+  const tin=sum(runs,r=>r.tin), tout=sum(runs,r=>r.tout), tot=tin+tout;
+  const ph=byPhase(runs,canon).sort((a,b)=>b.tokens-a.tokens);
+  const projs=byProject(runs);
+  const eff=sum(runs,r=>r.effective);
+  const measured=ph.filter(p=>p.tokens>0);
+
+  f.appendChild(kpiRow([
+    kpiM("portfolio_total_tokens", t("ov.sub.tokens",{n:nf(tot)})),
+    kpiM("portfolio_input_tokens", t("ov.sub.pctTotal",{p:pct(tot?tin/tot*100:0)})),
+    kpiM("portfolio_output_tokens", t("ov.sub.pctTotal",{p:pct(tot?tout/tot*100:0)})),
+    kpiM("average_tokens_per_execution", t("tk.sub.projects",{n:projs.length})),
+    kpiM("average_tokens_per_phase", t("tk.sub.phases",{n:measured.length})),
+    kpiM("portfolio_input_output_ratio", t("tk.sub.ratio")),
+    kpiM("portfolio_token_velocity", t("tk.sub.velocity")),
+    kpiM("portfolio_tokens_per_hour", t("tk.sub.throughput"))
+  ]));
+
+  const g1=el("div","grid g2");
+  const c1=card(t("tk.c1"),t("tk.c1s"),
+    [{name:t("tip.input"),color:S2()},{name:t("tip.output"),color:S1()}]);
+  c1.appendChild(hbars(ph.map(p=>({
+    label:p.key, segs:[{v:p.tin,color:S2(),name:t("tip.input")},{v:p.tout,color:S1(),name:t("tip.output")}],
+    tipRows:[{color:S2(),name:t("tip.input"),value:nf(p.tin)},{color:S1(),name:t("tip.output"),value:nf(p.tout)},
+             {color:"transparent",name:t("tip.total"),value:nf(p.tokens)},
+             {color:"transparent",name:t("tip.pctTotal"),value:pct(p.tokens/tot*100)}]
+  })),{labelWidth:64,valueWidth:80,fmt:compact,threshold:tot*0.2,thresholdLabel:t("thresh.20tokens")}));
+  g1.appendChild(c1);
+
+  const c2=card(t("tk.c2"),t("tk.c2s"),
+    [{name:t("band.high"),color:cssv("--ok"),glyph:"✓",cls:"ok"},
+     {name:t("band.mid"),color:cssv("--warn"),glyph:"~",cls:"warn"},
+     {name:t("band.low"),color:cssv("--bad"),glyph:"↓",cls:"bad"}]);
+  const effList=measured.filter(p=>p.tin>0).map(p=>{
+    const e=p.tout/p.tin;
+    return {p,e,band:t(e>=.40?"band.high":e>=.15?"band.mid":"band.low"),
+            color:e>=.40?cssv("--ok"):e>=.15?cssv("--warn"):cssv("--bad")};
+  }).sort((a,b)=>b.e-a.e);
+  c2.appendChild(hbars(effList.map(x=>({
+    label:x.p.key, flag:x.band.toLowerCase(),
+    segs:[{v:x.e,color:x.color,name:t("tip.efficiency")}], forceLabel:true,
+    tipRows:[{color:x.color,name:"token_out / token_in",value:nf2(x.e)},
+             {color:S2(),name:t("tip.input"),value:nf(x.p.tin)},
+             {color:S1(),name:t("tip.output"),value:nf(x.p.tout)},
+             {color:"transparent",name:t("tip.classification"),value:t("tip.bandSuffix",{band:x.band})}]
+  })),{labelWidth:76,valueWidth:64,fmt:nf2,axisFmt:v=>nf2(v)}));
+  g1.appendChild(c2);
+  f.appendChild(g1);
+
+  const g2=el("div","grid g2");
+  const days=byDay(runs);
+  const c3=card(t("tk.c3"),t("tk.c3s"),
+    [{name:t("tip.input"),color:S2(),line:true},{name:t("tip.output"),color:S1(),line:true}]);
+  c3.appendChild(trend(days.map(d=>dmy(d.key)),[
+    {name:t("tip.input"),color:S2(),points:days.map(d=>d.tin)},
+    {name:t("tip.output"),color:S1(),points:days.map(d=>d.tout)}],
+    {fmt:compact,area:false,titles:days.map(d=>d.key)}));
+  g2.appendChild(c3);
+
+  const c4=card(t("tk.c4"), t("tk.c4s"));
+  const sorted=[...ph].sort((a,b)=>b.tokens-a.tokens);
+  let acc=0; const paretoRows=sorted.map(p=>{ acc+=p.tokens; const cum=acc/tot*100;
+    return {p,cum,in80:cum-p.tokens/tot*100<80}; });
+  const cut=paretoRows.filter(x=>x.in80).length;
+  c4.appendChild(hbars(paretoRows.map(x=>({
+    label:x.p.key, flag:x.in80?t("flag.top80"):null, forceLabel:true,
+    segs:[{v:x.p.tokens,color:x.in80?S1():cssv("--g2"),name:t("tip.tokens")}],
+    tipRows:[{color:S1(),name:t("tip.tokens"),value:nf(x.p.tokens)},
+             {color:"transparent",name:t("tip.cumulative"),value:pct(x.cum)},
+             {color:"transparent",name:t("tip.share"),value:pct(x.p.tokens/tot*100)}]
+  })),{labelWidth:64,valueWidth:92,fmt:v=>compact(v),
+       axisFmt:compact}));
+  c4.appendChild(el("p","sub",t("tk.c4note",{cut:cut,n:sorted.length})));
+  g2.appendChild(c4);
+  f.appendChild(g2);
+
+  const c5=card(t("tk.c5"),t("tk.c5s"),
+    [{name:t("tip.input"),color:S2()},{name:t("tip.output"),color:S1()}]);
+  c5.appendChild(hbars(projs.sort((a,b)=>b.tokens-a.tokens).map(p=>({
+    label:p.key, segs:[{v:p.tin,color:S2(),name:t("tip.input")},{v:p.tout,color:S1(),name:t("tip.output")}],
+    tipRows:[{color:S2(),name:t("tip.input"),value:nf(p.tin)},{color:S1(),name:t("tip.output"),value:nf(p.tout)},
+             {color:"transparent",name:t("tip.total"),value:nf(p.tokens)},
+             {color:"transparent",name:t("tip.tokensPerHour"),value:compact(p.time?p.tokens/(p.time/3600):0)}]
+  })),{labelWidth:190,valueWidth:80,fmt:compact}));
+  f.appendChild(c5);
+
+  const cT=card(t("tk.table"),t("tk.tables"));
+  cT.appendChild(table(
+    [t("col.phase"),{t:t("col.occurrences"),num:1},{t:t("col.input"),num:1},
+     {t:t("col.output"),num:1},{t:t("col.total"),num:1},
+     {t:t("col.efficiency"),num:1},{t:t("col.velocity"),num:1},{t:t("col.estCost"),num:1}],
+    sorted.slice(0,15).map(p=>({ref:p,cells:[
+      {v:p.key,cls:"mn"},{v:nf(p.n),cls:"num"},{v:nf(p.tin),cls:"num"},{v:nf(p.tout),cls:"num"},
+      {v:nf(p.tokens),cls:"num"},{v:p.tin?nf2(p.tout/p.tin):"—",cls:"num"},
+      {v:p.time?compact(p.tokens/p.time)+"/s":"—",cls:"num"},{v:usd(p.cost),cls:"num"}]}))));
+  f.appendChild(cT);
+  return f;
+}
+
+/* ═══════════════════ PÁGINA 4 — FINOPS ═══════════════════ */
+function pageFinops(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("fin.title"), t("fin.desc")));
+  if(!runs.length){ f.appendChild(el("p","empty",t("empty.runs"))); return f; }
+
+  const tin=sum(runs,r=>r.tin), tout=sum(runs,r=>r.tout);
+  const total=cost(tin,tout), eff=sum(runs,r=>r.effective);
+  const projs=byProject(runs).sort((a,b)=>b.cost-a.cost);
+  const ph=byPhase(runs,canon).sort((a,b)=>b.cost-a.cost);
+  const avgRun=total/runs.length, avgPhase=ph.length?total/ph.length:0;
+
+  f.appendChild(kpiRow([
+    kpiM("portfolio_total_cost", t("fin.sub.tokens",{n:nf(tin+tout)}), "ok"),
+    kpiM("average_cost_per_execution", t("fin.sub.runs",{n:runs.length})),
+    kpiM("cost_per_hour", t("fin.sub.hours",{t:hms(eff)})),
+    kpiM("cost_per_project", t("fin.sub.projects",{n:projs.length})),
+    [t("fin.k5"), usd(avgPhase), t("fin.k5s",{n:ph.length})],
+    [t("fin.k6"), usd(cost(tin,0)),
+     total?t("fin.sub.pct",{p:pct(cost(tin,0)/total*100)}):"—"],
+    [t("fin.k7"), usd(cost(0,tout)),
+     total?t("fin.sub.pct",{p:pct(cost(0,tout)/total*100)}):"—"]
+  ]));
+
+  const g1=el("div","grid g2");
+  const c1=card(t("fin.c1"),t("fin.c1s"),
+    [{name:t("tip.input"),color:S2()},{name:t("tip.output"),color:S1()}]);
+  c1.appendChild(hbars(projs.map(p=>({
+    label:p.key, segs:[{v:cost(p.tin,0),color:S2(),name:t("tip.input")},{v:cost(0,p.tout),color:S1(),name:t("tip.output")}],
+    tipRows:[{color:S2(),name:t("tip.inputCost"),value:usd(cost(p.tin,0))},
+             {color:S1(),name:t("tip.outputCost"),value:usd(cost(0,p.tout))},
+             {color:"transparent",name:t("tip.total"),value:usd(p.cost)},
+             {color:"transparent",name:t("tip.executions"),value:nf(p.n)}],
+    ref:p.key
+  })),{labelWidth:190,valueWidth:82,fmt:usd,axisFmt:usd0,
+       onClick:it=>{ state.projects=new Set([it.ref]); renderFilters(); render(); }}));
+  g1.appendChild(c1);
+
+  const c2=card(t("fin.c2"),t("fin.c2s"));
+  c2.appendChild(hbars(ph.map(p=>({
+    label:p.key, segs:[{v:p.cost,color:S1(),name:t("tip.cost")}],
+    tipRows:[{color:S1(),name:t("tip.cost"),value:usd(p.cost)},
+             {color:"transparent",name:t("tip.pctTotal"),value:pct(p.cost/total*100)},
+             {color:"transparent",name:t("tip.tokens"),value:nf(p.tokens)}]
+  })),{labelWidth:64,valueWidth:82,fmt:usd,axisFmt:usd0,
+       threshold:total*0.2,thresholdLabel:t("thresh.20cost")}));
+  g1.appendChild(c2);
+  f.appendChild(g1);
+
+  const g2=el("div","grid g2");
+  const days=byDay(runs);
+  const c3=card(t("fin.c3"),t("fin.c3s"));
+  c3.appendChild(trend(days.map(d=>dmy(d.key)),[{name:t("tip.cost"),color:S3(),points:days.map(d=>d.cost)}],
+    {fmt:usd,titles:days.map(d=>d.key)}));
+  g2.appendChild(c3);
+
+  let cum=0; const cumPts=days.map(d=>{ cum+=d.cost; return cum; });
+  const c4=card(t("fin.c4"),t("fin.c4s"));
+  c4.appendChild(trend(days.map(d=>dmy(d.key)),[{name:t("tip.cumulative"),color:S1(),points:cumPts}],
+    {fmt:usd,titles:days.map(d=>d.key)}));
+  g2.appendChild(c4);
+  f.appendChild(g2);
+
+  const top=[...runs].sort((a,b)=>runCost(b)-runCost(a)).slice(0,10);
+  const cT=card(t("fin.table"),null);
+  cT.appendChild(table(
+    [t("col.project"),t("col.execution"),t("col.date"),t("col.status"),
+     {t:t("col.tokens"),num:1},{t:t("col.estCost"),num:1},{t:t("col.vsAvg"),num:1}],
+    top.map(r=>{ const c=runCost(r), d=(c/avgRun-1)*100;
+      return {ref:r,cells:[
+        {v:r.project,cls:"mn"},{v:r.id,cls:"mn"},{v:r.date,cls:"mn"},{node:pill(r.status)},
+        {v:nf(r.total),cls:"num"},{v:usd(c),cls:"num"},
+        {v:(d>=0?"+":"")+nf1(d)+"%",cls:"num"}]};
+    }),null,r=>{ state.drill=r.id; state.tab=1; render(); }));
+  f.appendChild(cT);
+
+  f.appendChild(buildAlerts(runs,true));
+  return f;
+}
+
+/* ═══════════════════ PÁGINA 5 — QUALITY & OPERATIONS ═══════════════════ */
+function pageQuality(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("page.qual"), t("ql.desc")));
+  if(!runs.length){ f.appendChild(el("p","empty",t("empty.runs"))); return f; }
+
+  const ok=runs.filter(r=>r.status==="completed").length;
+  const warn=runs.filter(r=>r.status==="completed_with_warnings").length;
+  const bad=runs.filter(r=>r.status==="aborted").length;
+  const allPh=runs.flatMap(r=>r.phases);
+  const deg=allPh.filter(p=>p.status==="degraded").length;
+  const abt=allPh.filter(p=>p.status==="aborted").length;
+  const skp=allPh.filter(p=>p.status==="skipped").length;
+  const health = runs.map(r=>r.phases.filter(p=>p.status==="executed").length/r.phases.length*100);
+  const avgHealth = health.reduce((a,b)=>a+b,0)/health.length;
+
+  f.appendChild(kpiRow([
+    kpiM("success_rate", t("ql.sub.ok",{ok:ok,n:runs.length}), "ok"),
+    kpiM("warning_rate", t("ql.sub.warn",{n:warn}), "warn"),
+    kpiM("failure_rate", t("ql.sub.bad",{n:bad}), bad?"bad":"ok"),
+    kpiM("portfolio_degraded_phases", t("ql.sub.ofPhases",{n:allPh.length}), "warn"),
+    kpiM("portfolio_weighted_health", t("ql.sub.weighted"), "ok"),
+    kpiM("phase_degraded_rate", t("ql.sub.degRate")),
+    [t("ql.k7"), pct(allPh.length?abt/allPh.length*100:0), t("ql.k7s",{n:abt})],
+    [t("ql.k8"), pct(avgHealth), t("ql.k8s"), avgHealth>=90?"ok":"warn"]
+  ]));
+
+  const g1=el("div","grid g2");
+  const ph=byPhase(runs,canon).sort((a,b)=>b.n-a.n);
+  const c1=card(t("ql.c1"),t("ql.c1s"),
+    [{name:stLabel("executed"),color:cssv("--ok"),glyph:"✓",cls:"ok"},
+     {name:stLabel("degraded"),color:cssv("--warn"),glyph:"!",cls:"warn"},
+     {name:stLabel("aborted"),color:cssv("--bad"),glyph:"×",cls:"bad"},
+     {name:stLabel("skipped"),color:cssv("--g2"),glyph:"–",cls:"mute"}]);
+  const stByPhase=new Map();
+  runs.forEach(r=>r.phases.forEach(p=>{ const k=canon(p.phase_name);
+    let o=stByPhase.get(k); if(!o){ o={key:k,executed:0,degraded:0,aborted:0,skipped:0}; stByPhase.set(k,o); }
+    o[p.status]=(o[p.status]||0)+1; }));
+  c1.appendChild(hbars([...stByPhase.values()].sort((a,b)=>(b.degraded+b.aborted)-(a.degraded+a.aborted)).map(o=>({
+    label:o.key,
+    segs:[{v:o.executed,color:cssv("--ok"),name:stLabel("executed")},
+          {v:o.degraded,color:cssv("--warn"),name:stLabel("degraded")},
+          {v:o.aborted,color:cssv("--bad"),name:stLabel("aborted")},
+          {v:o.skipped,color:cssv("--g2"),name:stLabel("skipped")}]
+  })),{labelWidth:64,valueWidth:56,fmt:v=>nf(v),axisFmt:v=>nf(v),kind:"count"}));
+  g1.appendChild(c1);
+
+  const c2=card(t("ql.c2"),t("ql.c2s"));
+  c2.appendChild(hbars(runs.map(r=>{
+    const h=r.phases.filter(p=>p.status==="executed").length/r.phases.length*100;
+    return {label:r.project, flag:r.date,
+      segs:[{v:h,color:h>=90?cssv("--ok"):h>=70?cssv("--warn"):cssv("--bad"),name:"Health"}],
+      forceLabel:true,
+      tipRows:[{color:cssv("--ok"),name:t("tip.health"),value:pct(h)},
+               {color:"transparent",name:t("tip.executedOf"),value:nf(r.nOk)+" / "+nf(r.phases.length)},
+               {color:"transparent",name:t("tip.degraded"),value:nf(r.nDeg)},
+               {color:"transparent",name:t("tip.state"),value:runLabel(r.status)}],
+      ref:r.id};
+  }),{labelWidth:190,valueWidth:62,fmt:v=>nf1(v)+"%",axisFmt:v=>nf(v)+"%",
+      onClick:it=>{ state.drill=it.ref; state.tab=1; render(); }}));
+  g1.appendChild(c2);
+  f.appendChild(g1);
+
+  const g2=el("div","grid g2");
+  const degList=[];
+  runs.forEach(r=>r.phases.filter(p=>p.status==="degraded"||p.status==="aborted")
+    .forEach(p=>degList.push({run:r,p})));
+  const cDeg=card(t("ql.deg"),degList.length?null:t("empty.none"));
+  if(degList.length) cDeg.appendChild(table(
+    [t("col.project"),t("col.phase"),t("col.state"),t("col.date"),{t:t("col.tokens"),num:1}],
+    degList.map(x=>({ref:x.run,cells:[
+      {v:x.run.project,cls:"mn"},{v:x.p.phase_name,cls:"mn"},{node:pill(x.p.status)},
+      {v:x.run.date,cls:"mn"},{v:x.p.token_usage.total_tokens?nf(x.p.token_usage.total_tokens):"—",cls:"num"}]})),
+    null,r=>{ state.drill=r.id; state.tab=1; render(); }));
+  g2.appendChild(cDeg);
+
+  const noTelList=[];
+  runs.forEach(r=>r.phases.filter(noTel).forEach(p=>noTelList.push({run:r,p})));
+  const cNo=card(t("ql.notel"), t("ql.notels"));
+  if(noTelList.length) cNo.appendChild(table(
+    [t("col.project"),t("col.phase"),t("col.endUtc")],
+    noTelList.map(x=>({ref:x.run,cells:[
+      {v:x.run.project,cls:"mn"},{v:x.p.phase_name,cls:"mn"},{v:ts(x.p.end_time_utc),cls:"mn"}]}))));
+  else cNo.appendChild(el("p","empty",t("empty.none")));
+  g2.appendChild(cNo);
+  f.appendChild(g2);
+
+  const days=byDay(runs);
+  const qual=days.map(d=>{
+    const rs=runs.filter(r=>r.date===d.key);
+    const p=rs.flatMap(r=>r.phases);
+    return p.length ? p.filter(x=>x.status==="executed").length/p.length*100 : 0;
+  });
+  const cTr=card(t("ql.trend"),t("ql.trends"));
+  cTr.appendChild(trend(days.map(d=>dmy(d.key)),[{name:t("ql.cleanPhases"),color:cssv("--ok"),points:qual}],
+    {fmt:v=>nf(v)+"%",titles:days.map(d=>d.key)}));
+  f.appendChild(cTr);
+  return f;
+}
+
+/* ═══════════════════ PÁGINA 6 — FACTORY OPERATIONS ═══════════════════ */
+function pageFactory(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("fa.title"), t("fa.desc")));
+  if(!runs.length){ f.appendChild(el("p","empty",t("empty.runs"))); return f; }
+
+  const groups=byPhase(runs,macroOf);
+  const order=["Assessment","Design","Migration","Other"];
+  const G=order.map(k=>groups.find(g=>g.key===k)).filter(Boolean);
+  const totTime=sum(G,g=>g.time), totTok=sum(G,g=>g.tokens), totCost=sum(G,g=>g.cost);
+  const COL={Assessment:S2(),Design:S3(),Migration:S1(),Other:cssv("--g2")};
+
+  f.appendChild(kpiRow(G.map(g=>[
+    macroLabel(g.key), hms(g.time),
+    t("fa.kpi.sub",{tok:compact(g.tokens),cost:usd(g.cost)}),
+    g.key==="Migration"?"warn":g.key==="Other"?"mute":null
+  ])));
+
+  const g1=el("div","grid g3");
+  const legend=G.map(g=>({name:macroLabel(g.key),color:COL[g.key]}));
+  const c1=card(t("fa.c1"),t("fa.c1s"),legend);
+  c1.appendChild(donut(G.map(g=>({label:macroLabel(g.key),value:g.time,color:COL[g.key]})),
+    t("fa.donut.time"),hms(totTime).slice(0,5)));
+  g1.appendChild(c1);
+  const c2=card(t("fa.c2"),t("fa.c2s"),legend);
+  c2.appendChild(donut(G.map(g=>({label:macroLabel(g.key),value:g.tokens,color:COL[g.key]})),
+    t("fa.donut.tokens"),compact(totTok)));
+  g1.appendChild(c2);
+  const c3=card(t("fa.c3"),t("fa.c3s"),legend);
+  c3.appendChild(donut(G.map(g=>({label:macroLabel(g.key),value:g.cost,color:COL[g.key]})),
+    t("fa.donut.cost"),usd(totCost)));
+  g1.appendChild(c3);
+  f.appendChild(g1);
+
+  const c4=card(t("fa.c4"), t("fa.c4s"));
+  c4.appendChild(hbars(G.map(g=>({
+    label:macroLabel(g.key), segs:[{v:g.tin?g.tout/g.tin:0,color:COL[g.key],name:t("tip.efficiency")}], forceLabel:true,
+    tipRows:[{color:COL[g.key],name:t("tip.efficiency"),value:nf2(g.tin?g.tout/g.tin:0)},
+             {color:S2(),name:t("tip.input"),value:nf(g.tin)},{color:S1(),name:t("tip.output"),value:nf(g.tout)},
+             {color:"transparent",name:t("tip.tokensPerHour"),value:compact(g.time?g.tokens/(g.time/3600):0)}]
+  })),{labelWidth:110,valueWidth:64,fmt:nf2,axisFmt:nf2}));
+  f.appendChild(c4);
+
+  const cT=card(t("fa.table"),null);
+  cT.appendChild(table(
+    [t("col.macro"),{t:t("col.phases"),num:1},{t:t("col.time"),num:1},{t:t("col.pctTime"),num:1},
+     {t:t("col.input"),num:1},{t:t("col.output"),num:1},{t:t("col.tokens"),num:1},
+     {t:t("col.pctTokens"),num:1},{t:t("col.cost"),num:1},{t:t("col.efficiency"),num:1}],
+    G.map(g=>({ref:g,cells:[
+      {v:macroLabel(g.key)},{v:nf(g.n),cls:"num"},{v:hms(g.time),cls:"num"},{v:pct(g.time/totTime*100),cls:"num"},
+      {v:nf(g.tin),cls:"num"},{v:nf(g.tout),cls:"num"},{v:nf(g.tokens),cls:"num"},
+      {v:pct(g.tokens/totTok*100),cls:"num"},{v:usd(g.cost),cls:"num"},
+      {v:g.tin?nf2(g.tout/g.tin):"—",cls:"num"}]})),
+    [{v:t("row.total")},{v:nf(sum(G,g=>g.n)),cls:"num"},{v:hms(totTime),cls:"num"},{v:pct(100),cls:"num"},
+     {v:nf(sum(G,g=>g.tin)),cls:"num"},{v:nf(sum(G,g=>g.tout)),cls:"num"},{v:nf(totTok),cls:"num"},
+     {v:pct(100),cls:"num"},{v:usd(totCost),cls:"num"},{v:"",cls:"num"}]));
+  f.appendChild(cT);
+  return f;
+}
+
+/* ═══════════════════ PÁGINA 7 — MODEL COST SIMULATOR ═══════════════════ */
+const MODELS=[
+  {id:"kimi-k2-6",      name:"Kimi-K2.6",                              vendor:"OpenAI"},
+  {id:"kimi-k2-7-code", name:"Kimi-K2.7-Code",                         vendor:"OpenAI"},
+  {id:"claude-sonnet-4-6", name:"claude-sonnet-4-6",                   vendor:"Anthropic", def:[3.00,15.00], baseline:true},
+  {id:"fw-glm-5-2",     name:"FW-GLM-5.2",                             vendor:"OpenAI"},
+  {id:"fw-minimax-m3",  name:"FW-MiniMax-M3",                          vendor:"OpenAI"},
+  {id:"gpt-5-6-luna",   name:"gpt-5.6-luna",                           vendor:"OpenAI"},
+  {id:"llama-4-mav",    name:"Llama-4-Maverick-17B-128E-Instruct-FP8", vendor:"OpenAI"}
+];
+function modelRate(m){
+  const s=state.models[m.id];
+  if(s && (s.in>0||s.out>0)) return [s.in||0,s.out||0,true];
+  if(m.def) return [m.def[0],m.def[1],true];
+  return [0,0,false];
+}
+function pageModels(){
+  const f=frag(), runs=scope();
+  f.appendChild(pageHead(t("md.title"), t("md.desc")));
+
+  const b=el("div","banner");
+  b.appendChild(el("span","ic warn","!"));
+  const bt=el("div");
+  const p1=el("p"); p1.appendChild(el("b","",t("md.warn1")));
+  p1.appendChild(document.createTextNode(
+    t("md.warn1b",{i:usd(3),o:usd(15)})));
+  const p2=el("p"); p2.appendChild(document.createTextNode(t("md.warn2")));
+  bt.appendChild(p1); bt.appendChild(p2); b.appendChild(bt);
+  f.appendChild(b);
+
+  const tin=sum(runs,r=>r.tin), tout=sum(runs,r=>r.tout);
+  const base=MODELS.find(m=>m.baseline), baseRate=modelRate(base);
+  const baseCost=cost(tin,tout,baseRate[0],baseRate[1]);
+
+  f.appendChild(kpiRow([
+    [t("md.k1"),compact(tin+tout),t("md.k1s",{i:nf(tin),o:nf(tout)})],
+    [t("md.k2"),nf(runs.length),t("md.k2s")],
+    [t("md.k3"),usd(baseCost),base.name,"ok"],
+    [t("md.k4"),t("md.k4v",{n:nf(MODELS.filter(m=>modelRate(m)[2]).length),t:MODELS.length}),t("md.k4s")]
+  ]));
+
+  const cIn=card(t("md.rates"),t("md.ratess"));
+  const rowsD=MODELS.map(m=>{
+    const [ri,ro,has]=modelRate(m);
+    const mkInput=(which,val)=>{
+      const i=el("input"); i.type="number"; i.min="0"; i.step="0.01";
+      i.value = (state.models[m.id] && state.models[m.id][which]!==undefined)
+        ? state.models[m.id][which] : (m.def ? m.def[which==="in"?0:1] : "");
+      i.placeholder="—"; i.setAttribute("aria-label",t(which==="in"?"md.aria.in":"md.aria.out",{m:m.name}));
+      i.addEventListener("change",()=>{
+        state.models[m.id]=Object.assign({},state.models[m.id]);
+        const v=parseFloat(i.value);
+        state.models[m.id][which]=isNaN(v)?0:v;
+        save(); render();
+      });
+      return i;
+    };
+    const bd=el("span","badge"+(m.baseline?"":has?" ok":" mute"),
+                t(m.baseline?"md.badge.default":has?"md.badge.set":"md.badge.none"));
+    return {ref:m,cells:[
+      {v:m.name,cls:"mn"},{v:m.vendor},{node:bd},
+      {node:mkInput("in"),cls:"num"},{node:mkInput("out"),cls:"num"},
+      {v:has?usd(cost(tin,tout,ri,ro)):"—",cls:"num"},
+      {v:has?(m.baseline?"—":((cost(tin,tout,ri,ro)/baseCost-1)*100>=0?"+":"")+nf1((cost(tin,tout,ri,ro)/baseCost-1)*100)+"%"):"—",cls:"num"}
+    ]};
+  });
+  cIn.appendChild(table(
+    [t("col.model"),t("col.vendor"),t("col.rate"),
+     {t:t("col.inPerM",{c:CUR().trim()}),num:1},{t:t("col.outPerM",{c:CUR().trim()}),num:1},
+     {t:t("col.volumeCost"),num:1},{t:t("col.vsDefault"),num:1}], rowsD));
+  const mt=cIn.querySelector("table"); if(mt) mt.classList.add("mtbl");
+  f.appendChild(cIn);
+
+  const ready=MODELS.filter(m=>modelRate(m)[2]);
+  if(ready.length>1){
+    const c=card(t("md.cmp"), t("md.cmps",{n:compact(tin+tout)}),
+      [{name:t("tip.input"),color:S2()},{name:t("tip.output"),color:S1()}]);
+    c.appendChild(hbars(ready.map(m=>{ const [ri,ro]=modelRate(m);
+      return {label:m.name, flag:m.baseline?t("flag.baseline"):null,
+        segs:[{v:cost(tin,0,ri,ro),color:S2(),name:t("tip.input")},{v:cost(0,tout,ri,ro),color:S1(),name:t("tip.output")}],
+        tipRows:[{color:S2(),name:t("tip.inputCost"),value:usd(cost(tin,0,ri,ro))},
+                 {color:S1(),name:t("tip.outputCost"),value:usd(cost(0,tout,ri,ro))},
+                 {color:"transparent",name:t("tip.total"),value:usd(cost(tin,tout,ri,ro))},
+                 {color:"transparent",name:t("md.tip.rate"),value:t("md.tip.ratev",{i:usd(ri),o:nf2(ro)})}]};
+    }).sort((a,b)=>a.segs[0].v+a.segs[1].v-(b.segs[0].v+b.segs[1].v)),
+      {labelWidth:250,valueWidth:92,fmt:usd,axisFmt:usd0}));
+    f.appendChild(c);
+
+    const cheapest=ready.map(m=>{ const [ri,ro]=modelRate(m); return {m,c:cost(tin,tout,ri,ro)}; })
+                        .sort((a,b)=>a.c-b.c)[0];
+    if(cheapest && cheapest.m.id!==base.id){
+      const save_=baseCost-cheapest.c;
+      const ins=el("div","insights");
+      ins.appendChild(insight(t("md.cheapest"),cheapest.m.name,
+        t("md.cheapests",{c:usd(cheapest.c),b:usd(baseCost),m:base.name,
+                          d:usd(Math.abs(save_)),p:pct(Math.abs(save_/baseCost*100))})));
+      ins.appendChild(insight(t("md.caveat"),t("md.caveatTitle"),
+        t("md.caveats",{p:pct(runs.filter(r=>r.status==="completed").length/Math.max(runs.length,1)*100)})));
+      f.appendChild(ins);
+    }
+  } else {
+    f.appendChild(el("p","empty",t("md.needMore")));
+  }
+
+  const cP=card(t("md.perProject"),t("md.perProjects"));
+  const projs=byProject(runs).sort((a,b)=>b.tokens-a.tokens);
+  cP.appendChild(table(
+    [t("col.project"),{t:t("col.tokens"),num:1}].concat(ready.map(m=>({t:m.name,num:1}))),
+    projs.map(p=>({ref:p,cells:[{v:p.key,cls:"mn"},{v:nf(p.tokens),cls:"num"}].concat(
+      ready.map(m=>{ const [ri,ro]=modelRate(m); return {v:usd(cost(p.tin,p.tout,ri,ro)),cls:"num"}; }))})),
+    [{v:t("row.total")},{v:nf(tin+tout),cls:"num"}].concat(
+      ready.map(m=>{ const [ri,ro]=modelRate(m); return {v:usd(cost(tin,tout,ri,ro)),cls:"num"}; }))));
+  f.appendChild(cP);
+  return f;
+}
+
+/* ═══════════════════ ALERTAS ═══════════════════ */
+function buildAlerts(runs,finopsOnly){
+  const c=card(t("al.title"),t("al.sub"));
+  const list=el("div","alist");
+  const ph=byPhase(runs,canon);
+  const totTime=sum(ph,p=>p.time), totTok=sum(ph,p=>p.tokens);
+  const avgCost=sum(runs,runCost)/Math.max(runs.length,1);
+  let n=0;
+
+  if(!finopsOnly){
+    ph.filter(p=>totTime&&p.time/totTime>0.2).sort((a,b)=>b.time-a.time).forEach(p=>{
+      list.appendChild(alert_("warn",t("al.slowPhase",{k:p.key,p:pct(p.time/totTime*100)}),
+        t("al.slowPhaseM",{t:hms(p.time),n:p.n}))); n++; });
+    ph.filter(p=>totTok&&p.tokens/totTok>0.2).sort((a,b)=>b.tokens-a.tokens).forEach(p=>{
+      list.appendChild(alert_("warn",t("al.hotPhase",{k:p.key,p:pct(p.tokens/totTok*100)}),
+        t("al.hotPhaseM",{n:nf(p.tokens)}))); n++; });
+  }
+  runs.filter(r=>r.status==="aborted"||r.status==="failed").forEach(r=>{
+    list.appendChild(alert_("bad",t("al.aborted",{p:r.project}),
+      t("al.abortedM",{id:r.id,d:r.date,a:r.nAb,g:r.nDeg}))); n++; });
+  runs.filter(r=>r.status==="completed_with_warnings").forEach(r=>{
+    list.appendChild(alert_("warn",t("al.warned",{p:r.project}),
+      t("al.warnedM",{n:r.nDeg,t:r.phases.length,d:r.date}))); n++; });
+  runs.filter(r=>runCost(r)>avgCost*1.5).sort((a,b)=>runCost(b)-runCost(a)).forEach(r=>{
+    list.appendChild(alert_("warn",t("al.costly",{p:r.project}),
+      t("al.costlyM",{c:usd(runCost(r)),a:usd(avgCost),
+                      p:nf1((runCost(r)/avgCost-1)*100)+"%"}))); n++; });
+
+  const noTelTotal=sum(runs,r=>r.nNoTel);
+  if(noTelTotal){ list.appendChild(alert_("info",t("al.noTel",{n:noTelTotal}),
+    t("al.noTelM"))); n++; }
+  if(DATA.duplicates && DATA.duplicates.length){
+    DATA.duplicates.forEach(d=> list.appendChild(alert_("info",t("al.dup",{a:d.archive}),
+      t("al.dupM",{o:d.duplicate_of,id:d.execution_id}))));
+    n+=DATA.duplicates.length;
+  }
+  if(!n) list.appendChild(el("p","empty",t("al.none")));
+  c.appendChild(list); return c;
+}
+
+/* ═══════════════════ INSIGHTS ═══════════════════ */
+function buildInsights(runs){
+  const c=card(t("in.title"),t("in.sub"));
+  const g=el("div","insights");
+  const ph=byPhase(runs,canon), projs=byProject(runs);
+  const totTime=sum(ph,p=>p.time), totTok=sum(ph,p=>p.tokens);
+
+  const slow=[...ph].sort((a,b)=>b.time-a.time)[0];
+  if(slow) g.appendChild(insight(t("in.bottleneck"),slow.key,
+    t("in.bottleneckD",{t:hms(slow.time),p:pct(slow.time/totTime*100),n:slow.n})));
+
+  const dear=[...projs].sort((a,b)=>b.cost-a.cost)[0];
+  if(dear) g.appendChild(insight(t("in.costliest"),dear.key,
+    t("in.costliestD",{c:usd(dear.cost),n:dear.n,tok:compact(dear.tokens)})));
+
+  const effProj=projs.filter(p=>p.time>0).map(p=>({p,v:p.tokens/(p.time/3600)}))
+                     .sort((a,b)=>b.v-a.v)[0];
+  if(effProj) g.appendChild(insight(t("in.efficient"),effProj.p.key,
+    t("in.efficientD",{v:compact(effProj.v)})));
+
+  const hungry=[...ph].sort((a,b)=>b.tokens-a.tokens)[0];
+  if(hungry) g.appendChild(insight(t("in.hungry"),hungry.key,
+    t("in.hungryD",{tok:compact(hungry.tokens),p:pct(hungry.tokens/totTok*100),c:usd(hungry.cost)})));
+
+  const worst=ph.filter(p=>p.tin>0).map(p=>({p,e:p.tout/p.tin})).sort((a,b)=>a.e-b.e)[0];
+  if(worst) g.appendChild(insight(t("in.worst"),worst.p.key,
+    t("in.worstD",{e:nf2(worst.e),i:compact(worst.p.tin),o:compact(worst.p.tout)})));
+
+  const days=byDay(runs);
+  if(days.length>=2){
+    const first=days[0].cost, last=days[days.length-1].cost;
+    const delta=first? (last/first-1)*100 : 0;
+    g.appendChild(insight(t("in.trend"),(delta>=0?"+":"")+nf1(delta)+"%",
+      t("in.trendD",{a:usd(first),da:dmy(days[0].key),
+                     b:usd(last),db:dmy(days[days.length-1].key)})));
+  }
+
+  const rec=[];
+  if(slow && slow.time/totTime>0.2) rec.push(t("in.recSplit",{k:slow.key}));
+  if(worst && worst.e<0.15) rec.push(t("in.recContext",{k:worst.p.key}));
+  const noTelTotal=sum(runs,r=>r.nNoTel);
+  if(noTelTotal) rec.push(t("in.recInstrument",{n:noTelTotal}));
+  g.appendChild(insight(t("in.rec"),rec.length?t("in.recN",{n:rec.length}):t("in.recNone"),
+    rec.length?rec.join(" · ")+".":t("in.recNoneD")));
+
+  c.appendChild(g); return c;
+}
+
+/* ═══════════════════ FILTROS ═══════════════════ */
+function renderFilters(){
+  const bar=document.getElementById("filters"); bar.replaceChildren();
+  const facets=DATA.facets||{projects:[],statuses:[],modes:[]};
+
+  const gp=el("div","fgroup"); gp.appendChild(el("label","",t("fl.project")));
+  const cp=el("div","fctl");
+  const all=el("button","fbtn",t("fl.all")); all.type="button";
+  all.setAttribute("aria-pressed",state.projects.size?"false":"true");
+  all.addEventListener("click",()=>{ state.projects.clear(); reload(); });
+  cp.appendChild(all);
+  (facets.projects||[]).forEach(p=>{
+    const b=el("button","fbtn",p.length>26?p.slice(0,24)+"…":p); b.type="button"; b.title=p;
+    b.setAttribute("aria-pressed",state.projects.has(p)?"true":"false");
+    b.addEventListener("click",()=>{
+      if(state.projects.has(p)) state.projects.delete(p); else state.projects.add(p);
+      reload(); });
+    cp.appendChild(b);
+  });
+  gp.appendChild(cp); bar.appendChild(gp);
+
+  const gd=el("div","fgroup"); gd.appendChild(el("label","",t("fl.date")));
+  const cd=el("div","fctl");
+  const d1=el("input"); d1.type="date"; d1.value=state.dateFrom;
+  d1.setAttribute("aria-label",t("fl.from"));
+  d1.addEventListener("change",()=>{ state.dateFrom=d1.value; reload(); });
+  const d2=el("input"); d2.type="date"; d2.value=state.dateTo;
+  d2.setAttribute("aria-label",t("fl.to"));
+  d2.addEventListener("change",()=>{ state.dateTo=d2.value; reload(); });
+  cd.appendChild(d1); cd.appendChild(el("span","","–")); cd.appendChild(d2);
+  const clr=el("button","fbtn ghost",t("fl.clear")); clr.type="button";
+  clr.addEventListener("click",()=>{ state.dateFrom=state.dateTo=""; reload(); });
+  cd.appendChild(clr); gd.appendChild(cd); bar.appendChild(gd);
+
+  const gm=el("div","fgroup"); gm.appendChild(el("label","",t("fl.mode")));
+  const sm=el("select"); sm.setAttribute("aria-label",t("fl.mode"));
+  sm.appendChild(new Option(t("fl.all"),""));
+  (facets.modes||[]).forEach(m=>{
+    const o=new Option(m,m); if(state.mode===m) o.selected=true; sm.appendChild(o); });
+  sm.addEventListener("change",()=>{ state.mode=sm.value; reload(); });
+  gm.appendChild(sm); bar.appendChild(gm);
+
+  const gs=el("div","fgroup"); gs.appendChild(el("label","",t("fl.status")));
+  const ss=el("select"); ss.setAttribute("aria-label",t("fl.status"));
+  ss.appendChild(new Option(t("fl.all"),""));
+  (facets.statuses||[]).forEach(s=>{
+    const o=new Option(runLabel(s),s); if(state.status===s) o.selected=true; ss.appendChild(o); });
+  ss.addEventListener("change",()=>{ state.status=ss.value; reload(); });
+  gs.appendChild(ss); bar.appendChild(gs);
+
+  const r=rates();
+  const gr=el("div","fgroup");
+  gr.appendChild(el("label","",t("fl.rate")));
+  const cr=el("div","fctl");
+  cr.appendChild(el("span","tm-stamp", t("fl.rateV",{i:usd(r.i),o:usd(r.o)})));
+  gr.appendChild(cr); bar.appendChild(gr);
+
+  const info=el("div","fscope");
+  info.appendChild(document.createTextNode(t("fl.scope")));
+  info.appendChild(el("b","",String(RUNS.length)));
+  info.appendChild(document.createTextNode(t("fl.scopeOf",{n:DATA.total_projects||0})));
+  info.appendChild(el("b","",compact(sum(RUNS,r=>r.total))));
+  info.appendChild(document.createTextNode(t("fl.scopeTokens")));
+  bar.appendChild(info);
+}
+
+/* ═══════════════════ SHELL ═══════════════════ */
+const PAGES=[
+  {id:"exec",  key:"page.exec",  render:pageOverview},
+  {id:"perf",  key:"page.perf",  render:pagePerformance},
+  {id:"token", key:"page.token", render:pageTokens},
+  {id:"fin",   key:"page.fin",   render:pageFinops},
+  {id:"qual",  key:"page.qual",  render:pageQuality},
+  {id:"fact",  key:"page.fact",  render:pageFactory},
+  {id:"model", key:"page.model", render:pageModels}
+];
+const tabsEl=document.getElementById("tabs"), viewEl=document.getElementById("view");
+const stampEl=document.getElementById("stamp");
+
+function queryString(){
+  const q=new URLSearchParams();
+  state.projects.forEach(p=>q.append("project",p));
+  if(state.status)   q.set("status",state.status);
+  if(state.mode)     q.set("mode",state.mode);
+  if(state.dateFrom) q.set("from",state.dateFrom);
+  if(state.dateTo)   q.set("to",state.dateTo);
+  return q.toString();
+}
+
+/* Compara o execution_status de cada projeto com a leitura anterior.
+   É esse atributo que o painel acompanha em tempo real. */
+function diffStatuses(previous, current){
+  if(!previous) return [];
+  const out=[];
+  Object.keys(current||{}).forEach(id=>{
+    const was=previous[id], now=current[id];
+    if(was!==undefined && was!==now) out.push({id, from:was, to:now});
+    else if(was===undefined) out.push({id, from:null, to:now});
+  });
+  Object.keys(previous).forEach(id=>{
+    if(!(id in (current||{}))) out.push({id, from:previous[id], to:null});
+  });
+  return out;
+}
+
+async function reload(manual){
+  if(state.loading) return;
+  state.loading=true; state.error=null;
+  document.body.setAttribute("aria-busy","true");
+  const btn=document.getElementById("btn-refresh");
+  if(btn){ btn.disabled=true; btn.textContent=t("btn.refreshing"); }
+  try{
+    const qs=queryString();
+    const response=await fetch("/api/dashboard-data"+(qs?"?"+qs:""),
+                               {headers:{"Accept":"application/json"},cache:"no-store"});
+    const payload=await response.json();
+    if(!response.ok || payload.status!=="success"){
+      state.error=payload.error||("HTTP "+response.status);
+    } else {
+      state.changes=diffStatuses(state.lastStatuses, payload.statuses||{});
+      state.lastStatuses=payload.statuses||{};
+      DATA=payload; buildRuns();
+    }
+  }catch(err){
+    state.error=t("load.failed");
+  }finally{
+    state.loading=false;
+    document.body.removeAttribute("aria-busy");
+    if(btn){ btn.disabled=false; btn.textContent=t("btn.refresh"); }
+  }
+  schedulePoll();
+  renderFilters(); render();
+}
+
+/* Enquanto houver execução com status "running", repolla na cadência do
+   app.yaml (refresh.interval_seconds). Sem nenhuma rodando, para sozinho. */
+function schedulePoll(){
+  if(state.timer){ clearTimeout(state.timer); state.timer=null; }
+  if(state.tick){ clearInterval(state.tick); state.tick=null; }
+  state.nextAt=null;
+  const live=(DATA.in_progress||[]).length;
+  if(!live) return;
+  const seconds=Math.max(5, Number(DATA.refresh_interval_seconds)||30);
+  state.nextAt=Date.now()+seconds*1000;
+  state.timer=setTimeout(()=>reload(false), seconds*1000);
+  state.tick=setInterval(()=>{
+    const nodes=document.querySelectorAll("[data-countdown]");
+    if(!nodes.length) return;
+    const left=Math.max(0, Math.round((state.nextAt-Date.now())/1000));
+    nodes.forEach(n=>n.textContent=t("live.next",{n:left}));
+  },1000);
+}
+
+/* Faixa de acompanhamento ao vivo + transições desde a leitura anterior. */
+function liveBanner(){
+  const box=frag();
+  const live=(DATA.in_progress||[]).filter(id=>RUNS.some(r=>r.projectId===id));
+  if(live.length){
+    const bar=el("div","livebar");
+    bar.appendChild(el("span","dot"));
+    const tx=el("div");
+    tx.appendChild(el("b","", live.length===1
+      ? t("live.one") : t("live.many",{n:live.length})));
+    tx.appendChild(el("div","names", live.join(" · ")));
+    bar.appendChild(tx);
+    const next=el("span","next"); next.setAttribute("data-countdown","1");
+    next.textContent=t("live.tracking");
+    bar.appendChild(next);
+    box.appendChild(bar);
+  }
+  if(state.changes.length){
+    const list=el("div","alist");
+    state.changes.forEach(c=>{
+      const label = c.to===null ? t("live.outOfScope")
+        : c.from===null ? t("live.enteredScope",{s:runLabel(c.to)})
+        : runLabel(c.from)+" → "+runLabel(c.to);
+      const a=alert_(c.to==="running"?"warn":c.to?"ok":"info",
+                     t("live.changed",{id:c.id}), label);
+      a.classList.add("chg");
+      list.appendChild(a);
+    });
+    box.appendChild(list);
+    const spacer=el("div"); spacer.style.height="14px"; box.appendChild(spacer);
+  }
+  return box;
+}
+
+
+PAGES.forEach((p,i)=>{
+  const b=el("button","tab",t(p.key)); b.type="button"; b.setAttribute("role","tab"); b.id="tab-"+p.id;
+  b.addEventListener("click",()=>{ state.tab=i; location.hash="#/"+p.id; render(); });
+  b.addEventListener("keydown",e=>{
+    if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ e.preventDefault();
+      state.tab=(i+(e.key==="ArrowRight"?1:PAGES.length-1))%PAGES.length; render();
+      tabsEl.children[state.tab].focus(); }});
+  tabsEl.appendChild(b);
+});
+
+function render(){
+  Array.from(tabsEl.children).forEach((b,j)=>{
+    b.setAttribute("aria-selected",j===state.tab?"true":"false");
+    b.textContent=t(PAGES[j].key);
+  });
+  hideTip();
+  if(state.error){
+    const box=el("div","note err");
+    box.appendChild(el("span","ic bad","×"));
+    const tx=el("div","atx");
+    tx.appendChild(el("b","",t("load.failed")));
+    tx.appendChild(el("span","ameta",state.error));
+    box.appendChild(tx);
+    viewEl.replaceChildren(box);
+    return;
+  }
+  viewEl.replaceChildren(PAGES[state.tab].render());
+  viewEl.setAttribute("aria-labelledby","tab-"+PAGES[state.tab].id);
+  if(stampEl) stampEl.textContent = t("stamp.summary",{n:RUNS.length,at:DATA.generated_at||""});
+  const live=(DATA.in_progress||[]).length;
+  const dot=document.getElementById("livedot"), tx=document.getElementById("livetx");
+  if(dot && tx){
+    if(live){ dot.hidden=false; tx.textContent=t("topbar.live",{n:live}); }
+    else dot.hidden=true;
+  }
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+const btn=document.getElementById("theme-btn");
+function applyTheme(){
+  const cur=document.documentElement.getAttribute("data-theme");
+  const dark = cur==="dark" || (!cur && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.getElementById("theme-ic").textContent = dark?"☀":"☾";
+  document.getElementById("theme-tx").textContent = t(dark?"theme.light":"theme.dark");
+}
+
+/* Textos fixos da casca — o restante da tela é redesenhado por render(),
+   mas topbar e abas vivem fora dele e precisam ser reescritos na troca. */
+function applyStaticTexts(){
+  document.documentElement.lang = LANG==="pt" ? "pt-BR" : "en";
+  document.getElementById("tm-sub").textContent = t("app.subtitle")+" · "+ROOT_SOURCE;
+  document.getElementById("btn-refresh").textContent =
+    state.loading ? t("btn.refreshing") : t("btn.refresh");
+  tabsEl.setAttribute("aria-label", t("tabs.aria"));
+  langsw.setAttribute("aria-label", t("lang.aria"));
+  btn.setAttribute("aria-label", t("theme.aria"));
+  applyTheme();
+}
+
+/* Troca de idioma: só reescreve a tela — não refaz a chamada ao servidor,
+   porque a tradução é do rótulo, nunca do dado. */
+const langsw=document.getElementById("langsw");
+Array.from(langsw.querySelectorAll("button")).forEach(b=>{
+  b.addEventListener("click",()=>{
+    const chosen=b.getAttribute("data-lang");
+    if(chosen===LANG) return;
+    LANG=chosen; save();
+    applyStaticTexts(); markLang(); renderFilters(); render();
+  });
+});
+function markLang(){
+  Array.from(langsw.querySelectorAll("button")).forEach(b=>
+    b.setAttribute("aria-pressed", b.getAttribute("data-lang")===LANG ? "true":"false"));
+}
+btn.addEventListener("click",()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const dark = cur==="dark" || (!cur && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+  applyTheme(); save(); renderFilters(); render();
+});
+if(window.matchMedia){
+  const mq=window.matchMedia("(prefers-color-scheme: dark)");
+  if(mq.addEventListener) mq.addEventListener("change",()=>{ applyTheme(); render(); });
+}
+
+function tabFromHash(){
+  const id=(location.hash||"").replace(/^#\/?/,"");
+  const i=PAGES.findIndex(p=>p.id===id);
+  if(i>=0) state.tab=i;
+}
+window.addEventListener("hashchange",()=>{ tabFromHash(); render(); });
+document.getElementById("btn-refresh").addEventListener("click",()=>reload(true));
+tabFromHash(); applyStaticTexts(); markLang();
+if(stampEl) stampEl.textContent=t("stamp.loading");
+reload();
+</script>
+
+</body>
+</html>

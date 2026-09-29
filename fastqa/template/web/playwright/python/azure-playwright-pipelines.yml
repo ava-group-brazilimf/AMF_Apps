@@ -1,0 +1,91 @@
+trigger:
+  branches:
+    include:
+      - Gabriel-Tests
+  paths:
+    include:
+      - SauceDemoE2E/*
+
+pr:
+  branches:
+    include:
+      - Gabriel-Tests
+  paths:
+    include:
+      - SauceDemoE2E/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  projectFolder: 'SauceDemoE2E'
+  pythonVersion: '3.11'
+
+stages:
+  - stage: Run_E2E_Tests
+    displayName: 'Run SauceDemo E2E Tests'
+    jobs:
+      - job: Playwright_Python_Tests
+        displayName: 'Playwright Python Tests'
+        steps:
+          - checkout: self
+            clean: true
+
+          - task: UsePythonVersion@0
+            displayName: 'Use Python $(pythonVersion)'
+            inputs:
+              versionSpec: '$(pythonVersion)'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r $(projectFolder)/requirements.txt
+              python -m playwright install --with-deps chromium
+            displayName: 'Install dependencies and Playwright'
+
+          - script: |
+              cd $(projectFolder)
+              cp .env.example .env
+              pytest -v --maxfail=1 --junitxml=test-results.xml --alluredir=allure-results
+            displayName: 'Run pytest with JUnit and Allure'
+            continueOnError: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '$(projectFolder)/test-results.xml'
+              failTaskOnFailedTests: true
+              testRunTitle: 'SauceDemoE2E Playwright Python Tests'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Allure results'
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: '$(Build.SourcesDirectory)/$(projectFolder)/allure-results'
+              artifact: 'allure-results'
+              publishLocation: 'pipeline'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish screenshots'
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: '$(Build.SourcesDirectory)/$(projectFolder)/artifacts/screenshots'
+              artifact: 'screenshots'
+              publishLocation: 'pipeline'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish videos'
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: '$(Build.SourcesDirectory)/$(projectFolder)/artifacts/videos'
+              artifact: 'videos'
+              publishLocation: 'pipeline'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish logs'
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: '$(Build.SourcesDirectory)/$(projectFolder)/artifacts/logs'
+              artifact: 'logs'
+              publishLocation: 'pipeline'

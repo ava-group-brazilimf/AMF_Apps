@@ -1,0 +1,64 @@
+# .NET Scaffold Manifest - mandatory deterministic foundation files.
+# Every blocking entry is emitted by f4s_dotnet_scaffold.py.
+manifest_id: dotnet
+version: "2.0.0"
+description: "Mandatory files for the deterministic .NET Clean Architecture scaffold."
+
+files:
+  - path: "*.sln"
+    category: solution-root
+    blocking: true
+    glob: true
+    error_if_missing: "dotnet build fails: solution file not found"
+  - path: "global.json"
+    category: solution-root
+    blocking: true
+    error_if_missing: "SDK selection is not pinned"
+  - path: "Directory.Build.props"
+    category: solution-root
+    blocking: true
+    error_if_missing: "shared build properties are missing"
+  - path: "Directory.Packages.props"
+    category: solution-root
+    blocking: true
+    error_if_missing: "Central Package Management file is missing"
+  - path: ".gitignore"
+    category: solution-root
+    blocking: true
+    error_if_missing: "initial repository can include bin and obj artifacts"
+
+  - path: "src/SharedKernel/*.SharedKernel/*.SharedKernel.csproj"
+    category: shared-kernel
+    blocking: true
+    glob: true
+    error_if_missing: "SharedKernel project not found"
+  - path: "src/*/*.Domain/*.Domain.csproj"
+    category: domain-layer
+    blocking: true
+    glob: true
+    error_if_missing: "Domain project not found for any bounded context"
+  - path: "src/*/*.Application/*.Application.csproj"
+    category: application-layer
+    blocking: true
+    glob: true
+    error_if_missing: "Application project not found for any bounded context"
+  - path: "src/*/*.Infrastructure/*.Infrastructure.csproj"
+    category: infrastructure-layer
+    blocking: true
+    glob: true
+    error_if_missing: "Infrastructure project not found for any bounded context"
+  - path: "src/*/*.Api/*.Api.csproj"
+    category: api-layer
+    blocking: true
+    glob: true
+    error_if_missing: "API project not found for any bounded context"
+  - path: "tests/*/*.Domain.Tests/*.Domain.Tests.csproj"
+    category: test-projects
+    blocking: true
+    glob: true
+    error_if_missing: "Domain test project not found for any bounded context"
+  - path: "tests/*/*.Application.Tests/*.Application.Tests.csproj"
+    category: test-projects
+    blocking: true
+    glob: true
+    error_if_missing: "Application test project not found for any bounded context"

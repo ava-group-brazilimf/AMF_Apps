@@ -1,0 +1,31 @@
+name: deliverables
+display_name: "Agentes de Entregáveis"
+version: "1.0.0"
+description: "Consolidação e publicação de todos os artefatos para o cliente"
+handoff:
+  to: "DevOps Agents (F7)"
+  role: "Produzem e consolidam os entregáveis técnicos e executivos finais do projeto"
+  reason: "Formalizar documentação, evidências, materiais de aceite e compliance"
+  step: "F6 — Agents 6"
+
+agents:
+  - id: ava-deliverable-packager
+    file: agents/packager-agent.md
+  - id: ava-deliverable-tech-docs
+    file: agents/tech-docs-agent.md
+  - id: ava-deliverable-migration-plan
+    file: agents/migration-plan-publisher.md
+  - id: ava-deliverable-test-evidence
+    file: agents/test-evidence-agent.md
+  - id: ava-deliverable-code-templates
+    file: agents/code-templates-agent.md
+  - id: ava-deliverable-security-compliance
+    file: agents/security-compliance-agent.md
+  - id: ava-deliverable-client-demo
+    file: agents/client-demo-agent.md
+  - id: ava-requestor-inspection
+    file: agents/requestor-inspection-agent.md
+  - id: ava-deliverable-package-approval-doc
+    file: agents/package-approval-doc-agent.md
+  - id: ava-deliverable-strategy-align
+    file: agents/strategy-align-agent.md

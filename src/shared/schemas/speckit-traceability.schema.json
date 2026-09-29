@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric/schemas/speckit-traceability.schema.json",
+  "title": "SpecKit Traceability",
+  "description": "Espinha de rastreabilidade da fase F3S. Uma entrada por task de implementacao. Imutavel apos o fim da F3S: o gate de saida grava o checksum, e uma task nao pode perder a proveniencia no meio da execucao. Verificado por CHK-SK-005..012. Spec: specs/039-speckit-planning-layer/.",
+  "type": "object",
+  "required": ["schema_version", "project", "trace_id", "generated_at", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "project": { "type": "string", "minLength": 1 },
+    "trace_id": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "constitution": {
+      "type": "string",
+      "description": "Caminho da constituicao que governou a geracao destas entradas.",
+      "default": "outputs/tobe/speckit/constitution.md"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "task_id", "spec_id", "plan_id", "group", "target_stack",
+        "source_artifact", "source_anchor", "target_files"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[A-Z0-9]+(-[A-Z0-9]+)*-[0-9]{3}$",
+          "description": "Ex.: T-CART-004. Unico no arquivo."
+        },
+        "spec_id": {
+          "type": "string",
+          "pattern": "^SPEC-[A-Z0-9]+(-[A-Z0-9]+)*-[0-9]{3}$"
+        },
+        "plan_id": {
+          "type": "string",
+          "pattern": "^PLAN-[A-Z0-9]+(-[A-Z0-9]+)*-[0-9]{3}$"
+        },
+        "group": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Grupo de modulo do plano. E a unidade de fan-out da F4."
+        },
+        "target_stack": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Roteia o agente coder. Valor vindo de tobe_stack do project-config.yaml — nunca inventado."
+        },
+        "source_artifact": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caminho relativo a projects/{project}/ do artefato de origem. CHK-SK-006 reabre este arquivo."
+        },
+        "source_anchor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trecho literal encontravel em source_artifact. Ancora inventada reprova CHK-SK-006 e bloqueia a F4 — e o que separa rastreabilidade verificavel de narrativa."
+        },
+        "rule_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Ids BR-* herdados da fonte. Alimenta CHK-SK-007."
+        },
+        "api_ops": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Operacoes OpenAPI no formato 'METHOD /path' ou operationId. Alimenta CHK-SK-008."
+        },
+        "test_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Ids TC-* herdados de test-cases.md. Alimenta CHK-SK-009."
+        },
+        "screen_id": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "screen-{kebab} quando a task vem do prototipo. Alimenta CHK-PROTO-003."
+        },
+        "target_files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Arquivos que a task produz, relativos a outputs/tobe/source-code/. Nunca um diretorio."
+        },
+        "depends_on": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "task_id dos quais esta task depende. Sem ciclos."
+        },
+        "acceptance": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Criterios de aceite verificaveis, copiados da task."
+        },
+        "verify_command": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Comando que prova a task. Sem ele a task nunca chega a 'verified' no razao."
+        }
+      }
+    }
+  }
+}

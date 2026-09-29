@@ -1,0 +1,6 @@
+{
+  "scenario": "version-incompatibility",
+  "rootCause": "MERMAID_VERSION_INCOMPATIBILITY",
+  "stage": "RUNTIME_VERSION_PROBE",
+  "publicationAllowed": false
+}

@@ -1,0 +1,26 @@
+{
+  "name": "typescript-automated-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test --trace on",
+    "reporter": "npx playwright show-report",
+    "ui": "npx playwright test --ui --trace on",
+    "dev": "npx playwright test --project=DEV",
+    "hml": "npx playwright test --project=HML"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^20.14.2",
+    "dotenv": "^16.4.5",
+    "monocart-reporter": "^2.4.8"
+  },
+  "dependencies": {
+    "@alex_neo/playwright-azure-reporter": "^1.9.1",
+    "csv-parse": "^5.5.6"
+  }
+}

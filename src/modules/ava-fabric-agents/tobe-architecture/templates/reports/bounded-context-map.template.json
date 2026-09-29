@@ -1,0 +1,104 @@
+{
+  "$schema": "bounded-context-map-json-template",
+  "$version": "1.0.0",
+  "$description": "Template canônico do bounded-context-map.json — contrato legível por máquina dos Bounded Contexts TO-BE, produzido pelo trigger BC do agente ava-tobe-architecture-design. É o par determinístico do bounded-context-map.md: o .md é a documentação (prosa, estrutura livre), este é o CONTRATO (schema fixo, ordem fixa, arrays ordenados, nenhum campo omitido). Existe porque a estrutura do .md varia por projeto — medido no repo: em cadastro-funcionarios cada BC é uma tabela '| **ID** | BC-01 |', em meu-erp-03 o mesmo BC é '**Module**: …' seguido de blocos de código. Ambos válidos como documentação e inutilizáveis como contrato: cada consumidor a jusante acabava escrevendo o próprio regex sobre markdown, e cada um errava de um jeito diferente. Os VALORES derivam das evidências AS-IS pela Tabela de Derivação por Campo da spec do agente; o SCHEMA, os nomes de campo, os tipos e a ordem das propriedades são INVARIÁVEIS e NÃO dependem da linguagem legada, do framework, da arquitetura ou da organização do código-fonte.",
+
+  "$usage": "O agente DEVE: (1) copiar este template; (2) remover TODAS as chaves de metadado prefixadas com '$' — elas descrevem o contrato, não fazem parte dele; (3) preencher os valores preservando EXATAMENTE a ordem de propriedades deste arquivo, em todos os níveis; (4) replicar o objeto de exemplo de bounded_contexts[] uma vez por BC identificado, e o de context_map[] uma vez por aresta do Context Map; (5) aplicar os defaults de $defaults a todo campo sem evidência — nunca omitir a chave, nunca inventar valor; (6) ordenar cada array conforme $ordering; (7) recontar total_bounded_contexts e unresolved.count ANTES de gravar; (8) salvar como projects/{project_name}/outputs/tobe/docs/bounded-context-map.json — UTF-8 sem BOM, indentação 2 espaços, quebras \\n, newline final, acentos literais (proibido escapar como \\uXXXX); (9) conferir a consistência .md ↔ .json (invariante J-6 da spec) ANTES de encerrar o trigger BC. A geração só pode ocorrer depois que TODOS os BCs tiverem sido identificados e consolidados: um JSON que descreve menos BCs que o .md é pior que JSON nenhum, porque é lido como verdade.",
+
+  "$invariants": "J-1 schema/nomes/tipos/ordem de propriedades FIXOS, independentes da tecnologia legada. J-2 nenhum campo omitido — dado ausente usa o default de $defaults. J-3 arrays com ordenação determinística conforme $ordering. J-4 JSON válido por RFC 8259, UTF-8 sem BOM, indent 2, \\n, newline final, acentos literais. J-5 todo bc_id casa ^BC-\\d{2}$ e é único no arquivo. J-6 o conjunto de bc_id/bc_name é IDÊNTICO ao do bounded-context-map.md. J-7 todo partner_bc_id, from_bc_id e to_bc_id existe em bounded_contexts[]. J-8 valores derivam das evidências AS-IS pela Tabela de Derivação por Campo — sem evidência, default; nunca invenção. generated_at é o ÚNICO campo volátil entre execuções: 'estruturalmente idêntico' significa mesmo schema, mesma ordem e mesmos defaults, não bytes idênticos.",
+
+  "$i18n": "Os NOMES DE CAMPO são identificadores, não prosa: permanecem em inglês em qualquer idioma de projeto — é o que os consumidores a jusante leem, e o mesmo critério já vale para wave-model.json (wave_id, bounded_contexts, total_fp). A regra pt-BR de AGENTS.md §6 aplica-se aos VALORES de conteúdo (responsibility.is, definition, description) e ao bounded-context-map.md. Traduzir uma chave quebra todo consumidor de uma vez.",
+
+  "$enums": {
+    "direction": ["Upstream", "Downstream", "Peer", "A definir"],
+    "ddd_pattern": ["ACL", "Conformist", "OHS", "Shared Kernel", "Customer-Supplier", "Published Language", "A definir"],
+    "layer": ["tobe"],
+    "$note": "Enumerações são FECHADAS. Valor fora da lista é falha de quality gate — não invente um sétimo padrão DDD nem uma quarta direção."
+  },
+
+  "$defaults": {
+    "string_de_conteudo": "A definir",
+    "string_de_anotacao_livre": "",
+    "array": [],
+    "inteiro": 0,
+    "enumeracao": "A definir",
+    "$note": "string_de_conteudo cobre bc_name, module, squad_owner, responsibility.is, responsibility.is_not, description e architecture_style. string_de_anotacao_livre cobre ubiquitous_language[].notes — ausência de nota é ausência, não lacuna. bc_id NÃO tem default: um BC sem id não é um BC; se não for possível atribuir id, o BC não entra no arquivo e a lacuna vai para unresolved.fields[]."
+  },
+
+  "$ordering": {
+    "bounded_contexts": "bc_id ascendente, comparado pelo NÚMERO (BC-02 antes de BC-10, não ordem lexicográfica)",
+    "relationships": "partner_bc_id ascendente, mesma comparação numérica",
+    "context_map": "from_bc_id ascendente, desempate por to_bc_id ascendente — ambos por número",
+    "ubiquitous_language": "term ascendente case-insensitive; empate desfeito por codepoint",
+    "arrays_de_string": "ascendente case-insensitive, duplicatas removidas — aplica-se a aggregate_roots, value_objects, domain_events_published, domain_events_consumed, repositories, commands, queries, acl_adapters, public_endpoints, critical_changes_asis_to_tobe, sources e unresolved.fields",
+    "$note": "Sem exceções. Onde a ordem narrativa carregar significado — tipicamente a sequência de mudança em critical_changes_asis_to_tobe — ela pertence ao .md, que é a documentação. Aqui o array vai ordenado: um contrato cuja ordem depende de julgamento não é determinístico."
+  },
+
+  "$unresolved_contract": "unresolved.fields[] lista o caminho de CADA campo que caiu no default por falta de evidência, no formato 'bounded_contexts[BC-02].squad_owner'. unresolved.count é o tamanho da lista. Existe porque 'A definir' espalhado por 40 campos é indistinguível, para um consumidor, de um artefato bem preenchido — e é exatamente a métrica que diz se a Fase 1 rodou com insumo suficiente. Declarar {count: 0, fields: []} havendo 'A definir' no arquivo é falha de quality gate.",
+
+  "$downstream_consumers": "bc_id e bc_name são as chaves que o resto da esteira usa. src/shared/tools/wave_model_consistency.py (passo F2d) resolve o bc_name de cada BC alocado a uma wave preferindo ESTE arquivo ao markdown — é o que permite reconciliar o wave-model.json sem heurística de regex, e por consequência o que permite a F3S expandir. Renomear bc_id/bc_name quebra a F2d. Nota: aquele consumidor trata bc_name == 'A definir' como lacuna declarada e cai no fallback de markdown — o default nunca vira nome de BC.",
+
+  "schema_version": "1.0.0",
+  "artifact": "bounded-context-map",
+  "layer": "tobe",
+  "project": "{project_name}",
+  "trace_id": "{trace_id — propaga sem mutação do project-config.yaml}",
+  "generated_at": "{ISO-8601 UTC, ex. 2026-08-26T14:32:07Z}",
+  "source_markdown": "outputs/tobe/docs/bounded-context-map.md",
+  "architecture_style": "{derivado de ADR-001 ou architecture-blueprint.md; sem evidência: A definir}",
+  "total_bounded_contexts": 0,
+
+  "bounded_contexts": [
+    {
+      "bc_id": "BC-01",
+      "bc_name": "{Nome do BC — derivado do bounded-context-map.md AS-IS (Passo 1); nunca inventado}",
+      "module": "{NomeMódulo da stack alvo, derivado dos ADRs; sem evidência: A definir}",
+      "squad_owner": "A definir",
+      "responsibility": {
+        "is": "{o que este contexto É responsável por — domínio e operações core; sem evidência: A definir}",
+        "is_not": "{exclusões explícitas de escopo; sem evidência: A definir}"
+      },
+      "ubiquitous_language": [
+        {
+          "term": "{Termo extraído do business-rules.md AS-IS}",
+          "definition": "{Definição encontrada no AS-IS; sem evidência: A definir}",
+          "notes": ""
+        }
+      ],
+      "aggregate_roots": [],
+      "value_objects": [],
+      "domain_events_published": [],
+      "domain_events_consumed": [],
+      "repositories": [],
+      "commands": [],
+      "queries": [],
+      "acl_adapters": [],
+      "public_endpoints": [],
+      "critical_changes_asis_to_tobe": [],
+      "relationships": [
+        {
+          "partner_bc_id": "BC-02",
+          "direction": "Upstream",
+          "ddd_pattern": "ACL",
+          "description": "{contrato entre os dois BCs; sem evidência: A definir}"
+        }
+      ],
+      "sources": []
+    }
+  ],
+
+  "context_map": [
+    {
+      "from_bc_id": "BC-01",
+      "to_bc_id": "BC-02",
+      "direction": "Upstream",
+      "ddd_pattern": "OHS",
+      "description": "{descrição da aresta; sem evidência: A definir}"
+    }
+  ],
+
+  "unresolved": {
+    "count": 0,
+    "fields": []
+  }
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AVA Fabric Agents - Repository Structure</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 14px;
+    padding: 40px;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #181825;
+    border-radius: 16px;
+    padding: 32px 40px;
+    border: 1px solid #313244;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  h1 {
+    font-size: 20px;
+    color: #cba6f7;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .subtitle {
+    color: #6c7086;
+    font-size: 12px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #313244;
+    padding-bottom: 16px;
+  }
+  .tree {
+    white-space: pre;
+    line-height: 1.55;
+  }
+  .folder { color: #89b4fa; font-weight: 600; }
+  .file { color: #a6adc8; }
+  .comment { color: #6c7086; font-style: italic; }
+  .phase { color: #a6e3a1; font-weight: 700; }
+  .connector { color: #45475a; }
+  .highlight { color: #f9e2af; }
+  .root { color: #cba6f7; font-weight: 700; font-size: 16px; }
+  .separator {
+    border-top: 1px solid #313244;
+    margin: 12px 0;
+  }
+  .legend {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #313244;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-color {
+    width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>ava-fabric-apps-agents/</h1>
+<div class="subtitle">Repository Structure &mdash; AVA Fabric Agents (44 agents)</div>
+<div class="tree"><span class="connector">│</span>
+<span class="connector">├── </span><span class="folder">.github/</span>                              <span class="comment">&larr; GitHub integrations</span>
+<span class="connector">│   ├── </span><span class="file">copilot-instructions.md</span>          <span class="comment">&larr; GitHub Copilot instructions</span>
+<span class="connector">│   └── </span><span class="folder">skills/</span>                          <span class="comment">&larr; GitHub Copilot Skills entry points (44)</span>
+<span class="connector">│       ├── </span><span class="file">ava-asis-*/SKILL.md</span>              <span class="comment">&larr; F1 Skills (8 agents)</span>
+<span class="connector">│       ├── </span><span class="file">ava-tobe-*/SKILL.md</span>              <span class="comment">&larr; F2 Skills (8 agents)</span>
+<span class="connector">│       ├── </span><span class="file">ava-stack-*/SKILL.md</span>             <span class="comment">&larr; F3 Skills (3 agents)</span>
+<span class="connector">│       ├── </span><span class="file">ava-qa-*/SKILL.md</span>                <span class="comment">&larr; F4 Skills (9 agents)</span>
+<span class="connector">│       ├── </span><span class="file">ava-prototype/SKILL.md</span>           <span class="comment">&larr; F5 Skills (1 agent)</span>
+<span class="connector">│       ├── </span><span class="file">ava-devops-*/SKILL.md</span>            <span class="comment">&larr; F6 Skills (7 agents)</span>
+<span class="connector">│       ├── </span><span class="file">ava-deliverable-*/SKILL.md</span>       <span class="comment">&larr; F7 Skills (7 agents)</span>
+<span class="connector">│       └── </span><span class="file">ava-summary/SKILL.md</span>             <span class="comment">&larr; F8 Skills (1 agent)</span>
+<span class="connector">│</span>
+<span class="connector">├── </span><span class="folder">docs/</span>                                  <span class="comment">&larr; Project documentation</span>
+<span class="connector">│   ├── </span><span class="file">agents-catalog.md</span>                <span class="comment">&larr; Full catalog of 44 agents</span>
+<span class="connector">│   └── </span><span class="file">guia-execucao-fluxo-agentes.md</span>   <span class="comment">&larr; Step-by-step execution guide</span>
+<span class="connector">│</span>
+<span class="connector">├── </span><span class="folder">src/</span>                                   <span class="comment">&larr; Agent source code</span>
+<span class="connector">│   ├── </span><span class="folder">modules/ava-fabric-agents/</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">asis-diagnostic/</span>             <span class="phase">&larr; F1 — AS-IS Diagnostic</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; Specialized agents (8)</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">orchestrator-asis.md</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">solution-delphi.md</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">documentation-asis.md</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">inventory-asis.md</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">security-review-asis.md</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">test-qa-asis.md</span>
+<span class="connector">│   │   │   │   ├── </span><span class="file">gaps-risks-asis.md</span>
+<span class="connector">│   │   │   │   └── </span><span class="folder">db-analyzer/</span>         <span class="comment">&larr; Sub-agents per DBMS</span>
+<span class="connector">│   │   │   │       ├── </span><span class="file">db-analyzer.md</span>
+<span class="connector">│   │   │   │       └── </span><span class="folder">skills/</span>
+<span class="connector">│   │   │   │           ├── </span><span class="file">mariadb-agent.md</span>
+<span class="connector">│   │   │   │           ├── </span><span class="file">mysql-agent.md</span>
+<span class="connector">│   │   │   │           ├── </span><span class="file">oracle-agent.md</span>
+<span class="connector">│   │   │   │           └── </span><span class="file">sqlserver-agent.md</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">workflows/analyze-delphi/</span> <span class="comment">&larr; Workflow with 7 steps</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">templates/reports/</span>       <span class="comment">&larr; Report templates</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">checklists/</span>              <span class="comment">&larr; Quality gates</span>
+<span class="connector">│   │   │   └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">tobe-architecture/</span>           <span class="phase">&larr; F2 — TO-BE Architecture</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; 8 agents (design, technical, sizing...)</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">workflows/design-dotnet/</span> <span class="comment">&larr; Workflow with 8 steps</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">templates/reports/</span>       <span class="comment">&larr; Report templates</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">checklists/</span>              <span class="comment">&larr; Quality gates</span>
+<span class="connector">│   │   │   └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">tech-stack/</span>                  <span class="phase">&larr; F4 — Tech Stack</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; 3 agents (orchestrator, backend, frontend)</span>
+<span class="connector">│   │   │   └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">qa-agents/</span>                   <span class="phase">&larr; F5 — QA Agents</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; 9 agents (BDD, scripts, exploratory...)</span>
+<span class="connector">│   │   │   └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">prototype/</span>                   <span class="phase">&larr; F3 — Prototype</span>
+<span class="connector">│   │   │   └── </span><span class="folder">agents/</span>
+<span class="connector">│   │   │       └── </span><span class="file">prototype-agent.md</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">devops-agents/</span>               <span class="phase">&larr; F6 — DevOps</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; 5 agents (CI, CD, IaC, compare, approval)</span>
+<span class="connector">│   │   │   └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   ├── </span><span class="folder">deliverables/</span>                <span class="phase">&larr; F7 — Deliverables</span>
+<span class="connector">│   │   │   ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; 7 agents (packager, docs, security...)</span>
+<span class="connector">│   │   │   └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │   │</span>
+<span class="connector">│   │   └── </span><span class="folder">summary/</span>                     <span class="phase">&larr; F8 — Summary</span>
+<span class="connector">│   │       ├── </span><span class="folder">agents/</span>                  <span class="comment">&larr; summary-agent.md</span>
+<span class="connector">│   │       ├── </span><span class="folder">workflows/generate-summary/</span> <span class="comment">&larr; 4 steps</span>
+<span class="connector">│   │       ├── </span><span class="folder">templates/html/</span>          <span class="comment">&larr; Interactive HTML template</span>
+<span class="connector">│   │       ├── </span><span class="folder">data/</span>                    <span class="comment">&larr; artifact-map.yaml</span>
+<span class="connector">│   │       └── </span><span class="file">module.yaml</span>
+<span class="connector">│   │</span>
+<span class="connector">│   └── </span><span class="folder">shared/</span>                          <span class="comment">&larr; Shared resources across agents</span>
+<span class="connector">│       ├── </span><span class="folder">checklists/</span>                  <span class="comment">&larr; pre-kickoff.md</span>
+<span class="connector">│       ├── </span><span class="folder">data/patterns/</span>               <span class="comment">&larr; Delphi and .NET patterns</span>
+<span class="connector">│       ├── </span><span class="folder">schemas/</span>                     <span class="comment">&larr; JSON Schemas (task, result, approval)</span>
+<span class="connector">│       └── </span><span class="folder">templates/reports/</span>           <span class="comment">&larr; Base report template</span>
+<span class="connector">│</span>
+<span class="connector">├── </span><span class="folder">project/</span>                               <span class="comment">&larr; Default project (single-project, legacy)</span>
+<span class="connector">│   ├── </span><span class="folder">context/</span>                         <span class="comment">&larr; Configuration and shared state</span>
+<span class="connector">│   └── </span><span class="folder">outputs/</span>                         <span class="comment">&larr; Generated artifacts (asis, summary)</span>
+<span class="connector">│</span>
+<span class="connector">├── </span><span class="folder">projects/</span>                              <span class="highlight">&larr; Multi-project (each subfolder = 1 project)</span>
+<span class="connector">│   ├── </span><span class="folder">_template/</span>                       <span class="comment">&larr; Template for new projects</span>
+<span class="connector">│   │   └── </span><span class="folder">context/</span>
+<span class="connector">│   │       ├── </span><span class="file">project-config.yaml</span>      <span class="comment">&larr; Initial configuration</span>
+<span class="connector">│   │       └── </span><span class="file">shared-context.md</span>        <span class="comment">&larr; Shared context</span>
+<span class="connector">│   │</span>
+<span class="connector">│   ├── </span><span class="folder">Meu-ERP/</span>                        <span class="comment">&larr; Sample project (full AS-IS + TO-BE)</span>
+<span class="connector">│   │   ├── </span><span class="folder">context/</span>
+<span class="connector">│   │   └── </span><span class="folder">outputs/</span>
+<span class="connector">│   │       ├── </span><span class="folder">asis/</span>                    <span class="comment">&larr; Diagnostics, diagrams, docs</span>
+<span class="connector">│   │       ├── </span><span class="folder">tobe/</span>                    <span class="comment">&larr; Architecture, ADRs, diagrams</span>
+<span class="connector">│   │       └── </span><span class="folder">summary/</span>                 <span class="comment">&larr; Consolidated HTML report</span>
+<span class="connector">│   │</span>
+<span class="connector">│   ├── </span><span class="folder">awesome-delphi/</span>                  <span class="comment">&larr; Sample project (partial AS-IS)</span>
+<span class="connector">│   ├── </span><span class="folder">data-comparer-Exemples/</span>          <span class="comment">&larr; Sample project (full AS-IS)</span>
+<span class="connector">│   │</span>
+<span class="connector">│   └── </span><span class="folder">example-vcl-login/</span>              <span class="highlight">&larr; Sample project (full F1→F8 pipeline)</span>
+<span class="connector">│       ├── </span><span class="folder">context/</span>
+<span class="connector">│       └── </span><span class="folder">outputs/</span>
+<span class="connector">│           ├── </span><span class="folder">asis/</span>                    <span class="comment">&larr; AS-IS reports and diagrams</span>
+<span class="connector">│           ├── </span><span class="folder">tobe/</span>                    <span class="comment">&larr; Blueprints, ADRs, sizing</span>
+<span class="connector">│           │   └── </span><span class="folder">source-code/</span>         <span class="comment">&larr; Generated .NET 10 + Angular 17 code</span>
+<span class="connector">│           ├── </span><span class="folder">qa/</span>                      <span class="comment">&larr; Scenarios, scripts, evidence</span>
+<span class="connector">│           ├── </span><span class="folder">deliverables/</span>            <span class="comment">&larr; Final delivery package</span>
+<span class="connector">│           └── </span><span class="folder">summary/</span>                 <span class="comment">&larr; Interactive HTML report</span>
+<span class="connector">│</span>
+<span class="connector">├── </span><span class="file">.gitignore</span>
+<span class="connector">├── </span><span class="file">module.yaml</span>                            <span class="comment">&larr; AVA Fabric root module manifest</span>
+<span class="connector">└── </span><span class="file">README.md</span></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-color" style="background:#89b4fa"></span> Directories</div>
+  <div class="legend-item"><span class="legend-color" style="background:#a6adc8"></span> Files</div>
+  <div class="legend-item"><span class="legend-color" style="background:#a6e3a1"></span> Phases (F1-F8)</div>
+  <div class="legend-item"><span class="legend-color" style="background:#f9e2af"></span> Highlights</div>
+  <div class="legend-item"><span class="legend-color" style="background:#6c7086"></span> Comments</div>
+</div>
+</div>
+</body>
+</html>

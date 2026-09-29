@@ -1,0 +1,51 @@
+name: tobe-architecture
+display_name: "Arquitetura TO-BE"
+version: "1.3.2"
+description: "Agentes especializados em design da arquitetura alvo (stack e versão definidos em project-config.yaml). timing_benchmark_enabled flag controla coleta de timestamps NTP e exibição de tabelas MACRO (por fase) + DETALHE (por agente) com tempo."
+agents:
+  - id: ava-tobe-orchestrator
+    file: agents/orchestrator-tobe.md
+  - id: ava-tobe-architecture-decision-matrix
+    file: agents/architecture-decision-matrix-tobe.md
+  - id: ava-tobe-adr
+    file: agents/adr-tobe.md
+  - id: ava-tobe-architecture-design
+    file: agents/architecture-design-tobe.md
+  - id: ava-tobe-database-policy
+    file: agents/database-policy-tobe.md
+  - id: ava-tobe-database-design
+    file: agents/database-design-tobe.md
+  - id: ava-tobe-security-design
+    file: agents/security-design-tobe.md
+  - id: ava-tobe-architecture-technical
+    file: agents/architecture-technical-tobe.md
+  - id: ava-tobe-measure-size
+    file: agents/measure-size-tobe.md
+  - id: ava-tobe-migration-plan
+    file: agents/migration-plan-tobe.md
+  - id: ava-tobe-coexistence-strategy
+    file: agents/coexistence-strategy-tobe.md
+  - id: ava-tobe-risk-mitigation
+    file: agents/risk-mitigation-tobe.md
+  - id: ava-tobe-spec
+    file: agents/openapi-spec-tobe.md
+  - id: ava-coder-dotnet
+    file: agents/coder-dotnet.md
+  - id: ava-docs-tobe
+    file: agents/docs-tobe.md
+  - id: ava-developer-guide-tobe
+    file: agents/developer-guide-tobe.md
+  - id: ava-tobe-user-journeys
+    file: agents/user-journeys-tobe.md
+  - id: ava-tobe-designer-system
+    file: agents/designer-system-tobe.md
+  - id: ava-tobe-azure-infra-estimator
+    file: agents/azure-infra-estimator-tobe.md
+
+inputs:
+  reference_architecture: "src/shared/data/reference-architecture.yaml"
+  architecture_backlog: "src/shared/data/architecture-backlog.yaml"
+  project_config: "projects/{project_name}/context/project-config.yaml"
+
+outputs:
+  base_path: "project/outputs/tobe"

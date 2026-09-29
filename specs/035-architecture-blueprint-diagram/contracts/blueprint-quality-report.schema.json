@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric.local/contracts/blueprint-quality-report.schema.json",
+  "title": "Architecture Blueprint Quality Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projectName",
+    "traceId",
+    "generatedAt",
+    "artifacts",
+    "publicationGate"
+  ],
+  "properties": {
+    "projectName": { "type": "string", "minLength": 1 },
+    "traceId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "publicationGate": { "$ref": "#/$defs/gate" }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "expectedPath",
+        "discoveredPath",
+        "generatingAgent",
+        "agentExecutionStatus",
+        "generationStatus",
+        "artifactStatus",
+        "renderingStatus",
+        "gateStatus",
+        "findings"
+      ],
+      "properties": {
+        "phase": { "enum": ["ASIS", "TOBE"] },
+        "expectedPath": { "type": "string", "minLength": 1 },
+        "discoveredPath": { "type": ["string", "null"] },
+        "generatingAgent": { "type": "string", "pattern": "^ava-[a-z0-9-]+$" },
+        "agentExecutionStatus": {
+          "enum": ["EXECUTED", "NOT_EXECUTED", "UNKNOWN"]
+        },
+        "generationStatus": {
+          "enum": ["SUCCEEDED", "FAILED", "NOT_ATTEMPTED", "INSUFFICIENT_INPUT"]
+        },
+        "artifactStatus": {
+          "enum": ["PRESENT", "MISSING", "EMPTY", "INVALID", "UNREGISTERED"]
+        },
+        "renderingStatus": {
+          "enum": ["SUCCEEDED", "FAILED", "NOT_ATTEMPTED", "UNAVAILABLE"]
+        },
+        "gateStatus": { "enum": ["PASS", "BLOCKED", "WARN"] },
+        "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" } }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "severity",
+        "stage",
+        "message",
+        "expectedArtifact",
+        "actualArtifact",
+        "generatingAgent",
+        "remediation"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "MISSING_INPUT",
+            "AGENT_NOT_EXECUTED",
+            "GENERATION_FAILED",
+            "MISSING_ARTIFACT",
+            "DISCOVERY_FAILED",
+            "RENDERING_FAILED",
+            "PASS"
+          ]
+        },
+        "severity": { "enum": ["ERROR", "WARNING", "INFO"] },
+        "stage": {
+          "enum": [
+            "INPUT",
+            "EXECUTION",
+            "GENERATION",
+            "DISCOVERY",
+            "RENDERING",
+            "PUBLICATION"
+          ]
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "expectedArtifact": { "type": "string", "minLength": 1 },
+        "actualArtifact": { "type": ["string", "null"] },
+        "generatingAgent": { "type": "string", "pattern": "^ava-[a-z0-9-]+$" },
+        "remediation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "blockingFindings"],
+      "properties": {
+        "status": { "enum": ["PASS", "BLOCKED", "WARN"] },
+        "blockingFindings": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

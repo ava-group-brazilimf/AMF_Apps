@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric.local/contracts/summary-language-compliance.schema.json",
+  "title": "Summary Language Compliance Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_path",
+    "is_compliant",
+    "offending_regions",
+    "ignored_protected_values",
+    "mode",
+    "target",
+    "blocking"
+  ],
+  "properties": {
+    "artifact_path": { "type": "string", "minLength": 1 },
+    "is_compliant": { "type": "boolean" },
+    "offending_regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["region_id", "message"],
+        "properties": {
+          "region_id": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 },
+          "line": { "type": "integer", "minimum": 1 },
+          "column": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "ignored_protected_values": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "mode": { "enum": ["summary", "remediation"] },
+    "target": { "enum": ["en", "pt"] },
+    "blocking": { "type": "boolean" }
+  }
+}

@@ -1,0 +1,113 @@
+# pipeline: Agent Observability Consistency — CI Gate
+# Plataforma: Azure DevOps
+# Finalidade: Impedir que o auto-reporte dos agentes volte a divergir.
+#
+# A versão e a fase de cada agente vivem em três lugares (frontmatter, literal
+# `--version`/`--phase` do bloco de observabilidade, e o catálogo derivado). O
+# bloco é escrito à mão em ~100 arquivos e não existe gerador — sem este gate o
+# drift volta. Na varredura que originou specs/032 havia 51 violações, incluindo
+# 3 agentes reportando o `--agent` de outro e 6 com a fase errada, o que credita
+# a economia de contexto ao agente ou à fase errada.
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - "feature/*"
+      - "fix/*"
+  paths:
+    include:
+      - src/modules/ava-fabric-agents/**/agents/**
+      - src/shared/tools/agent_registry.py
+      - src/shared/utils/verify_agent_observability.py
+      - src/shared/tools/pipeline_observer.py
+      - src/shared/tools/generate_observability_report.py
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  REGISTRY: src/shared/tools/agent_registry.py
+  VERIFIER: src/shared/utils/verify_agent_observability.py
+
+stages:
+  - stage: ObservabilityConsistency
+    displayName: "1 — Agent Observability Consistency"
+    jobs:
+      - job: VerifyAgents
+        displayName: "Verify agent self-report consistency"
+        steps:
+          - checkout: self
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "3.11"
+            displayName: "Use Python 3.11"
+
+          - script: |
+              echo "=== [CHK-01] Agent registry loads ==="
+              python "$(REGISTRY)" --catalog > /tmp/catalog.json
+              COUNT=$(python -c "import json;print(len(json.load(open('/tmp/catalog.json'))))")
+              echo "  agentes no catálogo: $COUNT"
+              if [ "$COUNT" -lt 50 ]; then
+                echo "  ❌  catálogo suspeito (< 50 agentes) — varredura falhou?"
+                exit 1
+              fi
+              echo "  ✅  registry OK"
+            displayName: "[CHK-01] Agent registry loads"
+
+          - script: |
+              echo "=== [CHK-02] Self-report consistency (E1–E6) ==="
+              python "$(VERIFIER)"
+            displayName: "[CHK-02] Agent self-report consistency"
+
+          - script: |
+              echo "=== [CHK-03] Catálogos derivam do registry, não de literais ==="
+              # Ambos os catálogos têm de bater com o registry. Se alguém
+              # reintroduzir uma lista manual, os tamanhos divergem.
+              python - <<'PY'
+              import importlib.util, sys
+              sys.path.insert(0, "src/shared/tools")
+              import agent_registry
+              expected = len(agent_registry.catalog())
+              for path, name in [("src/shared/tools/pipeline_observer.py", "pipeline_observer"),
+                                 ("src/shared/tools/generate_observability_report.py",
+                                  "generate_observability_report")]:
+                  spec = importlib.util.spec_from_file_location(name, path)
+                  module = importlib.util.module_from_spec(spec)
+                  spec.loader.exec_module(module)
+                  actual = len(module.AGENT_CATALOG)
+                  status = "✅" if actual == expected else "❌"
+                  print(f"  {status}  {name}: {actual} (esperado {expected})")
+                  if actual != expected:
+                      sys.exit(1)
+              PY
+            displayName: "[CHK-03] Catalogs derived from registry"
+
+          - script: |
+              echo "=== [CHK-04] Testes da tool e do registry ==="
+              python -m pip install --quiet pytest pyyaml
+              python -m pytest tests/tools tests/utils -q
+            displayName: "[CHK-04] Test suite"
+
+  - stage: Summary
+    displayName: "2 — Summary"
+    dependsOn: ObservabilityConsistency
+    condition: always()
+    jobs:
+      - job: PrintSummary
+        displayName: "Print validation summary"
+        steps:
+          - script: |
+              echo "============================================"
+              echo "  Agent Observability — CI Gate"
+              echo "============================================"
+              echo "  CHK-01 : agent_registry varre e resolve as fases"
+              echo "  CHK-02 : E1–E6 (agent/phase/version/track/dup)"
+              echo "  CHK-03 : catálogos derivados, não literais"
+              echo "  CHK-04 : tests/tools + tests/utils"
+              echo "============================================"
+              echo "  Referência: specs/032-headroom-pipeline-wide-attribution"
+              echo "============================================"
+            displayName: "Validation summary"

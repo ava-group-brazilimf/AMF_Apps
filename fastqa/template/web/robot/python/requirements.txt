@@ -1,0 +1,16 @@
+# ===========================================================================
+# Dependências — SauceDemo E2E Automation (PBI-001)
+# FastQA | Robot Framework + Python
+# ===========================================================================
+
+# Core
+robotframework>=7.0
+robotframework-browser>=18.0
+
+# Execução paralela
+robotframework-pabot>=2.16
+
+# Utilitários
+requests>=2.31
+faker>=24.0
+python-dotenv>=1.0

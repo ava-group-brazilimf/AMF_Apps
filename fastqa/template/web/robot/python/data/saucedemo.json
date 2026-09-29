@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "projeto": "SauceDemo E2E",
+    "pbi": "PBI-001",
+    "gerado_por": "FastQA",
+    "data": "2026-05-14"
+  },
+  "credenciais": {
+    "usuarios_validos": [
+      { "username": "standard_user",  "password": "secret_sauce", "perfil": "Usuário padrão — todos os fluxos funcionam normalmente" },
+      { "username": "performance_glitch_user", "password": "secret_sauce", "perfil": "Usuário com latência artificial — testes de performance" },
+      { "username": "error_user",      "password": "secret_sauce", "perfil": "Usuário que gera erros em ações específicas" },
+      { "username": "visual_user",     "password": "secret_sauce", "perfil": "Usuário para testes visuais" }
+    ],
+    "usuarios_invalidos": [
+      { "username": "locked_out_user", "password": "secret_sauce", "erro_esperado": "Epic sadface: Sorry, this user has been locked out." },
+      { "username": "usuario_inexistente", "password": "senha_errada", "erro_esperado": "Epic sadface: Username and password do not match any user in this service" }
+    ],
+    "erros_formulario": {
+      "sem_usuario": "Epic sadface: Username is required",
+      "sem_senha": "Epic sadface: Password is required",
+      "credenciais_invalidas": "Epic sadface: Username and password do not match any user in this service"
+    }
+  },
+  "produtos": [
+    {
+      "id": 4,
+      "nome": "Sauce Labs Backpack",
+      "slug": "sauce-labs-backpack",
+      "preco": "$29.99",
+      "descricao": "carry.allTheThings() with the sleek, streamlined Sly Pack"
+    },
+    {
+      "id": 0,
+      "nome": "Sauce Labs Bike Light",
+      "slug": "sauce-labs-bike-light",
+      "preco": "$9.99",
+      "descricao": "A red light isn't the desired state in testing but it sure helps with visibility"
+    },
+    {
+      "id": 1,
+      "nome": "Sauce Labs Bolt T-Shirt",
+      "slug": "sauce-labs-bolt-t-shirt",
+      "preco": "$15.99",
+      "descricao": "Get your testing superhero on with the Sauce Labs bolt T-shirt"
+    },
+    {
+      "id": 5,
+      "nome": "Sauce Labs Fleece Jacket",
+      "slug": "sauce-labs-fleece-jacket",
+      "preco": "$49.99",
+      "descricao": "It's not every day that you come across a midweight quarter-zip fleece jacket capable of handling everything"
+    },
+    {
+      "id": 2,
+      "nome": "Sauce Labs Onesie",
+      "slug": "sauce-labs-onesie",
+      "preco": "$7.99",
+      "descricao": "Rib snap infant onesie for the junior automation engineer in development"
+    },
+    {
+      "id": 3,
+      "nome": "Test.allTheThings() T-Shirt (Red)",
+      "slug": "test.allthethings()-t-shirt-(red)",
+      "preco": "$15.99",
+      "descricao": "This classic Sauce Labs t-shirt is perfect to wear when cozying up to your keyboard"
+    }
+  ],
+  "checkout": {
+    "dados_validos": {
+      "first_name": "Test",
+      "last_name": "User",
+      "postal_code": "12345"
+    },
+    "cenarios_erro": {
+      "sem_first_name": { "first_name": "", "last_name": "User", "postal_code": "12345", "erro_esperado": "Error: First Name is required" },
+      "sem_last_name":  { "first_name": "Test", "last_name": "", "postal_code": "12345", "erro_esperado": "Error: Last Name is required" },
+      "sem_postal_code":{ "first_name": "Test", "last_name": "User", "postal_code": "", "erro_esperado": "Error: Postal Code is required" }
+    }
+  },
+  "confirmacao": {
+    "titulo_pagina": "Checkout: Complete!",
+    "header": "Thank you for your order!",
+    "texto_body": "Your order has been dispatched, and will arrive just as fast as the pony can get there!"
+  },
+  "combinacoes_de_preco": [
+    { "produtos": ["Sauce Labs Backpack"], "subtotal": "$29.99", "total_com_tax": "$32.39" },
+    { "produtos": ["Sauce Labs Backpack", "Sauce Labs Bike Light"], "subtotal": "$39.98", "total_com_tax": "$43.18" },
+    { "produtos": ["Sauce Labs Onesie"], "subtotal": "$7.99", "total_com_tax": "$8.63" }
+  ]
+}

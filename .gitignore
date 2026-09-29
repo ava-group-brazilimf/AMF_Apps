@@ -1,0 +1,85 @@
+# Saídas geradas pelos agentes (transitório — não versionar)
+projects/**/outputs/
+
+**/__pycache__/*
+**/__pycache__/
+tmp/
+
+# SpecKit — artefatos de trabalho (não versionar)
+.specify/feature.json
+
+# Python cache
+__pycache__/*
+*/__pycache__/
+*/__pycache__/*
+**/__pycache__/
+**/*.pyc
+
+# Configurações de projeto (sensível — não versionar)
+projects/*/context/shared-context.md
+!projects/_template/context/shared-context.md
+
+# IDE local
+.claude/settings.local.json
+.cursor/settings.local.json
+*.swp
+.DS_Store
+.claude/*
+.claude/skills
+CLAUDE.md
+# Segredos
+*.env
+.env.*
+# ...exceto o template (documenta as variáveis, sem valores sensíveis)
+!.env.example
+secrets.yaml
+**/appsettings.Local.json
+
+# BMAD upstream (submodule)
+.bmad-core/
+
+# Node (se usar installer BMAD)
+node_modules/
+package-lock.json
+
+# Scripts temporários
+tmp_*.py
+# Validation outputs temporários
+validation-out.txt
+validation-detail.txt
+validation_detail.txt
+validation*.txt
+
+
+
+# Adicionado pelo FastQA Init
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+code_qa/*
+/fastqa/manual_test/evidence/
+/automated_test/web/results/
+/automated_test/**/node_modules/
+/fastqa/scripts/azure-devops/logs/
+
+# FastQA Template Ignores
+# Note: .github and .vscode are NOT ignored at repo root — only inside fastqa/ templates
+fastqa/template/**/.github
+fastqa/template/**/.vscode
+# `.vscode/*` (e nao `.vscode`): o git nao reabre arquivos dentro de um
+# DIRETORIO ignorado, entao a negacao abaixo so funciona ignorando o conteudo.
+.vscode/*
+# ...exceto a config compartilhada do workspace (settings.json ja era trackeado
+# antes desta regra; mcp.json precisa da negacao explicita)
+!.vscode/settings.json
+!.vscode/mcp.json
+
+.copilot-key
+
+# Headroom tool — venv isolado e estado local do proxy.
+# O fork em src/shared/tools/headroom/vendor/ E versionado (git subtree).
+src/shared/tools/headroom/.venv/
+.headroom/

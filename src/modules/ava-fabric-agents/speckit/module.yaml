@@ -1,0 +1,88 @@
+name: speckit
+display_name: "SpecKit — Camada de Planejamento"
+version: "4.0.0"
+description: >
+  Camada de planejamento entre o protótipo (F3) e a geração de código (F4).
+  Produz constitution, especificações verticais por migration wave, planos, tasks atômicas
+  e a espinha de rastreabilidade compilada que os gates determinísticos verificam.
+  Specs: specs/039-speckit-planning-layer/ e specs/040-speckit-task-dependency-graph/.
+
+handoff:
+  to: "Tech Stack (F4)"
+  role: "Entrega constitution + specs + plans + tasks + traceability.json"
+  reason: >
+    A F4 gerava código sem ter recebido os artefatos TO-BE e sem decomposição.
+    Esta fase produz o contrato intermediário e o gate que libera a codegen.
+  step: "F3S — entre F3 (Prototype) e F4 (Stack Generation)"
+
+agents:
+  # Orquestrador da fase — gate de entrada, despacho na ordem do F3S.yaml, gate de saída
+  - id: ava-speckit-orchestrator
+    file: agents/orchestrator-speckit.md
+    skill: ava-speckit-orchestrator
+
+  # Documento governante — entra no contexto de TODO agente a jusante, inclusive os coders
+  - id: ava-speckit-constitution
+    file: agents/constitution-agent.md
+    skill: ava-speckit-constitution
+
+  # Uma especificação por migration wave, com fontes selecionadas pelo manifesto.
+  - id: ava-speckit-specification
+    file: agents/specification-agent.md
+
+  - id: ava-speckit-prototype-spec
+    file: agents/prototype-spec-agent.md
+
+  - id: ava-speckit-planning
+    file: agents/planning-agent.md
+
+  - id: ava-speckit-tasks
+    file: agents/tasks-agent.md
+
+  # Auditoria de conformidade — roda depois dos checks determinísticos, nunca no lugar deles
+  - id: ava-speckit-compliance
+    file: agents/compliance-agent.md
+    skill: ava-speckit-compliance
+
+templates:
+  - templates/constitution-template.md
+  - templates/spec-template.md
+  - templates/prototype-spec-template.md
+  - templates/plan-template.md
+  - templates/tasks-template.md
+  - templates/verify.ps1.tmpl
+
+# Ordem, dependências e fatias de contexto por agente. Fonte da verdade do
+# despacho — `utils/artifact_gate_speckit.py` DERIVA seus itens daqui, em vez de
+# espelhá-los à mão (o modo de falha que F1.yaml documenta no próprio cabeçalho).
+dag: src/shared/data/pipeline-dag/F3S.yaml
+
+inputs:
+  project_config: "projects/{project_name}/context/project-config.yaml"
+  reference_architecture: "src/shared/data/reference-architecture.yaml"
+  prototype_protocol: "src/modules/ava-fabric-agents/shared/prototype-conversion-protocol.md"
+
+outputs:
+  base_path: "projects/{project_name}/outputs/tobe/speckit"
+  files:
+    - "constitution.md"
+    - "wave-spec-manifest.json"
+    - "specs/{wave-feature}/spec.md"
+    - "specs/{codegen-wave-feature}/plan.md"
+    - "specs/{codegen-wave-feature}/plan-graph.json"
+    - "specs/{codegen-wave-feature}/task-fragment.json"
+    - "specs/{codegen-wave-feature}/tasks.md"
+    - "traceability.json"
+    - "tasks-progress.json"
+    - "checks-report.json"
+    - "completeness-status.json"
+    - "ava-agents-progress.txt"
+    - "compliance-report.md"
+    - "compliance-status.json"
+    - "execution-log.json"
+
+standalone: false
+hooks:
+  after: ["ava-prototype"]
+  before: ["ava-stack-orchestrator"]
+  trigger_code: "SK"

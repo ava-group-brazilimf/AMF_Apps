@@ -1,0 +1,894 @@
+# ══════════════════════════════════════════════════════════════════════
+#  Definição das métricas — Migration Factory Dashboard
+#
+#  Este arquivo NÃO contém lista de projetos nem diretório raiz.
+#  Os projetos são descobertos dinamicamente (ver config/app.yaml).
+#
+#  Todos os `path` abaixo foram extraídos do pipeline-runner-metrics.json
+#  REAL. O esquema completo está documentado no README.md, seção
+#  "Esquema do pipeline-runner-metrics.json".
+#
+#  Campos que NÃO existem no arquivo real e portanto não geram métrica:
+#  agentes, ferramentas, artefatos, tentativas/retries, erros e avisos
+#  por fase. Ver README, seção "Métricas não implementáveis".
+# ══════════════════════════════════════════════════════════════════════
+
+settings:
+  # Tarifa usada por `token_cost`. Valor documentado nos próprios
+  # execution-report da Factory para claude-sonnet-4-6.
+  token_cost:
+    currency: "USD"
+    input_per_million: 3.00
+    output_per_million: 15.00
+
+  # Status tratados como "fase concluída sem ressalva".
+  healthy_phase_statuses:
+    - "executed"
+
+  # Status de execução tratados como sucesso limpo.
+  successful_execution_statuses:
+    - "completed"
+
+metrics:
+
+  # ─────────────────────────── ESCOPO: PROJETO ───────────────────────────
+
+  - id: project_execution_id
+    name: Execução
+    description: Identificador da execução registrada no arquivo de métricas
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "execution_id" }
+    calculation: { type: field }
+    format: text
+    display_type: table
+    order: 1
+    missing_value_behavior: not_available
+
+  - id: project_execution_status
+    name: Status da Execução
+    description: Status final registrado pelo pipeline runner
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "execution_status" }
+    calculation: { type: field }
+    format: status
+    display_type: table
+    order: 2
+    missing_value_behavior: not_available
+
+  - id: project_execution_mode
+    name: Modo de Execução
+    description: Modo com que o pipeline foi disparado
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "execution_mode" }
+    calculation: { type: field }
+    format: text
+    display_type: table
+    order: 3
+    missing_value_behavior: not_available
+
+  - id: project_started_at
+    name: Início
+    description: Horário UTC de início da execução
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "start_time_utc" }
+    calculation: { type: field }
+    format: datetime
+    display_type: table
+    order: 4
+    missing_value_behavior: not_available
+
+  - id: project_finished_at
+    name: Término
+    description: Horário UTC de término da execução
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "end_time_utc" }
+    calculation: { type: field }
+    format: datetime
+    display_type: table
+    order: 5
+    missing_value_behavior: not_available
+
+  - id: project_pipeline_duration
+    name: Duração do Pipeline
+    description: Duração total da execução do pipeline para o projeto
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "total_duration_seconds" }
+    calculation:
+      type: duration
+      seconds_field: "total_duration_seconds"
+      start_field: "start_time_utc"
+      end_field: "end_time_utc"
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: card
+    order: 6
+    missing_value_behavior: not_available
+
+  - id: project_effective_phase_time
+    name: Tempo Efetivo de Fase
+    description: Soma das durações medidas fase a fase, sem a ociosidade entre resumes
+    category: execution
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation:
+      type: sum_items
+      items_path: "phase_metrics"
+      value_field: "duration_seconds"
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: card
+    order: 7
+    missing_value_behavior: not_available
+
+  - id: project_total_tokens
+    name: Tokens Totais
+    description: Tokens de entrada e saída consumidos na execução
+    category: tokens
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "token_metrics.total_tokens" }
+    calculation: { type: field }
+    format: integer
+    display_type: card
+    order: 8
+    missing_value_behavior: not_available
+
+  - id: project_input_tokens
+    name: Tokens de Entrada
+    description: Tokens enviados ao modelo
+    category: tokens
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "token_metrics.token_in" }
+    calculation: { type: field }
+    format: integer
+    display_type: table
+    order: 9
+    missing_value_behavior: not_available
+
+  - id: project_output_tokens
+    name: Tokens de Saída
+    description: Tokens gerados pelo modelo
+    category: tokens
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "token_metrics.token_out" }
+    calculation: { type: field }
+    format: integer
+    display_type: table
+    order: 10
+    missing_value_behavior: not_available
+
+  - id: project_token_efficiency
+    name: Eficiência de Tokens
+    description: Razão entre tokens de saída e tokens de entrada
+    category: tokens
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "token_metrics" }
+    calculation:
+      type: ratio
+      numerator_path: "token_metrics.token_out"
+      denominator_path: "token_metrics.token_in"
+    precision: 3
+    format: decimal
+    display_type: table
+    order: 11
+    missing_value_behavior: not_available
+
+  - id: project_estimated_cost
+    name: Custo Estimado
+    description: Custo de IA estimado com a tarifa definida em settings.token_cost
+    category: cost
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "token_metrics" }
+    calculation:
+      type: token_cost
+      input_path: "token_metrics.token_in"
+      output_path: "token_metrics.token_out"
+    precision: 2
+    unit: USD
+    format: currency
+    display_type: card
+    order: 12
+    missing_value_behavior: not_available
+
+  - id: project_phase_count
+    name: Fases Configuradas
+    description: Quantidade de fases registradas na execução
+    category: phases
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation: { type: count_items, items_path: "phase_metrics" }
+    format: integer
+    display_type: card
+    order: 13
+    missing_value_behavior: not_available
+
+  - id: project_executed_phase_count
+    name: Fases Executadas
+    description: Fases concluídas sem ressalva
+    category: phases
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation:
+      type: count_items_where
+      items_path: "phase_metrics"
+      field: "status"
+      values_from_settings: "healthy_phase_statuses"
+    format: integer
+    display_type: table
+    order: 14
+    missing_value_behavior: not_available
+
+  - id: project_degraded_phase_count
+    name: Fases Degradadas
+    description: Fases que concluíram com ressalva ou reprovaram validação
+    category: phases
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation:
+      type: count_items_where
+      items_path: "phase_metrics"
+      field: "status"
+      values: ["degraded", "validation_failed", "aborted", "skipped"]
+    format: integer
+    display_type: card
+    order: 15
+    missing_value_behavior: not_available
+
+  - id: project_health_score
+    name: Health Score
+    description: Percentual de fases executadas sobre as fases configuradas
+    category: quality
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation:
+      type: percentage
+      numerator_metric: project_executed_phase_count
+      denominator_metric: project_phase_count
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 16
+    missing_value_behavior: not_available
+
+  - id: project_longest_phase
+    name: Fase Mais Longa
+    description: Fase que consumiu mais tempo na execução
+    category: phases
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation:
+      type: max_item_by
+      items_path: "phase_metrics"
+      value_field: "duration_seconds"
+      label_field: "phase_name"
+    format: text
+    display_type: table
+    order: 17
+    missing_value_behavior: not_available
+
+  - id: project_shortest_measured_phase
+    name: Fase Mais Curta Medida
+    description: Fase com a menor duração medida (ignora fases sem medição)
+    category: phases
+    enabled: true
+    scope: project
+    source: { type: pipeline_metrics_file, path: "phase_metrics" }
+    calculation:
+      type: min_item_by
+      items_path: "phase_metrics"
+      value_field: "duration_seconds"
+      label_field: "phase_name"
+      ignore_zero: true
+    format: text
+    display_type: table
+    order: 18
+    missing_value_behavior: not_available
+
+  # ────────────────────────── ESCOPO: PORTFÓLIO ──────────────────────────
+
+  - id: total_discovered_projects
+    name: Total de Projetos
+    description: Quantidade atual de projetos descobertos no diretório configurado
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: project_discovery }
+    calculation: { type: count_projects }
+    format: integer
+    display_type: card
+    order: 1
+
+  - id: projects_with_valid_metrics
+    name: Projetos com Métricas Válidas
+    description: Quantidade de projetos com pipeline-runner-metrics.json válido
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: project_discovery }
+    calculation:
+      type: count_by_status
+      statuses: ["available", "partially_available"]
+    format: integer
+    display_type: card
+    order: 2
+
+  - id: projects_without_metrics
+    name: Projetos sem Métricas
+    description: Projetos descobertos cujo arquivo de métricas está ausente
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: project_discovery }
+    calculation:
+      type: count_by_status
+      statuses: ["metrics_unavailable"]
+    format: integer
+    display_type: card
+    order: 3
+
+  - id: projects_with_errors
+    name: Projetos com Erro de Leitura
+    description: Projetos cujo arquivo existe mas não pôde ser interpretado
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: project_discovery }
+    calculation:
+      type: count_by_status
+      statuses: ["empty_file", "invalid_json", "incompatible_schema", "read_error"]
+    format: integer
+    display_type: card
+    order: 4
+
+  - id: portfolio_total_tokens
+    name: Tokens Totais do Portfólio
+    description: Soma dos tokens de todos os projetos com métricas válidas
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_total_tokens }
+    format: integer
+    display_type: card
+    order: 5
+
+  - id: portfolio_total_cost
+    name: Custo Estimado do Portfólio
+    description: Soma do custo estimado de todos os projetos
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_estimated_cost }
+    precision: 2
+    unit: USD
+    format: currency
+    display_type: card
+    order: 6
+
+  - id: portfolio_total_duration
+    name: Tempo Total de Execução
+    description: Soma da duração de pipeline de todos os projetos
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_pipeline_duration }
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: card
+    order: 7
+
+  - id: portfolio_average_duration
+    name: Duração Média
+    description: Duração média de pipeline entre os projetos com métricas
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: average_metric, metric_id: project_pipeline_duration }
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: card
+    order: 8
+
+  - id: portfolio_min_duration
+    name: Menor Duração
+    description: Menor duração de pipeline observada
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: minimum_metric, metric_id: project_pipeline_duration }
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: table
+    order: 9
+
+  - id: portfolio_max_duration
+    name: Maior Duração
+    description: Maior duração de pipeline observada
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: maximum_metric, metric_id: project_pipeline_duration }
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: table
+    order: 10
+
+  - id: portfolio_token_efficiency
+    name: Eficiência de Tokens do Portfólio
+    description: Razão entre a soma dos tokens de saída e a soma dos de entrada
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: project_output_tokens
+      denominator_metric: project_input_tokens
+    precision: 3
+    format: decimal
+    display_type: table
+    order: 11
+
+  - id: portfolio_coverage_percentage
+    name: Cobertura de Métricas
+    description: Percentual de projetos descobertos que possuem métricas válidas
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: project_discovery }
+    calculation:
+      type: percentage_metrics
+      numerator_metric: projects_with_valid_metrics
+      denominator_metric: total_discovered_projects
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 12
+
+  - id: portfolio_weighted_health
+    name: Health Score Ponderado
+    description: Health score médio ponderado pela quantidade de fases de cada projeto
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: weighted_average_metric
+      metric_id: project_health_score
+      weight_metric_id: project_phase_count
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 13
+
+  - id: portfolio_executions_by_status
+    name: Execuções por Status
+    description: Contagem de projetos agrupados pelo status da execução
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: count_by_project_field
+      metric_id: project_execution_status
+    format: breakdown
+    display_type: table
+    order: 14
+
+  - id: portfolio_latest_execution
+    name: Execução Mais Recente
+    description: Projeto cuja execução terminou por último
+    category: portfolio
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: latest_value
+      order_by_metric: project_finished_at
+      value: project_name
+    format: text
+    display_type: card
+    order: 15
+
+  # ── KPIs exibidos no Control Tower ──────────────────────────────────
+  # Cada card de KPI das páginas do dashboard vem de uma destas entradas.
+  # As séries dos gráficos (por fase, por dia, heatmap, Pareto) são
+  # derivadas no cliente a partir dos MESMOS runs — ver README.
+
+  - id: total_executions
+    name: Total Executions
+    description: Execuções no escopo atual (projetos com métricas legíveis)
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: project_discovery }
+    calculation:
+      type: count_by_status
+      statuses: ["available", "partially_available"]
+    format: integer
+    display_type: card
+    order: 20
+
+  - id: successful_executions
+    name: Successful Executions
+    description: Execuções concluídas sem avisos ou falhas
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: count_metric_value
+      metric_id: project_execution_status
+      values: ["completed"]
+    format: integer
+    display_type: card
+    order: 21
+
+  - id: executions_with_warnings
+    name: Executions with Warnings
+    description: Execuções concluídas com fases degradadas
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: count_metric_value
+      metric_id: project_execution_status
+      values: ["completed_with_warnings"]
+    format: integer
+    display_type: card
+    order: 22
+
+  - id: failed_executions
+    name: Failed Executions
+    description: Execuções abortadas ou que falharam antes do fim
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: count_metric_value
+      metric_id: project_execution_status
+      values: ["aborted", "failed"]
+    format: integer
+    display_type: card
+    order: 23
+
+  - id: success_rate
+    name: Success Rate
+    description: Percentual de execuções concluídas sem ressalva
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: percentage_metrics
+      numerator_metric: successful_executions
+      denominator_metric: total_executions
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 24
+
+  - id: warning_rate
+    name: Warning Rate
+    description: Percentual de execuções com fases degradadas
+    category: quality
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: percentage_metrics
+      numerator_metric: executions_with_warnings
+      denominator_metric: total_executions
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 25
+
+  - id: failure_rate
+    name: Failure Rate
+    description: Percentual de execuções abortadas ou interrompidas
+    category: quality
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: percentage_metrics
+      numerator_metric: failed_executions
+      denominator_metric: total_executions
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 26
+
+  - id: average_execution_time
+    name: Average Execution Time
+    description: Tempo efetivo médio de fase por execução
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: average_metric, metric_id: project_effective_phase_time }
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: card
+    order: 27
+
+  - id: total_execution_hours
+    name: Total Execution Hours
+    description: Soma do tempo efetivo de fase de todas as execuções
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_effective_phase_time }
+    precision: 2
+    unit: seconds
+    format: duration
+    display_type: card
+    order: 28
+
+  - id: portfolio_input_tokens
+    name: Total Input Tokens
+    description: Soma dos tokens de entrada do portfólio
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_input_tokens }
+    format: integer
+    display_type: card
+    order: 29
+
+  - id: portfolio_output_tokens
+    name: Total Output Tokens
+    description: Soma dos tokens de saída do portfólio
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_output_tokens }
+    format: integer
+    display_type: card
+    order: 30
+
+  - id: average_tokens_per_execution
+    name: Avg Tokens per Execution
+    description: Média de tokens consumidos por execução
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: average_metric, metric_id: project_total_tokens }
+    precision: 0
+    format: integer
+    display_type: card
+    order: 31
+
+  - id: average_cost_per_execution
+    name: Avg Cost per Execution
+    description: Custo estimado médio por execução
+    category: cost
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: average_metric, metric_id: project_estimated_cost }
+    precision: 2
+    unit: USD
+    format: currency
+    display_type: card
+    order: 32
+
+  - id: portfolio_total_phases
+    name: Fases Configuradas
+    description: Soma das fases registradas em todas as execuções
+    category: quality
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_phase_count }
+    format: integer
+    display_type: card
+    order: 33
+
+  - id: portfolio_degraded_phases
+    name: Degraded Phase Count
+    description: Soma das fases degradadas em todas as execuções
+    category: quality
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation: { type: sum_metric, metric_id: project_degraded_phase_count }
+    format: integer
+    display_type: card
+    order: 34
+
+  - id: phase_degraded_rate
+    name: phase_degraded_rate
+    description: Percentual de fases degradadas sobre o total de fases
+    category: quality
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: percentage_metrics
+      numerator_metric: portfolio_degraded_phases
+      denominator_metric: portfolio_total_phases
+    precision: 1
+    unit: percent
+    format: percentage
+    display_type: card
+    order: 35
+
+  - id: portfolio_input_output_ratio
+    name: Input / Output Ratio
+    description: Tokens de entrada por token de saída
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: portfolio_input_tokens
+      denominator_metric: portfolio_output_tokens
+    precision: 2
+    format: decimal
+    display_type: card
+    order: 36
+
+  - id: portfolio_token_velocity
+    name: Token Velocity
+    description: Tokens processados por segundo de execução
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: portfolio_total_tokens
+      denominator_metric: total_execution_hours
+    precision: 0
+    unit: tokens/s
+    format: integer
+    display_type: card
+    order: 37
+
+  - id: portfolio_tokens_per_hour
+    name: Tokens per Hour
+    description: Throughput de IA por hora de execução
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: portfolio_total_tokens
+      denominator_metric: total_execution_hours
+      scale: 3600
+    precision: 0
+    unit: tokens/h
+    format: integer
+    display_type: card
+    order: 38
+
+  - id: average_tokens_per_phase
+    name: Avg Tokens per Phase
+    description: Tokens médios por fase registrada
+    category: tokens
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: portfolio_total_tokens
+      denominator_metric: portfolio_total_phases
+    precision: 0
+    format: integer
+    display_type: card
+    order: 39
+
+  - id: cost_per_hour
+    name: Cost per Hour
+    description: Custo estimado por hora de execução
+    category: cost
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: portfolio_total_cost
+      denominator_metric: total_execution_hours
+      scale: 3600
+    precision: 2
+    unit: USD
+    format: currency
+    display_type: card
+    order: 40
+
+  - id: cost_per_project
+    name: Cost per Project
+    description: Custo estimado médio por projeto no escopo
+    category: cost
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: ratio_metrics
+      numerator_metric: portfolio_total_cost
+      denominator_metric: total_executions
+    precision: 2
+    unit: USD
+    format: currency
+    display_type: card
+    order: 41
+
+  - id: executions_in_progress
+    name: Em Execução Agora
+    description: Pipelines com execution_status "running" na última leitura
+    category: executive
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: count_metric_value
+      metric_id: project_execution_status
+      values: ["running"]
+    format: integer
+    display_type: card
+    order: 19
+
+  - id: interrupted_executions
+    name: Interrompidas
+    description: Execuções que pararam sem concluir e sem sinalizar erro
+    category: quality
+    enabled: true
+    scope: portfolio
+    source: { type: aggregated_project_metrics }
+    calculation:
+      type: count_metric_value
+      metric_id: project_execution_status
+      values: ["interrupted"]
+    format: integer
+    display_type: table
+    order: 42

@@ -1,0 +1,425 @@
+# AVA Fabric — CLI de orquestração da esteira · defaults
+# =====================================================================
+# FONTE ÚNICA de modelo, endpoints, URLs e da ORDEM DA ESTEIRA.
+# Camada MAIS FRACA da configuração. Precedência efetiva (forte → fraco):
+#
+#   1. flags do CLI (--model, --engine, --via-proxy, ...)
+#   2. variáveis de ambiente (AVA_PIPELINE_* / AVA_FOUNDRY_*)
+#   3. projects/{project}/context/project-config.yaml → bloco `pipeline:`
+#   4. este arquivo
+#   5. _FALLBACK_DEFAULTS em pipeline_config.py (só se este arquivo sumir)
+#
+# Artigo I da Constituição: nada de endpoint/modelo hardcoded em código.
+# Quem resolve a precedência é pipeline_config.py::load_config().
+#
+# Mesmo contrato de src/shared/tools/headroom/headroom.yaml.
+# ---------------------------------------------------------------------
+
+pipeline:
+  # ── Foundry (endpoint Anthropic-compatible) ───────────────────────
+  foundry:
+    # Private endpoint — exige a VPN vnet-core-brs-001 conectada.
+    # O path /anthropic faz parte da URL base: o SDK acrescenta /v1/messages.
+    endpoint: "https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic"
+    # Relativo à raiz do repo. Não commitar (está no .gitignore).
+    api_key_file: ".copilot-key"
+    # Obrigatório: além do Foundry, o header participa do roteamento do proxy
+    # Headroom (_is_anthropic_auth decide o upstream por ele).
+    anthropic_version: "2023-06-01"
+    # Tokens de saída por passo.
+    max_tokens: 32768
+
+  # ── Modelos ───────────────────────────────────────────────────────
+  models:
+    # Wire model: o deployment real no Foundry. Usado pelo SDK e como
+    # COPILOT_PROVIDER_WIRE_MODEL no motor copilot.
+    default: "claude-sonnet-4-6"
+    # Id lógico do Copilot CLI. NUNCA 'auto': subagentes caíam em gpt-5.4 e
+    # davam 404 no provider BYOK (R4 — pipeline-dag/F1.yaml L32).
+    provider_model_id: "claude-sonnet-4"
+    # Atalhos aceitos por --model.
+    aliases:
+      sonnet: "claude-sonnet-4-6"
+
+  # ── Proxy Headroom ────────────────────────────────────────────────
+  # A URL nunca é hardcoded: vem de headroom_config.py --proxy-url, que já
+  # aplicou env e project-config. Hardcodar a porta foi exatamente o defeito
+  # que fez o .bat sondar 8787 com o proxy em 8788 e degradar em silêncio.
+  proxy:
+    # auto    = usa o proxy se estiver no ar, senão degrada COM AVISO
+    # require = aborta (exit 2) se o proxy não responder
+    # off     = sempre rota direta
+    mode: "auto"
+    url_command:    ["src/shared/tools/headroom/headroom_config.py", "--proxy-url"]
+    status_command: ["src/shared/tools/headroom/headroom_tool.py", "proxy", "status"]
+    # Resolve o venv isolado da tool antes do python do PATH. Com `python` puro,
+    # um Python ausente/incompatível devolvia exit 1 e o launcher anunciava
+    # "proxy não respondeu", rodando a fase inteira SEM compressão.
+    prefer_tool_venv: true
+
+  # ── Execução ──────────────────────────────────────────────────────
+  execution:
+    engine: "sdk"              # sdk = SDK Anthropic | copilot = agent_runner.py
+    confirm: "manual"          # manual = pergunta a cada passo | auto = --yes implícito
+    timeout_s: 900
+    output_subdir: "outputs/pipeline_runner"
+
+  # ── Orçamento de contexto injetado no system prompt ───────────────
+  context:
+    skill_chars: 500000        # ~125K tokens da spec do agente
+    file_chars: 500000         # ~125K tokens por arquivo de contexto
+    max_artifacts: 500         # máximo de caminhos listados
+    max_artifact_bodies: 30    # máximo de artefatos com conteúdo inline
+    artifact_body_chars: 20000 # corte por artefato inline
+
+  # ── Patch de DNS (private endpoints via VPN) ──────────────────────
+  # Desligado por padrão: o /anthropic resolve nativamente sob VPN. Ligue só
+  # em ambiente sem split-DNS configurado (ex.: laptop fora da VPN corporativa).
+  dns_overrides:
+    enabled: false
+    hosts:
+      "aif-imf-agents-prd-eus2-001.services.ai.azure.com": "10.26.2.6"
+      "aif-imf-agents-prd-eus2-001.privatelink.services.ai.azure.com": "10.26.2.6"
+      "aif-imf-apps-prd-eus2-001.openai.azure.com": "10.26.2.11"
+      "aif-imf-apps-prd-eus2-001.services.ai.azure.com": "10.26.2.12"
+      "aif-imf-premium-models-prd-eus2-001.services.ai.azure.com": "10.26.2.27"
+      "aif-imf-premium-models-prd-eus2-001.privatelink.services.ai.azure.com": "10.26.2.27"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ORDEM DA ESTEIRA — fonte de verdade da sequência de execução.
+  #
+  # Lista ORDENADA, executada de cima para baixo. `--all` roda os 12 passos
+  # nesta ordem exata; `--phase` casa contra `phase` ou `group`.
+  #
+  # ⚠️ DIVERGÊNCIA INTENCIONAL — NÃO "CORRIGIR".
+  # `phase` aqui é ETAPA DA ESTEIRA, não o módulo do agent_registry:
+  #   esteira  F5 = DevOps Execute   ·  registry F5 = módulo qa-agents
+  #   esteira  F6 = QA Execution     ·  registry F6 = módulo devops-agents
+  # Os dois eixos são diferentes de propósito (decisão de processo). O
+  # pipeline_plan.validate_plan() valida apenas que o agente existe, é
+  # despachável e não está deprecado — NUNCA que step.phase == registry.phase.
+  # Ver tests/tools/test_pipeline_plan.py.
+  #
+  # Não há F7 na esteira. F3 e F8 não têm orquestrador registrado, por isso
+  # apontam para agentes diretos.
+  #
+  # O prompt enviado é `@{agent} | {trigger} | project: {P}`, ou
+  # `@{agent} project: {P}` quando trigger é null.
+  # ═══════════════════════════════════════════════════════════════════
+  steps:
+    - phase: "F1"
+      group: "F1"
+      agent: "ava-asis-orchestrator"
+      trigger: "FP"
+      label: "AS-IS Diagnostic — Full Pipeline"
+
+    - phase: "F2a"
+      group: "F2"
+      agent: "ava-tobe-orchestrator"
+      trigger: "SD"
+      label: "TO-BE Architecture — Solution Design"
+      inputs:
+        mandatory:
+          - path: "outputs/asis/architecture-blueprint.md"
+            produced_by: "ava-asis-solution-{legacy_technology} (F1)"
+          - path: "outputs/asis/bounded-context-map.md"
+            produced_by: "ava-asis-solution-{legacy_technology} (F1)"
+          - path: "outputs/asis/docs/business-rules.md"
+            produced_by: "ava-asis-documentation (F1)"
+          - path: "outputs/asis/db/db-analysis-report.md"
+            produced_by: "ava-asis-db-analyzer (F1)"
+          - path: "src/shared/data/reference-architecture.yaml"
+            base: "workspace"
+            produced_by: "repositório"
+        advisory:
+          - "outputs/asis/master-report.md"
+          - "outputs/asis/docs/business-rules.json"
+          - "outputs/asis/security-map.md"
+          - "outputs/asis/gaps-risks-report.md"
+
+    - phase: "F2b"
+      group: "F2"
+      agent: "ava-devops-orchestrator"
+      trigger: "DP"
+      label: "DevOps Plan"
+
+    - phase: "F2c"
+      group: "F2"
+      agent: "ava-qa-orchestrator"
+      trigger: "TPT"
+      label: "QA — Test Plan & Strategy"
+
+    - phase: "F3"
+      group: "F3"
+      agent: "ava-prototype"
+      trigger: null
+      label: "Prototype"
+      inputs:
+        mandatory:
+          - path: "outputs/asis/docs/business-rules.md"
+            produced_by: "ava-asis-documentation (F1)"
+          - path: "outputs/tobe/docs/bounded-context-map.md"
+            produced_by: "ava-tobe-architecture-design (F2, trigger BC)"
+        advisory:
+          - "outputs/tobe/docs/api-map.md"
+          - "outputs/tobe/docs/openapi/*.yaml"
+          - "outputs/tobe/docs/design-system.md"
+          - "outputs/tobe/docs/user-journeys.md"
+
+    # ── F3S — Camada de planejamento SpecKit (spec 039) ───────────────────
+    # Entre o protótipo e a geração de código. A ordem interna (constitution →
+    # specs → plans → tasks → compliance) e as fatias de contexto por agente
+    # ficam em src/shared/data/pipeline-dag/F3S.yaml, que é a fonte única.
+    # O gate de saída desta fase é o que libera a F4.
+    - phase: "F3S"
+      group: "F3S"
+      agent: "ava-speckit-orchestrator"
+      trigger: "SK"
+      label: "SpecKit — Constitution, Specs, Plans & Tasks"
+      # Fan-out pelas waves do F3S.yaml — um despacho por agente, com o corpo
+      # real carregado. A primeira execução rodou como passo ÚNICO: skill de 8KB
+      # (só o orquestrador), 68.170 tokens de saída, 26 artefatos numa resposta.
+      # Os seis corpos de agente nunca entraram em contexto, e a saída divergiu
+      # de todos os contratos que eles declaram. Sem o F3S.yaml, degrada para
+      # despacho único com aviso.
+      foreach:
+        source: "dag"
+      inputs:
+        mandatory:
+          - path: "outputs/tobe/docs/architecture-blueprint.md"
+            produced_by: "ava-tobe-architecture-design (F2, trigger CB)"
+          - path: "outputs/tobe/docs/tech-framework-document.md"
+            produced_by: "ava-tobe-architecture-technical (F2, trigger TF)"
+          - path: "outputs/tobe/docs/architecture-decision-matrix.md"
+            produced_by: "ava-tobe-architecture-decision-matrix (F2, fase 0-Pre)"
+          - path: "outputs/tobe/docs/decisions"
+            produced_by: "ava-tobe-adr (F2, fase 0)"
+          - path: "outputs/asis/docs/business-rules.md"
+            produced_by: "ava-asis-documentation (F1)"
+          - path: "outputs/tobe/prototype/index.html"
+            produced_by: "ava-prototype (F3)"
+          - path: "outputs/tobe/prototype/screen-list.md"
+            produced_by: "ava-prototype (F3)"
+          - path: "src/shared/data/pipeline-dag/F3S.yaml"
+            base: "workspace"
+            produced_by: "repositório"
+        advisory:
+          - "outputs/tobe/migration/wave-model.json"
+          - "outputs/tobe/docs/openapi/*.yaml"
+          - "outputs/tobe/docs/api-map.md"
+          - "outputs/tobe/docs/regras-negocio.md"
+          - "outputs/tobe/docs/backlog-tobe.md"
+          - "outputs/tobe/docs/wave-plan.md"
+          - "outputs/tobe/qa/test-cases.md"
+          - "outputs/tobe/prototype/design-tokens.json"
+          - "outputs/tobe/docs/security-architecture.md"
+
+    # ⚠️ Este bloco `inputs` é a correção do defeito central da spec 039.
+    # Medido em nopcommerce-02-cli-ava: dos 60 artefatos que o `load_context`
+    # injetava, 60 eram de `outputs/asis/` — ZERO de `outputs/tobe/`. O gerador
+    # de código rodou 14,9 min e escreveu 140 arquivos sem ter visto o blueprint,
+    # os ADRs, o OpenAPI, as regras de negócio nem o protótipo. `index.html`
+    # sequer era elegível, porque `.html` estava fora da allowlist de sufixos.
+    # Resultado: protótipo 13%, regras 17%, APIs 14%, build FALHA.
+    # Declarar aqui é o que faz esses artefatos chegarem. Não remover.
+    - phase: "F4"
+      group: "F4"
+      agent: "ava-stack-orchestrator"
+      trigger: "SG"
+      label: "Tech Stack — Stack Generation"
+      # Fan-out por grupo de tasks do razão de progresso (spec 039, Fase 3).
+      # A execução auditada gerou 140 arquivos em UMA resposta de 82.878 tokens
+      # contra teto de 128.000 — e a cadeia de coders declarada em
+      # tech-stack/module.yaml nunca foi carregada, porque o motor SDK só injeta
+      # o spec_path do orquestrador. Aqui cada grupo vira uma chamada com a sua
+      # fatia, despachando o agente coder real da stack.
+      # Sem tasks-progress.json em disco o passo degrada para despacho único.
+      # ⚠️ O `agent_map` FOI REMOVIDO daqui — e não deve voltar.
+      #
+      # Ele mapeava as nove stacks para o MESMO `ava-f4s-codegen-agent`, o que
+      # tornava o fan-out por task um fan-out sem roteamento: os coders reais
+      # declarados em `tech-stack/module.yaml` (`ava-stack-dotnet-backend`,
+      # `ava-stack-angular-frontend`, ...) nunca eram carregados.
+      #
+      # O roteamento agora é código, em `src/shared/tools/f4_routing.py`:
+      # tabela explícita `component_type + target_stack -> agente`, conferida
+      # contra o `agent_registry` e contra o disco, e FAIL-CLOSED — stack sem
+      # agente especializado interrompe a task com diagnóstico, nunca cai no
+      # genérico. Confira com:
+      #     python src/shared/tools/f4_routing.py --validate
+      #
+      # `source: ledger` permanece porque descreve o que dirige a fase: o razão
+      # `outputs/tobe/speckit/tasks-progress.json`. No `ava-pipeline-runner-cli.py` a
+      # fase não é mais expandida em passos estáticos — ela roda como laço
+      # (`f4_loop.py`), que relê o razão a cada task concluída.
+      foreach:
+        source: "ledger"
+        agent_from: "target_stack"
+        routed_by: "src/shared/tools/f4_routing.py"
+      inputs:
+        mandatory:
+          - path: "outputs/tobe/docs/architecture-blueprint.md"
+            produced_by: "ava-tobe-architecture-design (F2, trigger CB)"
+          - path: "outputs/tobe/docs/tech-framework-document.md"
+            produced_by: "ava-tobe-architecture-technical (F2, trigger TF)"
+          - path: "outputs/tobe/docs/architecture-decision-matrix.md"
+            produced_by: "ava-tobe-architecture-decision-matrix (F2, fase 0-Pre)"
+          - path: "outputs/tobe/docs/decisions"
+            produced_by: "ava-tobe-adr (F2, fase 0)"
+          - path: "outputs/tobe/docs/openapi/*.yaml"
+            produced_by: "ava-tobe-spec (F2, fase 4.61)"
+          - path: "outputs/tobe/docs/regras-negocio.md"
+            produced_by: "ava-docs-tobe (F2, trigger RN)"
+          - path: "outputs/tobe/docs/api-map.md"
+            produced_by: "ava-docs-tobe (F2, fase 5)"
+          - path: "outputs/tobe/docs/security-architecture.md"
+            produced_by: "ava-tobe-security-design (F2, fase 1.6)"
+          - path: "outputs/asis/docs/business-rules.md"
+            produced_by: "ava-asis-documentation (F1)"
+          # Protótipo — autoridade do P2C sobre *quais* telas e *como* cada uma é.
+          # `index.html` é o item que nunca chegou; ele é o motivo do eixo 13%.
+          - path: "outputs/tobe/prototype/index.html"
+            produced_by: "ava-prototype (F3)"
+          - path: "outputs/tobe/prototype/screen-list.md"
+            produced_by: "ava-prototype (F3)"
+          - path: "outputs/tobe/prototype/design-tokens.json"
+            produced_by: "ava-prototype (F3)"
+          # `specs/*/spec.md` é estreitado para `specs/{feature}/spec.md` da
+          # task no fan-out declarativo (`pipeline_plan._narrow_inputs`). No
+          # runner de produção este manifesto nem é usado: a F4 monta contexto
+          # por task em `f4_task_context.py`. Medido em cadastro-funcionarios-04:
+          # specs/plans/tasks de TODAS as features somam 460 KB — por despacho.
+          - path: "outputs/tobe/speckit/specs/*/spec.md"
+            produced_by: "ava-speckit-specification (F3S) / f4s_scaffold_injector.py (F3S, scaffolds)"
+        advisory:
+          - "outputs/tobe/prototype/figma-spec.md"
+          - "outputs/tobe/docs/backlog-tobe.md"
+          - "outputs/tobe/docs/wave-plan.md"
+          - "outputs/tobe/qa/test-cases.md"
+          - "outputs/tobe/patterns-applied.json"
+          # Promovidos a `mandatory` na Fase 4 da spec 039, junto com a mudança
+          # de contrato dos agentes coder. Advisory aqui para não quebrar
+          # projetos gerados antes da F3S existir.
+          - "outputs/tobe/speckit/constitution.md"
+          - "outputs/tobe/speckit/specs/*/plan.md"
+          - "outputs/tobe/speckit/specs/*/tasks.md"
+
+    # ⚠️ `outputs/tobe/source-code` FOI REMOVIDO daqui — e não deve voltar.
+    #
+    # Era declarado como `mandatory`, e `context_manifest._expand()` expande um
+    # diretório com `rglob("*")`, injetando o corpo de CADA arquivo. Com a F4
+    # concluída, isso é a aplicação inteira (backend + frontend + lock files +
+    # assets). Medido em produção:
+    #
+    #     BadRequestError 400 — prompt is too long: 3924457 tokens > 1000000
+    #
+    # Nenhuma tarefa de DevOps precisa do CONTEÚDO do código: IaC, CI, CD,
+    # containerização, custo e observabilidade derivam dos PLANOS. O que os
+    # sub-agentes precisam do código é o CAMINHO, que eles resolvem sozinhos com
+    # Glob/Read sob demanda — não o despejo do repositório no prompt.
+    #
+    # `floor: []` tira `context/shared-context.md` do piso: prosa longa que
+    # repete o que os planos já decidem. `context/project-config.yaml` continua,
+    # agora declarado explicitamente.
+    #
+    # A execução em si roda como laço iterativo sobre
+    # `outputs/tobe/devops/task-devops-progress.json` (uma chamada por tarefa,
+    # contexto mínimo por chamada) — ver `src/shared/tools/devops_task_ledger.py`
+    # e `_run_devops_execute_step()` em `ava-pipeline-runner-cli.py`.
+    - phase: "F5"
+      group: "F5"
+      agent: "ava-devops-orchestrator"
+      trigger: "DE"
+      label: "DevOps Execute"
+      inputs:
+        floor: []
+        mandatory:
+          - path: "context/project-config.yaml"
+            produced_by: "operador (setup do projeto)"
+          - path: "outputs/tobe/devops/devops-plan.md"
+            produced_by: "ava-devops-orchestrator (F2b, trigger DP)"
+          - path: "outputs/tobe/devops/environments-plan.md"
+            produced_by: "ava-devops-orchestrator (F2b, trigger DP)"
+
+    # QE, não TPT: o ava-qa-orchestrator v2.0.0 separou planejamento (TPT, na
+    # F2c) de execução (QE, aqui), espelhando o par DP/DE do DevOps. Repetir
+    # TPT aqui rodaria o planejamento de novo e a esteira de execução
+    # (GR→BM→…→PT→RS) nunca dispararia — o bug que o CHANGELOG de 2026-08-05
+    # descreve. O gate do QE exige F4 Stack + DevOps DE, satisfeitos pela
+    # ordem F4 → F5 → F6.
+    # ⚠️ `outputs/tobe/source-code` FOI REMOVIDO de `mandatory` — e não deve voltar.
+    #
+    # Era declarado como conteúdo obrigatório, e `context_manifest._expand()`
+    # expande diretório com `rglob("*")`. No `meu-erp-03` isso são 40.468
+    # arquivos / 379 MB (bin/, obj/, node_modules/). Medido em produção:
+    #
+    #     BadRequestError 400 — prompt is too long: 3958957 tokens > 1000000
+    #
+    # Havia DOIS amplificadores: os corpos injetados até esgotar os 2 MB de
+    # orçamento (2.0 MB) e — pior — um aviso por arquivo recusado depois disso
+    # (40.097 linhas, 7,5 MB). O guard de orçamento produzia 3,8× mais texto que
+    # os corpos que protegia. O segundo foi corrigido globalmente em
+    # `context_manifest` (agregação por motivo); o primeiro, aqui.
+    #
+    # `exists:` é o tier novo: confere presença e população SEM injetar corpo.
+    # É o que o gate QE realmente pergunta — "a F4 rodou?" —, e respondê-lo
+    # despejando o repositório no prompt era o defeito em uma frase.
+    #
+    # Dos 15 passos da cadeia QE, três precisam de código (DBI, CT, FT) e cada
+    # um usa o glob estreito que o próprio spec declara — nunca `source-code/**`.
+    # Ver `src/shared/tools/qa_task_ledger.py → TASK_BACKBONE` e
+    # `_run_qa_execute_step()` em `ava-pipeline-runner-cli.py`.
+    - phase: "F6"
+      group: "F6"
+      agent: "ava-qa-orchestrator"
+      trigger: "QE"
+      label: "QA — Quality Execute"
+      inputs:
+        floor: ["context/project-config.yaml"]
+        exists:
+          - path: "outputs/tobe/source-code/README.md"
+            produced_by: "scaffold-runner (F4S)"
+          - path: "outputs/tobe/source-code/backend/**"
+            produced_by: "ava-stack-orchestrator (F4)"
+          - path: "outputs/tobe/source-code/frontend/**"
+            produced_by: "ava-stack-orchestrator (F4)"
+        mandatory:
+          - path: "outputs/tobe/docs/bounded-context-map.md"
+            produced_by: "ava-tobe-orchestrator (F2a, trigger SD)"
+          - path: "outputs/tobe/qa/test-plan.md"
+            produced_by: "ava-qa-orchestrator (F2c, trigger TPT)"
+          - path: "outputs/tobe/qa/test-cases.md"
+            produced_by: "ava-qa-orchestrator (F2c, trigger TPT)"
+        advisory:
+          - "outputs/tobe/qa/functional-test-matrix.md"
+          - "outputs/tobe/tests/functional-test-matrix.md"
+          - "outputs/tobe/qa/gap-analysis.md"
+          # Ausente gera WARNING, nunca bloqueio — Passo 4b do gate QE.
+          - "outputs/tobe/parity-test-report.md"
+          - "outputs/asis/docs/business-rules.json"
+          - "outputs/asis/docs/behavior-catalog.json"
+          - "outputs/asis/docs/schema-inventory.md"
+
+    - phase: "F8a"
+      group: "F8"
+      agent: "ava-summary"
+      trigger: "SAS"
+      label: "Summary — Generate"
+
+    - phase: "F8b"
+      group: "F8"
+      agent: "ava-summary-remediation"
+      trigger: null
+      label: "Summary — Remediation"
+
+    - phase: "F8c"
+      group: "F8"
+      agent: "ava-summary"
+      trigger: "SV"
+      label: "Summary — Validate"
+
+    - phase: "F8d"
+      group: "F8"
+      agent: "ava-summary"
+      trigger: "SAS"
+      label: "Summary — Final"

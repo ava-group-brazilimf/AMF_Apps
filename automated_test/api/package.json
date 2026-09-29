@@ -1,0 +1,22 @@
+{
+  "name": "fastqa-automated-api-tests",
+  "version": "1.0.0",
+  "description": "Playwright API black-box tests gerados pelo FastQA",
+  "private": true,
+  "scripts": {
+    "setup:playwright": "npm install && npx playwright install chromium",
+    "test": "npx playwright test",
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:security": "npx playwright test --grep @security",
+    "test:regression": "npx playwright test --grep @regression",
+    "report": "npx playwright show-report",
+    "test:report": "npx playwright test --reporter=html && npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "dotenv": "^16.5.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

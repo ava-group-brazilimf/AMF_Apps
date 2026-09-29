@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentTask",
+  "description": "Contrato de entrada padrão para todos os agentes AVA",
+  "type": "object",
+  "required": ["trace_id", "agent_id", "description"],
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID único gerado no kickoff, propagado por toda a esteira"
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^ava-[a-z0-9-]+$",
+      "description": "ID do agente destino (ex: ava-asis-solution-delphi)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Descrição da tarefa em linguagem natural"
+    },
+    "context": {
+      "type": "object",
+      "description": "Contexto adicional para o agente",
+      "properties": {
+        "project_name": { "type": "string" },
+        "repository_path": { "type": "string" },
+        "legacy_technology": {
+          "type": "string",
+          "enum": ["delphi", "cobol", "vb6", "powerbuilder", "foxpro"]
+        },
+        "scope_modules": {
+          "oneOf": [
+            { "type": "string", "const": "all" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "previous_output": {
+          "type": "string",
+          "description": "Path do output do agente anterior na esteira"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "priority": { "type": "string", "enum": ["P0", "P1", "P2", "P3"] },
+        "retry_count": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "requested_by": { "type": "string" }
+      }
+    }
+  }
+}

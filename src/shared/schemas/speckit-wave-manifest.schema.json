@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric/schemas/speckit-wave-manifest.schema.json",
+  "title": "SpecKit Wave Manifest",
+  "description": "Recorte determinístico das fontes de engenharia por migration wave.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "trace_id",
+    "generated_at",
+    "wave_source",
+    "total_waves",
+    "warnings",
+    "features"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "wave_source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "wave_plan": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "total_waves": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/feature"
+      }
+    }
+  },
+  "$defs": {
+    "feature": {
+      "type": "object",
+      "required": [
+        "wave_id",
+        "migration_wave_order",
+        "feature",
+        "title",
+        "wave_type",
+        "description",
+        "bounded_contexts",
+        "depends_on",
+        "acceptance_criteria",
+        "codegen",
+        "sources"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "wave_id": {
+          "type": "string",
+          "pattern": "^W[0-9]+$"
+        },
+        "migration_wave_order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "feature": {
+          "type": "string",
+          "pattern": "^[0-9]{3}-[a-z0-9-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "wave_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "bounded_contexts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "bc_id",
+              "bc_name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "bc_id": {
+                "type": "string",
+                "pattern": "^BC-[0-9]+$"
+              },
+              "bc_name": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^W[0-9]+$"
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "codegen": {
+          "type": "boolean"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "source_id",
+              "artifact",
+              "anchors"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "artifact": {
+                "type": "string",
+                "minLength": 1
+              },
+              "anchors": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "prototype": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null,
+          "description": "Recorte FECHADO do prototipo para esta wave, derivado de prototype-implementation-manifest.json. null quando a feature nao e de codegen ou quando o prototipo nao existe. E o que impede a fatia vertical de virar ingestao da base inteira: o agente recebe as telas dos seus bounded contexts e nada alem.",
+          "additionalProperties": true,
+          "properties": {
+            "screens": {
+              "type": "array"
+            },
+            "routes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "component_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "shared_component_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "owns_shared_components": {
+              "type": "boolean",
+              "description": "true em UMA unica feature. E a decisao de ownership que SINGLE-CREATE-OWNER cobra."
+            },
+            "owned_shared_components": {
+              "type": "array"
+            },
+            "design_system": {
+              "type": "object"
+            },
+            "design_tokens": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "api_ops": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "unresolved_endpoints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "flows": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "crossing_flows": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "html_anchors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

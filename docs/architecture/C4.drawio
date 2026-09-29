@@ -1,0 +1,61 @@
+# C4 Diagrams — i18n System
+
+## C4.drawio (Text Representation)
+
+This document contains the Mermaid source for all C4 diagrams. See [ContextDiagram.md](ContextDiagram.md) for rendered versions.
+
+### Context Level
+
+```mermaid
+C4Context
+    title AVA Fabric Summary — i18n System Context
+
+    Person(user, "Report Viewer", "Stakeholder viewing the migration summary")
+    System(summary, "AVA Fabric Summary HTML", "Self-contained bilingual report ~1.5MB")
+    System_Ext(agents, "70 Agent Pipeline (F1-F7)", "Generates phase data with bilingual labels")
+    System_Ext(step03, "Step-03 Build HTML", "Injects data + validates i18n keys")
+
+    Rel(user, summary, "Views report, switches language via combobox")
+    Rel(agents, step03, "Provides summary-data.json with k: keys + localized labels")
+    Rel(step03, summary, "Generates final HTML with I18N dict populated")
+```
+
+### Container Level
+
+```mermaid
+C4Container
+    title i18n Containers Inside summary-template.html
+
+    Container(html, "HTML Layer", "Static markup", "~30 sections with data-i18n on all text elements")
+    Container(css, "CSS Layer", "Design tokens + custom props", "--txt-zoom-hint for pseudo-element i18n")
+    Container(dobj, "D Object", "Data payload", "k:/dk:/nk:/rk:/sk:/gk:/ak: i18n key patterns")
+    Container(i18n, "I18N Dictionary", "JS object", "~300 keys × 2 languages, O(1) lookup")
+    Container(engine, "i18n Engine", "setLang() + t()", "DOM scan + re-render orchestrator")
+    Container(renderfns, "20 Render Functions", "JS", "renderKPIs, renderPhases, etc.")
+
+    Rel(engine, html, "Updates data-i18n textContent")
+    Rel(engine, renderfns, "Triggers re-render")
+    Rel(renderfns, dobj, "Reads data arrays")
+    Rel(renderfns, i18n, "Resolves keys via t()")
+    Rel(engine, css, "Sets CSS custom properties")
+```
+
+### Component Level
+
+```mermaid
+C4Component
+    title i18n Engine Components
+
+    Component(setlang, "setLang(l)", "Entry point", "Called by combobox onchange")
+    Component(datai18n, "data-i18n Scanner", "DOM loop", "querySelectorAll('[data-i18n]')")
+    Component(titlescanner, "Title/Placeholder Scanner", "DOM loop", "data-i18n-title, data-i18n-placeholder")
+    Component(cssupd, "CSS Property Updater", "1 line", "Sets --txt-zoom-hint on :root")
+    Component(rerender, "Re-render Orchestrator", "20 try/catch blocks", "Calls all render functions")
+    Component(tfn, "t(key) Resolver", "O(1) hash lookup", "I18N[lang][key] || I18N.pt[key] || key")
+
+    Rel(setlang, datai18n, "Step 1: static text")
+    Rel(setlang, titlescanner, "Step 2: attributes")
+    Rel(setlang, cssupd, "Step 3: CSS vars")
+    Rel(setlang, rerender, "Step 4: dynamic sections")
+    Rel(rerender, tfn, "Each render fn calls t()")
+```

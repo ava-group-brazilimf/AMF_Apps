@@ -1,0 +1,21 @@
+// %%COPYRIGHT%%
+//
+// Host ASP.NET Core do scaffold. Sem endpoint de domínio e sem OpenAPI: as
+// features são geradas depois, pelos agentes coder, e só após a aprovação
+// humana do baseline compilável.
+
+var builder = WebApplication.CreateBuilder(args);
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+
+// Health check mínimo — é tudo o que o verificador consegue afirmar sobre esta
+// aplicação antes de existir qualquer regra de negócio.
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
+   .WithName("HealthCheck");
+
+app.Run();
+
+/// <summary>Exposto para os testes de integração conseguirem referenciar o host.</summary>
+public partial class Program;

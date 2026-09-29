@@ -1,0 +1,18 @@
+# AVA Fabric — Headroom Tool (venv isolado: src/shared/tools/headroom/.venv)
+#
+# Instalado por setup.ps1 / setup.sh. NÃO instalar no venv principal do repo —
+# o repo é stdlib-only por convenção (invariante IV7).
+#
+# O fork embedded vive em ./vendor (git subtree, headroom-ai 0.33.0). O build
+# backend do vendor é maturin, que exige toolchain Rust. Quando `cargo` existe,
+# setup.* instala o fork em modo editável; senão cai para o wheel PyPI da MESMA
+# versão. Ver README.md § Instalação.
+
+headroom-ai[proxy,mcp,ml,code,memory,otel]==0.33.0
+
+# Leitura de project-config.yaml (mesma dependência já usada por
+# context_budget.py / module_partitioner.py no venv principal)
+pyyaml>=6.0
+
+# Testes da tool
+pytest>=8.0

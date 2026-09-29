@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WaveComparisonReport",
+  "description": "Schema de validação estrutural do relatório de comparação AS-IS × TO-BE para aprovação de wave",
+  "type": "object",
+  "required": ["report_id", "trace_id", "project", "wave_id", "generated_at", "verdict", "metrics", "parity", "gonogo"],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "description": "Identificador único do relatório"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Trace ID do fluxo de execução"
+    },
+    "project": {
+      "type": "string",
+      "description": "Nome do projeto"
+    },
+    "wave_id": {
+      "type": "string",
+      "description": "Identificador da wave"
+    },
+    "wave_name": {
+      "type": "string",
+      "description": "Nome descritivo da wave"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp de geração do relatório"
+    },
+    "version": {
+      "type": "string",
+      "description": "Versão do relatório"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["GO", "NO-GO", "CONDICIONAL"],
+      "description": "Veredicto final da comparação"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Nível de risco geral"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "asis": {
+          "type": "object",
+          "properties": {
+            "modules": { "type": "array", "items": { "type": "string" } },
+            "endpoint_count": { "type": "integer", "minimum": 0 },
+            "environment": { "type": "string" },
+            "collection_period": { "type": "string" }
+          }
+        },
+        "tobe": {
+          "type": "object",
+          "properties": {
+            "modules": { "type": "array", "items": { "type": "string" } },
+            "endpoint_count": { "type": "integer", "minimum": 0 },
+            "environment": { "type": "string" },
+            "collection_period": { "type": "string" }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": ["performance", "coverage", "vulnerabilities", "function_points"],
+      "properties": {
+        "performance": {
+          "type": "object",
+          "properties": {
+            "latency_avg_ms": { "$ref": "#/definitions/metric_comparison" },
+            "latency_p95_ms": { "$ref": "#/definitions/metric_comparison" },
+            "latency_p99_ms": { "$ref": "#/definitions/metric_comparison" },
+            "throughput_rps": { "$ref": "#/definitions/metric_comparison" },
+            "error_rate_pct": { "$ref": "#/definitions/metric_comparison" }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "properties": {
+            "line_pct": { "$ref": "#/definitions/metric_comparison" },
+            "branch_pct": { "$ref": "#/definitions/metric_comparison" },
+            "unit_tests_count": { "$ref": "#/definitions/metric_comparison" },
+            "integration_tests_count": { "$ref": "#/definitions/metric_comparison" },
+            "e2e_tests_count": { "$ref": "#/definitions/metric_comparison" }
+          }
+        },
+        "vulnerabilities": {
+          "type": "object",
+          "properties": {
+            "critical": { "$ref": "#/definitions/metric_comparison" },
+            "high": { "$ref": "#/definitions/metric_comparison" },
+            "medium": { "$ref": "#/definitions/metric_comparison" },
+            "low": { "$ref": "#/definitions/metric_comparison" },
+            "sonar_gate": {
+              "type": "object",
+              "properties": {
+                "asis": { "type": "string", "enum": ["pass", "fail", "n/a"] },
+                "tobe": { "type": "string", "enum": ["pass", "fail", "n/a"] },
+                "status": { "type": "string", "enum": ["pass", "fail"] }
+              }
+            }
+          }
+        },
+        "function_points": {
+          "type": "object",
+          "properties": {
+            "planned": { "type": "integer", "minimum": 0 },
+            "implemented": { "type": "integer", "minimum": 0 },
+            "tested": { "type": "integer", "minimum": 0 },
+            "impl_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+            "coverage_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        }
+      }
+    },
+    "parity": {
+      "type": "object",
+      "required": ["overall_pct", "operations"],
+      "properties": {
+        "overall_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentual de paridade funcional geral"
+        },
+        "operations_tested": { "type": "integer", "minimum": 0 },
+        "operations_total": { "type": "integer", "minimum": 0 },
+        "fields_divergent": { "type": "integer", "minimum": 0 },
+        "exceptions_count": { "type": "integer", "minimum": 0 },
+        "operations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/parity_operation" }
+        },
+        "divergences": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/divergence" }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/exception" }
+        }
+      }
+    },
+    "gonogo": {
+      "type": "object",
+      "required": ["mandatory_total", "mandatory_pass", "mandatory_fail", "criteria"],
+      "properties": {
+        "mandatory_total": { "type": "integer", "minimum": 0 },
+        "mandatory_pass": { "type": "integer", "minimum": 0 },
+        "mandatory_fail": { "type": "integer", "minimum": 0 },
+        "criteria": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/gonogo_criterion" }
+        }
+      }
+    },
+    "signoffs": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/signoff" }
+    },
+    "thresholds_used": {
+      "type": "object",
+      "description": "Thresholds aplicados nesta execução (copiados do project-config)",
+      "properties": {
+        "parity_pct": { "type": "number" },
+        "latency_avg_ms": { "type": "number" },
+        "latency_p95_ms": { "type": "number" },
+        "throughput_min": { "type": "number" },
+        "error_rate_max_pct": { "type": "number" },
+        "line_coverage_pct": { "type": "number" },
+        "branch_coverage_pct": { "type": "number" },
+        "vuln_high_max": { "type": "integer" },
+        "fp_coverage_pct": { "type": "number" }
+      }
+    }
+  },
+  "definitions": {
+    "metric_comparison": {
+      "type": "object",
+      "properties": {
+        "asis": { "type": "number" },
+        "tobe": { "type": "number" },
+        "delta": { "type": "number" },
+        "threshold": { "type": "number" },
+        "status": { "type": "string", "enum": ["pass", "fail", "warn", "n/a"] }
+      }
+    },
+    "parity_operation": {
+      "type": "object",
+      "required": ["operation", "match"],
+      "properties": {
+        "operation": { "type": "string" },
+        "payload_ref": { "type": "string" },
+        "asis_response_status": { "type": "integer" },
+        "tobe_response_status": { "type": "integer" },
+        "match": { "type": "boolean" },
+        "observation": { "type": "string" }
+      }
+    },
+    "divergence": {
+      "type": "object",
+      "required": ["operation", "field", "severity"],
+      "properties": {
+        "operation": { "type": "string" },
+        "field": { "type": "string" },
+        "asis_value": {},
+        "tobe_value": {},
+        "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+        "justification": { "type": "string" }
+      }
+    },
+    "exception": {
+      "type": "object",
+      "required": ["operation", "field", "reason", "approver"],
+      "properties": {
+        "operation": { "type": "string" },
+        "field": { "type": "string" },
+        "reason": { "type": "string" },
+        "approver": { "type": "string" },
+        "approved_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "gonogo_criterion": {
+      "type": "object",
+      "required": ["id", "description", "mandatory", "result"],
+      "properties": {
+        "id": { "type": "string" },
+        "section": { "type": "string" },
+        "description": { "type": "string" },
+        "threshold": { "type": "string" },
+        "mandatory": { "type": "boolean" },
+        "result": { "type": "string", "enum": ["pass", "fail", "pending"] },
+        "evidence_ref": { "type": "string" }
+      }
+    },
+    "signoff": {
+      "type": "object",
+      "required": ["role", "mandatory"],
+      "properties": {
+        "role": { "type": "string" },
+        "name": { "type": "string" },
+        "mandatory": { "type": "boolean" },
+        "decision": { "type": "string", "enum": ["approved", "rejected", "pending"] },
+        "date": { "type": "string", "format": "date-time" },
+        "comment": { "type": "string" }
+      }
+    }
+  }
+}

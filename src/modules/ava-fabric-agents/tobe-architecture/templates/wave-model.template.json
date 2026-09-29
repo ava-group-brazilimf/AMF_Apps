@@ -1,0 +1,269 @@
+{
+  "$schema": "wave-model-template",
+  "$version": "2.0.0",
+  "$description": "Template canônico para geração do wave-model.json — Single Source of Truth para composição de waves e métricas de esforço. Este modelo define uma estrutura FIXA de 5 waves (W0–W4). Os tipos de W0 (foundation) e W4 (cutover) são fixos. Os tipos de W1, W2 e W3 são DINÂMICOS — inferidos do predominant_operation_type majoritário dos Bounded Contexts alocados em cada wave (domain_read, domain_write ou domain_core). A composição de BCs e os nomes das waves são DINÂMICOS — derivados do inventory-report.md e das regras de priorização (Step 4). As métricas de esforço (FP/SP) são populadas em DUAS FASES: (Fase 2.7) composição de waves com FP/SP = 0; (Fase 3) o sizing agent atualiza FP/SP com valores IFPUG precisos. Horas são DERIVADAS downstream via cadeia Fixed Parameters (FP × 1.8 = SP → SP ÷ 20 = Sprints → Sprints × 10 × 8 = Horas). Todos os artefatos que referenciam waves DEVEM derivar deste modelo; PROIBIDO replicar regras de composição de waves em outros artefatos.",
+  "$invariants": "bounded_contexts[] responde 'quais BCs esta wave MIGRA', nunca 'quais ela toca': e desse campo que o speckit_wave_manifest deriva o recorte vertical da F3S (ancoras US-*, TC-*, operationId). Wave de dominio que ficar sem BC exclusivo — comum com 5 waves fixas e poucos BCs — declara bounded_contexts: [] e descreve o escopo transversal em scope_description/activities. PROIBIDO relistar BC ja alocado a wave anterior: duas waves com o mesmo BC reivindicam as mesmas ancoras e a F3S gera spec/task duplicadas (medido em cadastro-funcionario-02, 2026-08-27). FORMA CANÔNICA INVIOLÁVEL de waves[].bounded_contexts[]: lista de OBJETOS {bc_id, bc_name, ...}. PROIBIDO gravar IDs textuais ([\"BC-02\"]) — com ou sem um bc_details[] paralelo. Motivo medido (cadastro-funcionarios, 2026-08-26): o modelo gravou [\"BC-02\"] sem bc_details e a F3S abortou a expansão com 'waves[1] não declara bc_details para bounded_contexts=BC-02', COM todos os artefatos do gate de entrada presentes. Uma lista única de objetos torna 'referência sem definição' impossível por construção — não há dois conjuntos para divergirem. Se um bc_details[] chegar de artefato anterior, absorva seus campos nos objetos e REMOVA bc_details. A chave do nome é bc_name (name/title NÃO são lidos a jusante). Demais invariantes obrigatórias (WM-1…WM-10 do Step 4.7 de migration-plan-tobe.md): wave_id e wave_number ambos presentes e concordantes; tshirt preenchido (grafia 'tshirt', não 'tshirt_size'); depends_on_waves[] só referencia waves declaradas; total_waves == len(waves); metadata.project_name == projeto em execução (a guarda de projeto do leitor a jusante NÃO lê project_name de primeiro nível); nenhum bc_id em duas waves; todo bc_id definido no bounded-context-map.md; wave ids e composição de BCs idênticos aos headings '## W{N} — …' do wave-plan.md. Veredito determinístico: python src/shared/tools/wave_model_consistency.py --project {project_name} → exige status: ok.",
+  "$usage": "O agente DEVE: (1) copiar este template; (2) preencher composição (wave_name, bounded_contexts[], tshirt, scores) nos Steps 1–4.5; (3) W0 wave_type='foundation' e W4 wave_type='cutover' são FIXOS; para W1, W2 e W3 o wave_type é DINÂMICO — derivado do predominant_operation_type majoritário dos BCs alocados na wave (Leitura→domain_read, Escrita→domain_write, Core→domain_core; empate resolvido pela hierarquia Core > Escrita > Leitura); (4) os wave_names e a composição de BCs são DINÂMICOS — derivados do inventory-report.md e do algoritmo de priorização (Step 4.3); (5) salvar como wave-model.json com total_fp/total_sp = 0 (placeholders); (6) o sizing agent (ava-tobe-measure-size, Fase 3) ATUALIZA total_fp e total_sp por BC e por wave com valores IFPUG precisos — esta atualização é OBRIGATÓRIA antes de gerar artefatos derivados; (7) artefatos downstream derivam horas de FP/SP via Fixed Parameters: FP × 1.8 = SP → SP ÷ 20 = Sprints → Sprints × 10 × 8 = Horas; (8) para W0 (foundation) e W4 (cutover) sem BCs: total_fp/total_sp = 0, esforço estimado via AI Execution Time Benchmarks pelo T-shirt. (9) O campo `wave_name` de cada wave é a string canônica que DEVE ser reproduzida literalmente em todos os artefatos derivados (sections do Gantt .mmd, headers do wave-plan.md, sections do .drawio). PROIBIDO abreviar, truncar ou reformatar o wave_name.",
+
+  "metadata": {
+    "project_name": "{project_name}",
+    "generated_at": "{ISO-8601 timestamp}",
+    "trace_id": "{trace_id}",
+    "agent_version": "{agent_version}",
+    "model_version": "1.0.0",
+    "input_artifacts_hash": {
+      "description": "Fingerprint dos artefatos de entrada para detectar drift. Registrar o nome e a data de última modificação de cada artefato lido nos Steps 1–3.",
+      "inventory_report": "{last_modified_or_absent}",
+      "api_map": "{last_modified_or_absent}",
+      "data_structure": "{last_modified_or_absent}",
+      "bounded_context_map": "{last_modified_or_absent}",
+      "gaps_risks_report": "{last_modified_or_absent}",
+      "business_rules": "{last_modified_or_absent}",
+      "functional_requirements": "{last_modified_or_absent}"
+    }
+  },
+
+  "summary": {
+    "total_waves": 5,
+    "total_waves_description": "Fixo em 5 waves. W0 (foundation) e W4 (cutover) têm tipo fixo. W1, W2 e W3 têm wave_type dinâmico — derivado do predominant_operation_type majoritário dos BCs alocados (domain_read | domain_write | domain_core). Em empate: Core > Escrita > Leitura.",
+    "total_bcs": "{contagem total de BCs}",
+    "total_fp": "{soma de total_fp de todas as waves — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+    "total_sp": "{total_fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+    "effort_derivation_note": "Horas são DERIVADAS downstream por artefatos consumidores via cadeia Fixed Parameters: SP ÷ 20 = Sprints → Sprints × 10 × 8 = Horas. Split IA/Manual via ia_coverage_percent de cada wave. Para W0/W4 (sem BCs): horas derivadas da tabela AI Execution Time Benchmarks pelo T-shirt.",
+    "wave_count_status": "{NORMAL | ADJUSTED_SPLIT | ADJUSTED_CONSOLIDATION}",
+    "first_wave_tshirt": "{XS | S | M — obrigatório ≤ M}",
+    "last_wave_tshirt": "{XS | S | M — obrigatório ≤ M}"
+  },
+
+  "waves": [
+    {
+      "wave_number": 0,
+      "wave_name": "W0 — {nome_derivado_do_escopo_de_infraestrutura}",
+      "wave_type": "foundation",
+      "scope_description": "{derivado dos componentes de infraestrutura identificados no inventory-report.md: SharedKernel, CI/CD, ambientes, feature flags, etc.}",
+      "priority_band": "P0",
+      "tshirt": "{XS | S | M — obrigatório ≤ M}",
+      "tshirt_justification": "{Dimensão determinante e por quê}",
+      "coupling_score_accumulated": "{soma dos coupling scores dos BCs da wave}",
+      "ia_hours": "{derivado da tabela AI Execution Time Benchmarks pelo T-shirt}",
+      "manual_hours": "{derivado da tabela AI Execution Time Benchmarks pelo T-shirt}",
+      "total_hours": "{ia_hours + manual_hours}",
+      "ia_coverage_percent": "{derivado da tabela Propriedades por T-Shirt}",
+      "feature_flag": "{NomeDaFlag}",
+      "depends_on_waves": [],
+      "external_integrations": [],
+      "bounded_contexts": [],
+      "gap_list": [],
+      "acceptance_criteria": [
+        "Pipeline CI/CD operacional (build + deploy automatizado)",
+        "Ambientes dev/staging provisionados",
+        "Feature flags framework configurado",
+        "SharedKernel compilando com zero erros",
+        "Health checks respondendo em todos os ambientes",
+        "Observabilidade básica (logging + tracing) funcionando"
+      ],
+      "rollback_strategy": "{Descrição da estratégia de rollback — feature flag, blue-green, etc.}"
+    },
+    {
+      "wave_number": 1,
+      "wave_name": "W1 — {nome_derivado_dos_BCs_de_leitura_alocados}",
+      "wave_type": "{DINÂMICO: inferido do predominant_operation_type majoritário dos BCs alocados — domain_read | domain_write | domain_core}",
+      "scope_description": "{BCs com tipo de operação predominante Leitura, alocados pelo algoritmo de priorização a partir do inventory-report.md}",
+      "priority_band": "{P0 | P1}",
+      "tshirt": "{XS | S | M | L | XL}",
+      "tshirt_justification": "{Dimensão determinante e por quê}",
+      "coupling_score_accumulated": "{soma dos coupling scores dos BCs da wave}",
+      "total_fp": "{soma de fp dos BCs da wave — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+      "total_sp": "{total_fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+      "ia_coverage_percent": "{derivado da tabela Propriedades por T-Shirt}",
+      "effort_source": "sizing-report",
+      "feature_flag": "{NomeDaFlag}",
+      "depends_on_waves": [0],
+      "external_integrations": [],
+      "bounded_contexts": [
+        {
+          "bc_id": "{BC-N}",
+          "bc_name": "{Nome do BC — derivado do inventory-report.md}",
+          "fp": "{contagem IFPUG do BC — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+          "sp": "{fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+          "tshirt": "{XS | S | M | L | XL}",
+          "tshirt_determinant_dimension": "{FP | Integrações | Endpoints | Entidades BD | Regras de negócio}",
+          "coupling_score": "{inteiro}",
+          "coupling_in": "{n.º dependências de entrada}",
+          "coupling_out": "{n.º dependências de saída}",
+          "priority_score": "{inteiro 0–60}",
+          "priority_criteria": {
+            "dominio_critico": "{1–5}",
+            "risco_transacional": "{1–5}",
+            "valor_negocio": "{1–5}",
+            "complexidade_funcional": "{1–5}"
+          },
+          "predominant_operation_type": "Leitura",
+          "observations": "{justificativa das pontuações; [INFERIDO] se valor neutro aplicado}"
+        }
+      ],
+      "gap_list": [],
+      "acceptance_criteria": [
+        "Cobertura de testes ≥ 80 %",
+        "Zero findings Critical/High no SonarQube",
+        "Paridade funcional de leitura validada pelo cliente",
+        "Performance igual ou melhor que AS-IS (p95 latência)",
+        "Security scan OWASP sem Critical"
+      ],
+      "rollback_strategy": "{Descrição da estratégia de rollback — feature flag, blue-green, etc.}"
+    },
+    {
+      "wave_number": 2,
+      "wave_name": "W2 — {nome_derivado_dos_BCs_de_escrita_alocados}",
+      "wave_type": "{DINÂMICO: inferido do predominant_operation_type majoritário dos BCs alocados — domain_read | domain_write | domain_core}",
+      "scope_description": "{BCs com tipo de operação predominante Escrita, alocados pelo algoritmo de priorização a partir do inventory-report.md}",
+      "priority_band": "{P1 | P2}",
+      "tshirt": "{XS | S | M | L | XL}",
+      "tshirt_justification": "{Dimensão determinante e por quê}",
+      "coupling_score_accumulated": "{soma dos coupling scores dos BCs da wave}",
+      "total_fp": "{soma de fp dos BCs da wave — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+      "total_sp": "{total_fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+      "ia_coverage_percent": "{derivado da tabela Propriedades por T-Shirt}",
+      "effort_source": "sizing-report",
+      "feature_flag": "{NomeDaFlag}",
+      "depends_on_waves": [0, 1],
+      "external_integrations": [],
+      "bounded_contexts": [
+        {
+          "bc_id": "{BC-N}",
+          "bc_name": "{Nome do BC — derivado do inventory-report.md}",
+          "fp": "{contagem IFPUG do BC — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+          "sp": "{fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+          "tshirt": "{XS | S | M | L | XL}",
+          "tshirt_determinant_dimension": "{FP | Integrações | Endpoints | Entidades BD | Regras de negócio}",
+          "coupling_score": "{inteiro}",
+          "coupling_in": "{n.º dependências de entrada}",
+          "coupling_out": "{n.º dependências de saída}",
+          "priority_score": "{inteiro 0–60}",
+          "priority_criteria": {
+            "dominio_critico": "{1–5}",
+            "risco_transacional": "{1–5}",
+            "valor_negocio": "{1–5}",
+            "complexidade_funcional": "{1–5}"
+          },
+          "predominant_operation_type": "Escrita",
+          "observations": "{justificativa das pontuações; [INFERIDO] se valor neutro aplicado}"
+        }
+      ],
+      "gap_list": [],
+      "acceptance_criteria": [
+        "Cobertura de testes ≥ 80 %",
+        "Zero findings Critical/High no SonarQube",
+        "Paridade funcional de escrita validada pelo cliente",
+        "Performance igual ou melhor que AS-IS (p95 latência)",
+        "Security scan OWASP sem Critical",
+        "Integridade transacional validada (zero inconsistências em teste de carga)"
+      ],
+      "rollback_strategy": "{Descrição da estratégia de rollback — feature flag, blue-green, etc.}"
+    },
+    {
+      "wave_number": 3,
+      "wave_name": "W3 — {nome_derivado_dos_BCs_core_alocados}",
+      "wave_type": "{DINÂMICO: inferido do predominant_operation_type majoritário dos BCs alocados — domain_read | domain_write | domain_core}",
+      "scope_description": "{BCs com tipo de operação predominante Core, alocados pelo algoritmo de priorização a partir do inventory-report.md}",
+      "priority_band": "{P1 | P2}",
+      "tshirt": "{XS | S | M | L | XL}",
+      "tshirt_justification": "{Dimensão determinante e por quê}",
+      "coupling_score_accumulated": "{soma dos coupling scores dos BCs da wave}",
+      "total_fp": "{soma de fp dos BCs da wave — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+      "total_sp": "{total_fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+      "ia_coverage_percent": "{derivado da tabela Propriedades por T-Shirt}",
+      "effort_source": "sizing-report",
+      "feature_flag": "{NomeDaFlag}",
+      "depends_on_waves": [0, 1, 2],
+      "external_integrations": [],
+      "bounded_contexts": [
+        {
+          "bc_id": "{BC-N}",
+          "bc_name": "{Nome do BC — derivado do inventory-report.md}",
+          "fp": "{contagem IFPUG do BC — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+          "sp": "{fp × 1.8 — preenchido pelo sizing agent (Fase 3); 0 até atualização}",
+          "tshirt": "{XS | S | M | L | XL}",
+          "tshirt_determinant_dimension": "{FP | Integrações | Endpoints | Entidades BD | Regras de negócio}",
+          "coupling_score": "{inteiro}",
+          "coupling_in": "{n.º dependências de entrada}",
+          "coupling_out": "{n.º dependências de saída}",
+          "priority_score": "{inteiro 0–60}",
+          "priority_criteria": {
+            "dominio_critico": "{1–5}",
+            "risco_transacional": "{1–5}",
+            "valor_negocio": "{1–5}",
+            "complexidade_funcional": "{1–5}"
+          },
+          "predominant_operation_type": "Core",
+          "observations": "{justificativa das pontuações; [INFERIDO] se valor neutro aplicado}"
+        }
+      ],
+      "gap_list": [],
+      "acceptance_criteria": [
+        "Cobertura de testes ≥ 80 %",
+        "Zero findings Critical/High no SonarQube",
+        "Paridade funcional completa validada pelo cliente",
+        "Performance igual ou melhor que AS-IS (p95 latência)",
+        "Security scan OWASP sem Critical",
+        "Integridade transacional validada (zero inconsistências em teste de carga)",
+        "Regras fiscais validadas contra cenários de homologação"
+      ],
+      "rollback_strategy": "{Descrição da estratégia de rollback — feature flag, blue-green, etc.}"
+    },
+    {
+      "wave_number": 4,
+      "wave_name": "W4 — {nome_derivado_das_atividades_operacionais}",
+      "wave_type": "cutover",
+      "scope_description": "{atividades operacionais finais identificadas: pentest, sign-offs, decommission, migração final, etc.}",
+      "priority_band": "P0",
+      "tshirt": "{XS | S — obrigatório ≤ M}",
+      "tshirt_justification": "Wave operacional — sem desenvolvimento de código; atividades de sign-off e validação",
+      "coupling_score_accumulated": 0,
+      "total_fp": 0,
+      "total_fp_note": "W4 (cutover) não possui BCs com contagem IFPUG — FP/SP = 0. Esforço derivado da tabela AI Execution Time Benchmarks pelo T-shirt.",
+      "total_sp": 0,
+      "ia_coverage_percent": "{derivado da tabela Propriedades por T-Shirt}",
+      "effort_source": "benchmark",
+      "feature_flag": "GLOBAL_CUTOVER",
+      "depends_on_waves": [0, 1, 2, 3],
+      "external_integrations": [],
+      "bounded_contexts": [],
+      "gap_list": [],
+      "acceptance_criteria": [
+        "Pentest externo concluído — zero findings Critical",
+        "Sign-off LGPD/DPO obtido e documentado",
+        "Migração final de dados concluída e validada",
+        "Smoke test em produção aprovado",
+        "Feature-flag flip global executado",
+        "Decommission do sistema legado concluído",
+        "Monitoramento pós-deploy estável por 72h",
+        "Sign-off final do PM e Cliente/Sponsor"
+      ],
+      "rollback_strategy": "Blue-green deployment com restore point de banco de dados; feature-flag flip reverso em caso de falha crítica pós-cutover"
+    }
+  ],
+
+  "cross_validation_checksums": {
+    "description": "Checksums para validação cruzada entre wave-model.json e artefatos derivados. Cada artefato derivado DEVE referenciar exatamente as mesmas waves (número, composição de BCs, T-shirt, FP/SP) que este modelo. Horas são derivadas downstream via Fixed Parameters (FP × 1.8 = SP → SP ÷ 20 = Sprints → Sprints × 10 × 8 = Horas).",
+    "wave_ids_hash": "{hash MD5 da concatenação ordenada de wave_number + bc_ids de cada wave — usado para detectar divergências}",
+    "derived_artifacts": [
+      "wave-plan.md",
+      "migration-executive-summary.md",
+      "ai-estimation-report.md",
+      "ado-work-items.md",
+      "migration-gantt.mmd",
+      "migration-plan.md",
+      "manual-gap-list.md",
+      "integration-matrix.md"
+    ]
+  },
+
+  "wave_type_inference_rule": {
+    "description": "Regra para derivar wave_type das waves de domínio (W1-W3)",
+    "applies_to": ["W1", "W2", "W3"],
+    "fixed_types": {"W0": "foundation", "W4": "cutover"},
+    "algorithm": "Coletar predominant_operation_type de cada BC da wave. Tipo majoritário determina wave_type. Mapeamento: Leitura→domain_read, Escrita→domain_write, Core→domain_core. Em empate, hierarquia: Core > Escrita > Leitura.",
+    "valid_values": ["domain_read", "domain_write", "domain_core"]
+  }
+}

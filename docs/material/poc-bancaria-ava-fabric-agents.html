@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AVA Fabric Agents — Dossiê de POC Bancária</title>
+<style>
+:root{
+  --bg:#f5f7fa; --panel:#ffffff; --ink:#16202e; --muted:#5b6879; --line:#dde4ec;
+  --accent:#004b87; --accent2:#0a7bc4; --ok:#137a4c; --warn:#b26a00; --bad:#b3261e;
+  --chip:#eef3f9; --shadow:0 1px 2px rgba(16,32,54,.06),0 8px 24px rgba(16,32,54,.06);
+  --mono:'Cascadia Mono',Consolas,'SF Mono',monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0e141c;--panel:#151d28;--ink:#e6edf5;--muted:#9aa8ba;--line:#26303e;
+        --accent:#4da3e0;--accent2:#7cc4f0;--ok:#4ec98a;--warn:#e0a247;--bad:#f0837a;
+        --chip:#1c2733;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.62 'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;}
+a{color:var(--accent2);text-decoration:none}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;max-width:1500px;margin:0 auto}
+
+/* NAV */
+nav{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:26px 16px;
+  border-right:1px solid var(--line);background:var(--panel)}
+nav .brand{font-weight:700;font-size:15px;letter-spacing:.2px;color:var(--accent);line-height:1.3}
+nav .brand small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.4px;text-transform:uppercase}
+nav ol{list-style:none;margin:22px 0 0;padding:0;counter-reset:s}
+nav ol li{counter-increment:s;margin:1px 0}
+nav ol li a{display:block;padding:7px 10px;border-radius:7px;font-size:13.5px;color:var(--ink);opacity:.82}
+nav ol li a::before{content:counter(s) ". ";color:var(--muted);font-variant-numeric:tabular-nums}
+nav ol li a:hover{background:var(--chip);opacity:1}
+nav .navfoot{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+
+main{padding:0 40px 90px;min-width:0}
+
+/* HERO */
+header.hero{padding:46px 0 26px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.eyebrow{display:inline-block;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;
+  color:var(--accent);background:var(--chip);padding:5px 11px;border-radius:99px;font-weight:600}
+h1{font-size:38px;line-height:1.15;margin:16px 0 10px;letter-spacing:-.6px}
+.sub{font-size:17px;color:var(--muted);max-width:82ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.meta span{font-size:12px;color:var(--muted);background:var(--chip);border:1px solid var(--line);
+  padding:4px 10px;border-radius:6px}
+
+/* SECTIONS */
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{font-size:25px;letter-spacing:-.3px;margin:0 0 6px;padding-top:14px}
+h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:10px}
+.lede{color:var(--muted);margin:0 0 22px;max-width:88ch}
+h3{font-size:16.5px;margin:30px 0 12px;color:var(--accent)}
+h4{font-size:14px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+
+/* CARDS */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+.kpi .v{font-size:31px;font-weight:700;letter-spacing:-1px;color:var(--accent);line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+.kpi .src{font-size:10.5px;color:var(--muted);opacity:.75;margin-top:8px;font-family:var(--mono);word-break:break-all}
+.card h5{margin:0 0 8px;font-size:15px}
+
+/* TABLES */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:var(--shadow);margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:13.3px;min-width:520px}
+th{background:var(--accent);color:#fff;text-align:left;padding:11px 13px;font-weight:600;font-size:12.5px;
+  position:sticky;top:0}
+td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--chip) 55%,transparent)}
+td code,li code,p code{font-family:var(--mono);font-size:11.8px;background:var(--chip);padding:1px 5px;border-radius:4px;
+  border:1px solid var(--line);word-break:break-word}
+.num-col{text-align:right;font-variant-numeric:tabular-nums}
+
+/* BADGES */
+.b{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;letter-spacing:.4px;white-space:nowrap}
+.b.ga{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 35%,transparent)}
+.b.beta{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.b.alpha{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 32%,transparent)}
+.b.neutral{background:var(--chip);color:var(--muted);border:1px solid var(--line)}
+
+/* PIPELINE */
+.pipe{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 14px}
+.stage{flex:1 0 116px;background:var(--panel);border:1px solid var(--line);border-radius:11px;
+  padding:13px 12px;text-align:center;box-shadow:var(--shadow);position:relative}
+.stage .id{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.stage .nm{font-size:12px;margin:6px 0 9px;line-height:1.3;min-height:31px}
+.stage .ag{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stage .ag small{font-size:10px;font-weight:400;color:var(--muted);display:block}
+.stage .gt{margin-top:9px;font-size:9.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--warn);font-weight:700}
+.stage.top{border-color:var(--accent);border-width:2px}
+
+/* BARS */
+.bars{margin:14px 0}
+.bar{display:grid;grid-template-columns:200px 1fr 62px;gap:12px;align-items:center;margin:9px 0;font-size:13px}
+.bar .t{color:var(--muted)}
+.bar .track{background:var(--chip);border-radius:99px;height:11px;overflow:hidden;border:1px solid var(--line)}
+.bar .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.bar .fill.ok{background:linear-gradient(90deg,#0f7a4a,#25b477)}
+.bar .fill.bad{background:linear-gradient(90deg,#9e2a22,#d95c50)}
+.bar .p{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* CALLOUT */
+.note{border-left:4px solid var(--accent);background:var(--panel);border-radius:0 10px 10px 0;
+  padding:15px 18px;margin:18px 0;box-shadow:var(--shadow)}
+.note.warn{border-left-color:var(--warn)}
+.note.ok{border-left-color:var(--ok)}
+.note p{margin:0}
+.note strong{color:var(--accent)}
+
+/* TIMELINE */
+.tl{border-left:2px solid var(--line);margin:16px 0 0 8px;padding-left:22px}
+.tl .it{position:relative;padding-bottom:20px}
+.tl .it::before{content:"";position:absolute;left:-29px;top:5px;width:11px;height:11px;border-radius:50%;
+  background:var(--accent);border:2px solid var(--panel)}
+.tl .tm{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.6px;text-transform:uppercase}
+.tl .tt{font-weight:600;margin:2px 0 3px}
+.tl .td{font-size:13px;color:var(--muted)}
+
+ul.clean{list-style:none;padding:0;margin:12px 0}
+ul.clean li{padding:7px 0 7px 24px;position:relative;border-bottom:1px dashed var(--line);font-size:13.6px}
+ul.clean li:last-child{border-bottom:0}
+ul.clean li::before{content:"▸";position:absolute;left:4px;color:var(--accent);font-weight:700}
+
+footer{border-top:1px solid var(--line);padding-top:22px;color:var(--muted);font-size:12.5px}
+
+@media (max-width:1000px){
+  .wrap{grid-template-columns:1fr}
+  nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  nav ol{columns:2}
+  main{padding:0 20px 60px}
+  h1{font-size:29px}
+  .bar{grid-template-columns:130px 1fr 52px}
+}
+@media print{
+  nav{display:none}.wrap{grid-template-columns:1fr}
+  body{background:#fff;font-size:10.5pt}
+  section{page-break-inside:avoid}
+  .card,.tw{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="brand">AVA Fabric Agents<small>Dossiê de POC · Setor Bancário</small></div>
+  <ol>
+    <li><a href="#s0">Sumário Executivo</a></li>
+    <li><a href="#s1">Maturidade do Produto</a></li>
+    <li><a href="#s2">Casos de Uso</a></li>
+    <li><a href="#s3">Assertividade</a></li>
+    <li><a href="#s4">Capacidade Evolutiva</a></li>
+    <li><a href="#s5">Artefatos Entregues</a></li>
+    <li><a href="#s6">Modelo Comercial</a></li>
+    <li><a href="#s7">Riscos e Mitigação</a></li>
+    <li><a href="#s8">Roteiro de Demo</a></li>
+    <li><a href="#s9">Conclusão</a></li>
+  </ol>
+  <div class="navfoot">
+    Evidência: run real <code>nopcommerce-04</code><br>18–19/08/2026<br><br>
+    v1.0 · 2026-08-20
+  </div>
+</nav>
+
+<main>
+
+<header class="hero">
+  <span class="eyebrow">Dossiê Técnico-Comercial</span>
+  <h1>AVA Fabric Agents<br>Workflow de Agentes para Modernização de Legado</h1>
+  <p class="sub">Relatório de prontidão para Prova de Conceito em cliente do setor bancário.
+  Todos os números deste documento derivam de uma <strong>execução real</strong> do pipeline sobre
+  uma base de 254 mil linhas de código — nenhum indicador é estimado sem indicação explícita.</p>
+  <div class="meta">
+    <span>Versão 1.0</span><span>2026-08-20</span>
+    <span>Base de evidência: <code>projects/nopcommerce-04/outputs/</code></span>
+    <span>Uso interno / material de apresentação</span>
+  </div>
+</header>
+
+<!-- ============ 0 ============ -->
+<section id="s0">
+  <h2><span class="num">0</span>Sumário Executivo</h2>
+  <p class="lede">O AVA Fabric Agents é uma esteira industrial de modernização operada por
+  <strong>110 agentes de IA especializados</strong> em <strong>9 fases sequenciais (F0→F8)</strong>
+  com <strong>gates de qualidade bloqueantes</strong>. Não é um assistente de código: é um pipeline
+  determinístico, auditável e retomável.</p>
+
+  <div class="grid g4">
+    <div class="card kpi"><div class="v">254.001</div><div class="l">linhas de código legado analisadas · 1.731 arquivos · 1.998 classes</div><div class="src">asis/metrics.json</div></div>
+    <div class="card kpi"><div class="v">436</div><div class="l">regras de negócio extraídas e catalogadas (de 561 candidatas)</div><div class="src">brs/business_rules_catalog.json</div></div>
+    <div class="card kpi"><div class="v">≈ 4 h</div><div class="l">de máquina para ir de código legado a backlog executável (F0→F3S)</div><div class="src">timestamps pipeline_runner/</div></div>
+    <div class="card kpi"><div class="v">394</div><div class="l">tasks de implementação rastreadas · 2.991 dependências · 15 ondas</div><div class="src">speckit/traceability.json</div></div>
+    <div class="card kpi"><div class="v">232</div><div class="l">artefatos entregues em disco (82 MB)</div><div class="src">execution-report_20260819</div></div>
+    <div class="card kpi"><div class="v">92,5%</div><div class="l">Readiness Gate F2→F3S (limite 85%) — <strong>APPROVED</strong></div><div class="src">readiness-gate-status.json</div></div>
+    <div class="card kpi"><div class="v">20/20</div><div class="l">checks de compliance SpecKit · 0 bloqueadores</div><div class="src">speckit/compliance-status.json</div></div>
+    <div class="card kpi"><div class="v">3.323 h</div><div class="l">esforço TO-BE estimado pelo pipeline · 892 FP · time de 8</div><div class="src">tobe/docs/effort-calculator.md</div></div>
+  </div>
+
+  <div class="note">
+    <p><strong>Mensagem central para o cliente bancário:</strong> em cerca de 4 horas de execução, o
+    produto converteu 254 mil linhas de código legado em um plano de modernização auditável — 10
+    bounded contexts, 8 ADRs, contratos OpenAPI, 436 regras catalogadas com rastreabilidade, 394 tasks
+    com grafo de dependências acíclico e estimativa formal de 3.323 horas. É o trabalho que, em uma
+    discovery tradicional, consome <strong>6 a 10 semanas de squad</strong>.</p>
+  </div>
+
+  <div class="note ok">
+    <p><strong>Recomendação:</strong> executar a POC com escopo <strong>F0→F3S completo + F4 em um
+    bounded context piloto</strong>, sobre um sistema de criticidade média. Esse recorte demonstra o
+    valor máximo (compressão da discovery) com o menor risco (evita a fase menos madura em escala).</p>
+  </div>
+</section>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <h2><span class="num">1</span>Maturidade do Produto</h2>
+  <p class="lede">Pipeline multiagente com determinismo (temperatura 0.0), rastreabilidade por
+  <code>trace_id</code> e checksum, retomabilidade de estado e gates que <em>bloqueiam</em> em vez de
+  advertir.</p>
+
+  <h3>1.1 Arquitetura da esteira</h3>
+  <div class="pipe">
+    <div class="stage"><div class="id">F0</div><div class="nm">AST Extraction<br>(sem LLM)</div><div class="ag">—<small>tooling</small></div></div>
+    <div class="stage top"><div class="id">F1</div><div class="nm">AS-IS Diagnostic</div><div class="ag">25<small>agentes</small></div><div class="gt">security gate</div></div>
+    <div class="stage top"><div class="id">F2</div><div class="nm">TO-BE Architecture</div><div class="ag">22<small>agentes</small></div><div class="gt">readiness gate</div></div>
+    <div class="stage"><div class="id">F3</div><div class="nm">Prototype</div><div class="ag">1<small>agente</small></div></div>
+    <div class="stage top"><div class="id">F3S</div><div class="nm">SpecKit<br>specs · plans · tasks</div><div class="ag">7<small>agentes</small></div><div class="gt">exit gate</div></div>
+    <div class="stage"><div class="id">F4</div><div class="nm">Stack / Codegen</div><div class="ag">14<small>agentes</small></div><div class="gt">build gate</div></div>
+    <div class="stage"><div class="id">F5</div><div class="nm">QA &amp; Automação</div><div class="ag">14<small>agentes</small></div></div>
+    <div class="stage"><div class="id">F6</div><div class="nm">DevOps · IaC · CI/CD</div><div class="ag">15<small>agentes</small></div><div class="gt">release gate</div></div>
+    <div class="stage"><div class="id">F7</div><div class="nm">Deliverables</div><div class="ag">10<small>agentes</small></div></div>
+    <div class="stage"><div class="id">F8</div><div class="nm">Summary</div><div class="ag">1<small>agente</small></div><div class="gt">quality gate</div></div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin-top:-4px">Total: <strong>110 agentes</strong>
+  (inclui 1 orquestrador transversal) · <strong>6 gates</strong>. Fonte executável:
+  <code>python src/shared/tools/agent_registry.py</code>.</p>
+
+  <h3>1.2 Matriz de maturidade por fase</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Fase</th><th>Maturidade</th><th>Evidência do run</th><th>Risco p/ POC</th></tr></thead>
+    <tbody>
+      <tr><td><strong>F0</strong> — AST Extraction</td><td><span class="b ga">GA</span></td><td>96 artefatos, 77 MB de AST bruto; extração determinística sem LLM</td><td><span class="b ga">Baixo</span></td></tr>
+      <tr><td><strong>F1</strong> — AS-IS Diagnostic</td><td><span class="b ga">GA</span></td><td>Master report + inventário + DB + segurança + gaps concluídos em ~38 min</td><td><span class="b ga">Baixo</span></td></tr>
+      <tr><td><strong>F2</strong> — TO-BE Architecture</td><td><span class="b ga">GA</span></td><td>8 ADRs, C4 completo, OpenAPI por BC, wave model, gate 92,5%</td><td><span class="b ga">Baixo</span></td></tr>
+      <tr><td><strong>F3</strong> — Prototype</td><td><span class="b ga">GA</span></td><td>Protótipo navegável + design tokens + rastreabilidade de design</td><td><span class="b ga">Baixo</span></td></tr>
+      <tr><td><strong>F3S</strong> — SpecKit</td><td><span class="b ga">GA recente</span></td><td>20/20 checks; schemas v3/v4 estabilizados em 08/2026</td><td><span class="b beta">Médio</span></td></tr>
+      <tr><td><strong>F4</strong> — Codegen .NET</td><td><span class="b beta">Beta</span></td><td>249 arquivos gerados; <strong>build falhou nas 2 tasks de scaffold</strong></td><td><span class="b alpha">Médio-Alto</span></td></tr>
+      <tr><td><strong>F4</strong> — Outras stacks</td><td><span class="b alpha">Alpha</span></td><td>Spring Boot, FastAPI, Gin, NestJS marcados 🚧 em <code>module.yaml</code></td><td><span class="b alpha">Alto</span></td></tr>
+      <tr><td><strong>F5</strong> — QA &amp; Automação</td><td><span class="b beta">Beta</span></td><td>Test plan, casos de teste e matriz funcional gerados</td><td><span class="b beta">Médio</span></td></tr>
+      <tr><td><strong>F6</strong> — DevOps / IaC</td><td><span class="b beta">Beta</span></td><td>Terraform de Wave 1 (main/variables/outputs/modules + tfvars dev)</td><td><span class="b beta">Médio</span></td></tr>
+      <tr><td><strong>F7</strong> — Deliverables</td><td><span class="b beta">Beta</span></td><td>Security &amp; Compliance Report (33 KB) + sumário JSON</td><td><span class="b beta">Médio</span></td></tr>
+      <tr><td><strong>F8</strong> — Summary</td><td><span class="b beta">Beta</span></td><td>HTML consolidado com <code>quality_gate</code> de ~55 regras</td><td><span class="b ga">Baixo</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>1.3 Engenharia que sustenta a maturidade</h3>
+  <div class="grid g2">
+    <div class="card"><h5>Gates bloqueantes, não advisory</h5><p style="margin:0;font-size:13.4px;color:var(--muted)">
+      O <code>speckit-exit-gate</code> <strong>abortou</strong> a execução quando as pré-condições não
+      foram atendidas. O pipeline para em vez de produzir artefato inválido — comportamento essencial
+      em ambiente regulado.</p></div>
+    <div class="card"><h5>Contrato de artefato por fase</h5><p style="margin:0;font-size:13.4px;color:var(--muted)">
+      Cada fase declara os arquivos que deve produzir e é validada automaticamente (coluna <code>Val</code>
+      no relatório de execução).</p></div>
+    <div class="card"><h5>Estado e retomada</h5><p style="margin:0;font-size:13.4px;color:var(--muted)">
+      <code>runner-state.json</code> registra fases executadas/puladas/abortadas e métricas por fase
+      (tokens, % de janela, tempo, nº de artefatos). O pipeline retoma de onde parou.</p></div>
+    <div class="card"><h5>Observabilidade</h5><p style="margin:0;font-size:13.4px;color:var(--muted)">
+      Relatório por run, <code>pipeline-status.html</code> ao vivo e <code>GENERATION_LOG.md</code> por
+      stack, com hipótese de causa raiz em caso de falha de build.</p></div>
+    <div class="card"><h5>Gestão de janela de contexto</h5><p style="margin:0;font-size:13.4px;color:var(--muted)">
+      Compressão por fase (<em>headroom</em>). No run, o codegen operou a <strong>36,8%</strong> de uma
+      janela de 1 M tokens — folga arquitetural para bases maiores.</p></div>
+    <div class="card"><h5>Governança de conteúdo</h5><p style="margin:0;font-size:13.4px;color:var(--muted)">
+      <code>constitution.md</code> por projeto: decisões que as fases seguintes <strong>não podem
+      contradizer</strong> (check <code>CHK-SK-015</code>).</p></div>
+  </div>
+
+  <h3>1.4 Lacunas conhecidas (declaradas)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Lacuna</th><th>Impacto</th><th>Mitigação para a POC</th></tr></thead>
+    <tbody>
+      <tr><td>L1</td><td>Build gate do F4 falhou em 100% das tasks de scaffold na 1ª passada</td><td>Código gerado exige correção humana antes de compilar</td><td>Piloto de F4 em 1 BC com dev sênior no loop</td></tr>
+      <tr><td>L2</td><td>Codegen maduro apenas para .NET + Angular</td><td>Restringe stack-alvo</td><td>Definir .NET 8 + Angular como alvo da POC</td></tr>
+      <tr><td>L3</td><td>SAST/DAST não executados (<code>PENDING</code>)</td><td>Compliance de segurança fica CONDITIONAL</td><td>Integrar SonarQube/DAST do banco no gate F6/F7</td></tr>
+      <tr><td>L4</td><td><code>security_enabled_asis: false</code> → 9 artefatos ausentes</td><td>Sem threat model completo do legado</td><td>Habilitar <code>security_enabled_*: true</code> (obrigatório p/ banco)</td></tr>
+      <tr><td>L5</td><td>F3S com breaking changes recentes (schemas v3/v4)</td><td>Risco de regressão</td><td>Congelar versão da plataforma na POC</td></tr>
+      <tr><td>L6</td><td>Reexecuções observadas em F3S</td><td>Custo e tempo adicionais</td><td>Já endereçado no branch <code>bugfix/speckit-phase-blocked</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <h2><span class="num">2</span>Casos de Uso</h2>
+  <p class="lede">Doze casos de uso do produto, dos quais sete são diretamente aplicáveis ao contexto bancário.</p>
+
+  <h3>2.1 Casos de uso do produto</h3>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Caso de uso</th><th>Fases</th><th>Entregável-chave</th></tr></thead>
+    <tbody>
+      <tr><td>UC-01</td><td><strong>Discovery acelerada de legado</strong> — entender um sistema sem documentação</td><td>F0–F1</td><td>Mapeamento do AS-IS t, inventário, mapa de regras, Diagramas(Arquitetura, MER,Contexto, Componentes, Sreen flow)</td></tr>
+      <tr><td>UC-02</td><td><strong>Assessment de risco e dívida técnica</strong></td><td>F1</td><td><code>risk-register.json</code>, <code>gap-register.json</code>, complexity map</td></tr>
+      <tr><td>UC-03</td><td><strong>Auditoria de segurança do legado</strong></td><td>F1</td><td>OWASP matrix, STRIDE, vulnerabilities, compliance gaps</td></tr>
+      <tr><td>UC-04</td><td><strong>Arquitetura TO-BE com ADRs</strong></td><td>F2</td><td>Blueprint, C4, bounded context map, 8 ADRs, OpenAPI</td></tr>
+      <tr><td>UC-05</td><td><strong>Estimativa formal e plano de ondas</strong></td><td>F2</td><td>Effort calculator (FP/SP/h), wave model, migration plan, Gantt</td></tr>
+      <tr><td>UC-06</td><td><strong>Protótipo navegável p/ validação com negócio</strong></td><td>F3</td><td>HTML navegável + design tokens + rastreabilidade de tela</td></tr>
+      <tr><td>UC-07</td><td><strong>Backlog executável e rastreável</strong></td><td>F3S</td><td>394 tasks com <code>depends_on</code>, <code>verify_command</code>, <code>acceptance</code></td></tr>
+      <tr><td>UC-08</td><td><strong>Geração de código orientada a especificação</strong></td><td>F4</td><td>Solução .NET modular + SPA Angular com build gate</td></tr>
+      <tr><td>UC-09</td><td><strong>Plano e artefatos de QA</strong></td><td>F5</td><td>Test plan, casos de teste, matriz funcional, automação</td></tr>
+      <tr><td>UC-10</td><td><strong>IaC e CI/CD</strong></td><td>F6</td><td>Terraform por wave, pipelines, estimativa de custo de nuvem</td></tr>
+      <tr><td>UC-11</td><td><strong>Pacote de entrega ao cliente</strong></td><td>F7</td><td>Security &amp; Compliance Report, tech docs, evidências, demo</td></tr>
+      <tr><td>UC-12</td><td><strong>Modernização parcial (Strangler Fig)</strong></td><td>F1–F6</td><td>Coexistence strategy + matriz de zonas de migração</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>2.2 Priorização para o banco</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Prio.</th><th>Caso de uso bancário</th><th>Por que se encaixa</th><th>Fases</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Inventário e mapeamento de regras de negócio de core legado (crédito, cadastro, cobrança)</td><td>Regras críticas embutidas em código sem documentação; F0/F1 extrai por AST — determinístico, não "alucinável"</td><td>F0–F1</td></tr>
+      <tr><td><strong>2</strong></td><td>Assessment regulatório e de segurança pré-modernização</td><td>Mapeia LGPD Arts. 46–50, OWASP e STRIDE; produz backlog assinável por CISO/DPO</td><td>F1, F7</td></tr>
+      <tr><td><strong>3</strong></td><td>Plano de modernização por ondas com estimativa defensável</td><td>Comitê de investimento exige número auditável: FP → SP → horas com overhead e contingência explícitos</td><td>F2</td></tr>
+      <tr><td><strong>4</strong></td><td>Decomposição de "god services" em bounded contexts</td><td>Monolitos bancários concentram lógica; o produto identificou 2 god services e propôs decomposição</td><td>F1–F2</td></tr>
+      <tr><td><strong>5</strong></td><td>Backlog executável para squads internos</td><td>394 tasks com dependências e critérios de aceite — consumível sem depender da IA para codar</td><td>F3S</td></tr>
+      <tr><td><strong>6</strong></td><td>Coexistência legado ↔ novo (Strangler Fig)</td><td>Bancos não fazem big bang; entrega estratégia e matriz de coexistência</td><td>F2</td></tr>
+      <tr><td><strong>7</strong></td><td>Codegen assistido em BC piloto</td><td>Demonstra aceleração de implementação com humano no loop</td><td>F4</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warn">
+    <p><strong>Fora de escopo recomendado para a POC:</strong> codegen em massa das 394 tasks (Beta);
+    stacks Java/Python/Go (Alpha); cutover produtivo ou migração de dados real; substituição do
+    processo de homologação e segurança do banco — o produto <em>alimenta</em> esses processos, não os substitui.</p>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <h2><span class="num">3</span>Nível de Assertividade</h2>
+  <p class="lede">Assertividade não é medida por opinião. O produto instrumenta quatro indicadores
+  objetivos, todos extraídos de arquivos de estado gerados pela própria execução.</p>
+
+  <h3>3.1 Índices — visão geral</h3>
+  <div class="bars">
+    <div class="bar"><div class="t">ICA — Conformidade de Artefato</div><div class="track"><div class="fill ok" style="width:98%"></div></div><div class="p">98%</div></div>
+    <div class="bar"><div class="t">IRA — Rastreabilidade (F3S)</div><div class="track"><div class="fill ok" style="width:100%"></div></div><div class="p">100%</div></div>
+    <div class="bar"><div class="t">IGQ — Gates de Qualidade</div><div class="track"><div class="fill ok" style="width:96%"></div></div><div class="p">96%</div></div>
+    <div class="bar"><div class="t">IPE — Prontidão Executável (F4)</div><div class="track"><div class="fill bad" style="width:2%"></div></div><div class="p">0%</div></div>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Índice</th><th>Definição</th><th>Fonte de evidência</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ICA</strong></td><td>% de artefatos contratados pela fase que foram produzidos e validados</td><td>validação de contrato por fase (<code>Val</code>)</td></tr>
+      <tr><td><strong>IGQ</strong></td><td>Score do gate da fase vs. limite mínimo</td><td><code>*-status.json</code> dos gates</td></tr>
+      <tr><td><strong>IPE</strong></td><td>% de tasks cujo <code>verify_command</code> retorna sucesso</td><td><code>tasks-state.json</code> + <code>GENERATION_LOG.md</code></td></tr>
+      <tr><td><strong>IRA</strong></td><td>% de itens com origem declarada (<code>source_refs</code> → artefato + âncora)</td><td><code>traceability.json</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <p><strong>Como apresentar ao cliente:</strong> o produto é <strong>altamente assertivo em análise,
+    arquitetura e planejamento</strong> (98–100%) e <strong>parcialmente assertivo em geração de código
+    executável</strong> — exige intervenção humana no gate de build. Essa é a leitura honesta, e é
+    exatamente o que a POC deve testar.</p>
+  </div>
+
+  <h3>3.2 Assertividade por fase executada</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Fase</th><th>Métrica principal</th><th>Valor</th><th>Evidência</th></tr></thead>
+    <tbody>
+      <tr><td><strong>F0</strong> — AST Extraction</td><td>Extração determinística concluída</td><td><span class="b ga">100%</span></td><td>15,7 MB de AST bruto; 1.731 arquivos varridos</td></tr>
+      <tr><td><strong>F1</strong> — AS-IS Diagnostic</td><td>Artefatos de contrato produzidos</td><td><span class="b ga">100%</span></td><td>96 artefatos: master-report, metrics, risk-register, gap-register</td></tr>
+      <tr><td><strong>F1</strong> — Catálogo de regras</td><td>Taxa de aceitação após curadoria</td><td><span class="b neutral">77,7%</span></td><td>436 aceitas / 561 candidatas — 125 <strong>rejeitadas pelo filtro</strong></td></tr>
+      <tr><td><strong>F2</strong> — TO-BE Architecture</td><td>Readiness Gate</td><td><span class="b ga">92,5%</span></td><td>11 critérios PASS · 1 CONDITIONAL (security architecture placeholder)</td></tr>
+      <tr><td><strong>F3</strong> — Prototype</td><td>Protótipo + rastreabilidade de design</td><td><span class="b ga">100%</span></td><td><code>index.html</code>, <code>design-tokens.json</code>, traceability</td></tr>
+      <tr><td><strong>F3S</strong> — SpecKit</td><td>Compliance gate</td><td><span class="b ga">100%</span></td><td>20/20 checks · 0 bloqueadores · 2 avisos LOW</td></tr>
+      <tr><td><strong>F3S</strong> — Grafo de tasks</td><td>DAG acíclico validado</td><td><span class="b ga">100%</span></td><td>394 nós · 2.991 arestas · 15 ondas · checksum <code>5afcdbc9…</code></td></tr>
+      <tr><td><strong>F4</strong> — Codegen (escrita)</td><td>Arquivos gerados conforme plano</td><td><span class="b ga">100%</span></td><td>249 arquivos: 100 Angular + 149 .NET</td></tr>
+      <tr><td><strong>F4</strong> — Codegen (build gate)</td><td><code>dotnet build</code> / <code>ng build</code> sem erro</td><td><span class="b alpha">0% (0/2)</span></td><td>exit 1 e 127 após 3 e 2 tentativas de remediação</td></tr>
+      <tr><td><strong>F7</strong> — Security &amp; Compliance</td><td>Gate de compliance</td><td><span class="b beta">CONDITIONAL</span></td><td>13/13 vulnerabilidades IN_PROGRESS · SAST/DAST PENDING</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.3 Desempenho medido (tempo de máquina)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Fase</th><th class="num-col">Duração</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>F0 → F1 completo</td><td class="num-col"><strong>≈ 38 min</strong></td><td>7 agentes: orchestrator, inventory, solution, db-analyzer, documentation, security, gaps</td></tr>
+      <tr><td>F2 (TO-BE + DevOps + QA)</td><td class="num-col"><strong>≈ 29 min</strong></td><td>3 orquestradores</td></tr>
+      <tr><td>F3 (Prototype)</td><td class="num-col"><strong>≈ 8 min</strong></td><td>—</td></tr>
+      <tr><td>F3S (constitution → tasks → compliance)</td><td class="num-col"><strong>≈ 60 min</strong></td><td>1ª passada: 5 specs, 3 plans, 3 task sets</td></tr>
+      <tr><td><strong>F0 → F3S (backlog pronto)</strong></td><td class="num-col"><strong>≈ 2 h 20 min</strong></td><td>18/08 12:36 → 14:57</td></tr>
+      <tr><td>F4 — scaffold Angular</td><td class="num-col">434 s</td><td>239.619 tokens in · 45.311 out · 36,8% da janela</td></tr>
+      <tr><td>F4 — scaffold .NET</td><td class="num-col">701 s</td><td>239.619 tokens in · 69.379 out · 36,8% da janela</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.4 Falhas observadas — causa raiz</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Falha</th><th>Código</th><th>Causa raiz</th><th>Natureza</th><th>Corrigível?</th></tr></thead>
+    <tbody>
+      <tr><td><code>ng build</code> falhou</td><td>exit <strong>127</strong></td><td>Comando <code>ng</code> não encontrado no host — Angular CLI ausente no ambiente</td><td><span class="b neutral">Ambiente</span></td><td><span class="b ga">Sim</span> — imagem com toolchain</td></tr>
+      <tr><td><code>dotnet build</code> falhou</td><td>4× <strong>NU1008</strong></td><td>Central Package Management ativo com versões declaradas nos <code>.csproj</code></td><td><span class="b neutral">Config. do gerador</span></td><td><span class="b ga">Sim</span> — corrigir template</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note ok">
+    <p><strong>Leitura para o cliente:</strong> nenhuma das falhas foi "código sem sentido" ou
+    alucinação. Foram <strong>falhas de ambiente e de template de projeto</strong> — a classe de
+    problema mais barata de corrigir. O log registra hipótese de causa e recomenda revisão humana,
+    em vez de mascarar o erro.</p>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <h2><span class="num">4</span>Capacidade Evolutiva</h2>
+
+  <h3>4.1 Do produto (workflow de agentes)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Vetor</th><th>Como está implementado</th><th>Evidência</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Agentes como dados</strong></td><td>Cada agente é um <code>.md</code> declarativo com versão semântica própria</td><td>238 arquivos de agente; ex.: <code>ava-devops-iac-azure v2.6.0</code></td></tr>
+      <tr><td><strong>Registry central</strong></td><td><code>agent_registry.py</code> resolve fase → agentes em runtime</td><td><code>PHASE_BY_MODULE</code></td></tr>
+      <tr><td><strong>Stack não hardcodada</strong></td><td>Agentes leem <code>tobe_stack.*</code> de <code>project-config.yaml</code> em runtime</td><td>README §"Stack — Totalmente Configurável"</td></tr>
+      <tr><td><strong>Contratos versionados</strong></td><td>Schemas explícitos: <code>traceability v4</code>, <code>tasks-state v3</code>, <code>plan-graph v3</code></td><td>headers dos JSONs</td></tr>
+      <tr><td><strong>Governança de mudança</strong></td><td>72 specs internas versionadas + CHANGELOG com breaking changes declarados</td><td><code>specs/</code>, <code>CHANGELOG.md</code> (210 KB)</td></tr>
+      <tr><td><strong>Extensibilidade de nuvem</strong></td><td>Agentes IaC separados por provedor</td><td>Azure · AWS · GCP · K8s nativo</td></tr>
+      <tr><td><strong>Modelo de IA plugável</strong></td><td>Engine isolada (<code>sdk_engine.py</code>); modelo é parâmetro de execução</td><td><code>runner-state.json</code> registra o modelo</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Roadmap natural de curto prazo</h4>
+  <ul class="clean">
+    <li>Fechar o gate de build do F4 .NET (correção NU1008 no template) — <strong>impacto alto, esforço baixo</strong>.</li>
+    <li>Containerizar o runtime de verificação (Node/Angular CLI, .NET SDK) — elimina falhas classe 127.</li>
+    <li>Promover Spring Boot de 🚧 para GA — abre o mercado Java, dominante em bancos.</li>
+    <li>Integrar SAST/DAST corporativos como gate nativo (SonarQube já previsto).</li>
+    <li>Paralelizar F4 por onda topológica — o grafo de 15 ondas já existe e permite isso.</li>
+  </ul>
+
+  <h3>4.2 Do produto gerado (TO-BE do cliente)</h3>
+  <p class="lede">O TO-BE não é código descartável gerado por IA. É uma solução arquitetada para evoluir
+  por 10+ anos sem depender da ferramenta que a criou.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Característica do TO-BE</th><th>Evidência no run</th><th>Benefício de evolução</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Modularidade por bounded context</strong></td><td>10 BCs em <code>src/Modules/{Catalog,Orders,Customers,Payments,Shipping,Tax,Security,Messages,Media,Common}</code></td><td>Times independentes por domínio; deploy isolável</td></tr>
+      <tr><td><strong>Camadas por módulo</strong></td><td><code>.API</code> · <code>.Application</code> · <code>.Infrastructure</code> · <code>.Domain</code></td><td>Troca de infraestrutura sem tocar no domínio</td></tr>
+      <tr><td><strong>Contratos explícitos</strong></td><td>OpenAPI por BC (<code>bc01-catalog.yaml</code>, <code>bc02-orders.yaml</code>)</td><td>Evolução contratual versionada; consumidores estáveis</td></tr>
+      <tr><td><strong>Decisões registradas</strong></td><td>8 ADRs (estratégia, banco, segurança, backend, frontend, integração, observabilidade, auditoria/LGPD)</td><td>Novos times entendem o "porquê", não só o "o quê"</td></tr>
+      <tr><td><strong>Rastreabilidade regra → task → arquivo</strong></td><td>394 tasks com <code>source_refs</code>, <code>rule_ids</code>, <code>api_ops</code></td><td>Auditoria regulatória: prova de que a regra do legado foi implementada</td></tr>
+      <tr><td><strong>Central Package Management</strong></td><td><code>Directory.Packages.props</code></td><td>Atualização de dependências centralizada — crítico para resposta a CVE</td></tr>
+      <tr><td><strong>Frontend modular</strong></td><td>Angular standalone com rotas por domínio</td><td>Lazy loading e evolução por domínio</td></tr>
+      <tr><td><strong>IaC versionada</strong></td><td>Terraform por onda, com módulos e <code>tfvars</code> por ambiente</td><td>Infra evolui com o mesmo rigor do código</td></tr>
+      <tr><td><strong>Observabilidade desde o dia 1</strong></td><td>ADR-007</td><td>Operação bancária exige telemetria desde o início</td></tr>
+      <tr><td><strong>Auditoria e LGPD por construção</strong></td><td>ADR-008 + mapeamento Arts. 46–50</td><td>Conformidade desenhada, não remendada</td></tr>
+      <tr><td><strong>Coexistência com o legado</strong></td><td><code>coexistence-strategy.md</code> + matriz + Strangler Fig</td><td>Migração incremental sem big bang</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note ok"><p><strong>Conclusão:</strong> a capacidade evolutiva do TO-BE
+  <strong>não depende da continuidade do uso da ferramenta</strong>. O banco recebe um ativo autossuficiente.</p></div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <h2><span class="num">5</span>Artefatos Entregues</h2>
+  <p class="lede">232 arquivos · 82 MB no run de referência.</p>
+
+  <div class="grid g4">
+    <div class="card kpi"><div class="v">96</div><div class="l"><code>asis/</code> — diagnóstico do legado (77,7 MB, inclui AST bruto)</div></div>
+    <div class="card kpi"><div class="v">132</div><div class="l"><code>tobe/</code> — arquitetura, specs, backlog, código, IaC, QA (4,5 MB)</div></div>
+    <div class="card kpi"><div class="v">2</div><div class="l"><code>deliverables/</code> — pacote de entrega ao cliente (42 KB)</div></div>
+    <div class="card kpi"><div class="v">2</div><div class="l"><code>readiness-gate/</code> — evidência formal de gate</div></div>
+  </div>
+
+  <h3>5.1 Principais entregáveis (top 12 para apresentação)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Entregável</th><th>Arquivo</th><th>Público-alvo</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>AS-IS Master Report</strong></td><td><code>asis/master-report.md</code></td><td>Arquitetura / TI</td></tr>
+      <tr><td>2</td><td><strong>Catálogo de Regras de Negócio</strong> (436 regras)</td><td><code>asis/docs/business-rules.md</code> + <code>.json</code></td><td>Negócio / Compliance</td></tr>
+      <tr><td>3</td><td><strong>Mapa de Bounded Contexts</strong></td><td><code>asis/bounded-context-map.md</code></td><td>Arquitetura</td></tr>
+      <tr><td>4</td><td><strong>Diagramas C4 + ER + Sequência</strong> (18 diagramas)</td><td><code>asis/diagrams/</code>, <code>tobe/diagrams/</code></td><td>Arquitetura</td></tr>
+      <tr><td>5</td><td><strong>TO-BE Architecture Blueprint</strong></td><td><code>tobe/docs/architecture-blueprint.md</code></td><td>Arquitetura / Comitê</td></tr>
+      <tr><td>6</td><td><strong>8 ADRs</strong></td><td><code>tobe/docs/decisions/ADR-001..008</code></td><td>Arquitetura / Auditoria</td></tr>
+      <tr><td>7</td><td><strong>Contratos OpenAPI por BC</strong></td><td><code>tobe/docs/openapi/*.yaml</code></td><td>Integração</td></tr>
+      <tr><td>8</td><td><strong>Effort Calculator + AI Estimation</strong> (3.323 h · 892 FP)</td><td><code>tobe/docs/effort-calculator.md</code></td><td>Comitê de investimento</td></tr>
+      <tr><td>9</td><td><strong>Migration Plan + Wave Model + Gantt</strong></td><td><code>tobe/migration/</code></td><td>PMO</td></tr>
+      <tr><td>10</td><td><strong>Backlog executável</strong> (394 tasks · 2.991 dependências)</td><td><code>tobe/speckit/traceability.json</code>/<code>.csv</code></td><td>Squads</td></tr>
+      <tr><td>11</td><td><strong>Security &amp; Compliance Report</strong> (LGPD, OWASP, STRIDE, pentest W4)</td><td><code>deliverables/security-compliance-report.md</code></td><td>CISO / DPO</td></tr>
+      <tr><td>12</td><td><strong>Código-fonte TO-BE + IaC</strong></td><td><code>tobe/source-code/</code>, <code>tobe/iac/wave-1/</code></td><td>Engenharia</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.2 Entregáveis por fase</h3>
+  <div class="grid g2">
+    <div class="card"><h5>F0 — AST Extraction</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <code>ast-raw/{extraction,compressed,brs}/</code>: business_rules · database_rules · procedures ·
+      integrations · apis · code_overview · business_rule_cases · <code>business_rules_catalog.json</code> ·
+      <code>review_pack.csv</code> (revisão humana em lote).</p></div>
+    <div class="card"><h5>F1 — AS-IS Diagnostic <span class="b neutral">96 artefatos</span></h5><p style="font-size:13px;color:var(--muted);margin:0">
+      master-report · inventory-report · architecture-blueprint · bounded-context-map · complexity-map ·
+      metrics · pattern-classifications · risk-register · gap-register · gaps-risks-report ·
+      <code>db/</code> (análise, qualidade, ER, stored procedures) · <code>security/</code> (OWASP matrix, review) ·
+      vulnerabilities · compliance-gaps · events-pubsub · <code>docs/</code> (business rules, screen flow,
+      value chain) · <code>diagrams/</code> (C4, sequência, pub/sub).</p></div>
+    <div class="card"><h5>F2 — TO-BE Architecture <span class="b neutral">35 docs + 10 diagramas</span></h5><p style="font-size:13px;color:var(--muted);margin:0">
+      blueprint · architecture-decision-matrix · ADR-001..008 · bounded-context-map · db-design +
+      sql-strategy · OpenAPI · api-map · integration-matrix · backlog-tobe · <strong>ado-work-items</strong>
+      (importável no Azure DevOps) · effort-calculator · ai-estimation-report · migration-plan +
+      executive-summary · coexistence-strategy + matrix · wave-model · risk-mitigation-plan ·
+      azure-infra-estimator (custo de nuvem) · design-system · user-journeys.</p></div>
+    <div class="card"><h5>F3 — Prototype</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <code>prototype/index.html</code> navegável · design-tokens · figma-spec · screen-list ·
+      design-input-traceability · execution-log.</p></div>
+    <div class="card"><h5>F3S — SpecKit <span class="b neutral">backlog executável</span></h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <code>constitution.md</code> · <code>wave-spec-manifest.json</code> · 7 features com spec + plan +
+      tasks (36 arquivos) · <code>traceability.json</code> (v4) + <code>.csv</code> ·
+      <code>tasks-state.json</code> (v3, 394 tasks) · compliance-report + status (20 checks).</p></div>
+    <div class="card"><h5>F4 — Codegen</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <code>source-code/dotnet/</code>: 123 arquivos <code>.cs</code>, solution, Directory.Build/Packages.props,
+      global.json, módulos por BC em 4 camadas · <code>source-code/angular/</code>: SPA standalone com rotas
+      por domínio · <code>GENERATION_LOG.md</code> por stack · <code>source-code.zip</code>.</p></div>
+    <div class="card"><h5>F5 — QA</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      test-plan · test-cases · gap-analysis · functional-test-matrix · automatable-test-cases ·
+      traceability-matrix · <code>tests/features/</code> (BDD).</p></div>
+    <div class="card"><h5>F6 — DevOps</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <code>iac/wave-1/</code>: main.tf · variables.tf · outputs.tf · modules/ · terraform.tfvars.dev ·
+      devops-plan · environments-plan.</p></div>
+    <div class="card"><h5>F7 — Deliverables</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <strong>Security &amp; Compliance Report</strong> (33 KB, 10 seções): executive summary · remediação de
+      vulnerabilidades · LGPD Arts. 46–50 · GDPR · STRIDE AS-IS→TO-BE · SAST · DAST · checklist de
+      pentest Wave 4 · quality gates · log Z-Curve. Sumário JSON com linhas de assinatura de
+      <strong>CISO</strong> e <strong>DPO</strong>.</p></div>
+    <div class="card"><h5>F8 — Summary</h5><p style="font-size:13px;color:var(--muted);margin:0">
+      <code>pipeline-status.html</code> ao vivo · <code>execution-report_*.md</code> (tokens, custo, tempo e
+      artefatos por fase) · HTML consolidado auditado por <code>quality_gate</code> (~55 regras).</p></div>
+  </div>
+
+  <h3>5.3 Cobertura das exigências bancárias</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Exigência bancária</th><th>Artefato que a atende</th></tr></thead>
+    <tbody>
+      <tr><td>Rastreabilidade regra legada → implementação</td><td><code>traceability.json</code> (<code>source_refs</code>, <code>rule_ids</code>) + <code>review_pack.csv</code></td></tr>
+      <tr><td>Conformidade LGPD</td><td>Seção 3 do Security Report — Arts. 46–50 → controles TO-BE + evidências de PII + assinatura do DPO</td></tr>
+      <tr><td>Postura de segurança</td><td>OWASP coverage matrix · STRIDE · 13 vulnerabilidades com severidade/CWE/OWASP</td></tr>
+      <tr><td>Teste de intrusão</td><td>Checklist de pentest Wave 4: escopo, metodologia, credenciais, critérios go/no-go</td></tr>
+      <tr><td>Evidência para auditoria</td><td><code>trace_id</code> por execução · checksums de grafo · exit codes · timestamps NTP</td></tr>
+      <tr><td>Decisão de comitê</td><td>Effort calculator com fórmula, overhead 15%, contingência 20% e linha de aprovação</td></tr>
+      <tr><td>Continuidade operacional</td><td>Coexistence strategy (Strangler Fig) — sem big bang</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <h2><span class="num">6</span>Modelo Comercial</h2>
+  <p class="lede">Os valores monetários são <strong>faixas de referência para calibração pelo time
+  comercial</strong>. O único número de custo <strong>medido</strong> é o consumo de modelo de IA.</p>
+
+  <h3>6.1 Drivers de precificação</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Driver</th><th>Métrica</th><th>Impacto</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Tamanho da base legada</strong></td><td>KLOC / nº de arquivos</td><td>Custo de F0–F1 (linear)</td></tr>
+      <tr><td><strong>Complexidade de domínio</strong></td><td>nº de Bounded Contexts</td><td>Custo de F2–F3S</td></tr>
+      <tr><td><strong>Volume de backlog</strong></td><td>nº de tasks / FP</td><td>Custo de F4 (linear por task)</td></tr>
+      <tr><td><strong>Escopo de segurança</strong></td><td><code>security_enabled_*</code>, SAST/DAST, pentest</td><td>Custo de F1-sec e F7</td></tr>
+      <tr><td><strong>Stacks-alvo</strong></td><td>1 backend + 1 frontend vs. múltiplas</td><td>Complexidade de F4</td></tr>
+      <tr><td><strong>Nuvem e ambientes</strong></td><td>Azure/AWS/GCP × dev/hml/prd</td><td>Custo de F6</td></tr>
+      <tr><td><strong>Modo de execução</strong></td><td>SaaS Avanade vs. on-premise / VPC do banco</td><td>Setup e compliance</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.2 Custo de execução medido (consumo de IA)</h3>
+  <p style="font-size:13px;color:var(--muted);margin-top:-6px">Base: métricas reais de F4
+  (<code>runner-state.json</code>) · tarifa pública de referência US$ 3,00/M in · US$ 15,00/M out.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Item</th><th>Medido</th><th>Cálculo</th><th class="num-col">Custo</th></tr></thead>
+    <tbody>
+      <tr><td>Scaffold Angular</td><td>239.619 in · 45.311 out</td><td>0,72 + 0,68</td><td class="num-col"><strong>US$ 1,40</strong></td></tr>
+      <tr><td>Scaffold .NET</td><td>239.619 in · 69.379 out</td><td>0,72 + 1,04</td><td class="num-col"><strong>US$ 1,76</strong></td></tr>
+      <tr><td>Média por task de codegen</td><td>—</td><td>—</td><td class="num-col"><strong>≈ US$ 1,58</strong></td></tr>
+      <tr><td>Projeção F4 completo (394 tasks)</td><td>—</td><td>394 × 1,58</td><td class="num-col"><strong>≈ US$ 620</strong></td></tr>
+      <tr><td>Projeção F0–F3S (≈ 45 execuções)</td><td>—</td><td>estimativa por analogia</td><td class="num-col"><strong>≈ US$ 200–400</strong></td></tr>
+      <tr><td><strong>Total de IA por migração deste porte</strong></td><td>—</td><td>—</td><td class="num-col"><strong>≈ US$ 800–1.100</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <p><strong>Insight comercial decisivo:</strong> o custo de IA é desprezível frente ao esforço humano
+    que substitui (3.323 h estimadas). A precificação <strong>não deve ser baseada em consumo de
+    tokens</strong>, e sim em <strong>valor entregue</strong> — esforço evitado, velocidade e risco reduzido.</p>
+  </div>
+
+  <h3>6.3 Três modelos de contratação</h3>
+  <div class="grid g3">
+    <div class="card">
+      <h5>Modelo A — Assinatura + Fee por Projeto</h5>
+      <ul class="clean" style="margin-top:6px">
+        <li>Setup inicial (one-time): R$ [ — ]</li>
+        <li>Assinatura por squad/mês: R$ [ — ]</li>
+        <li>Fee por projeto, por faixa de KLOC: R$ [ — ]</li>
+        <li>Suporte e evolução: [ — ] % da assinatura</li>
+      </ul>
+      <p style="font-size:12.6px;color:var(--muted);margin:8px 0 0"><strong>Quando usar:</strong> o banco
+      quer capacidade instalada e vai modernizar múltiplos sistemas.<br><strong>Vantagem:</strong> receita
+      recorrente + previsibilidade.</p>
+    </div>
+    <div class="card">
+      <h5>Modelo B — Preço por Ponto de Função <span class="b neutral">outcome</span></h5>
+      <ul class="clean" style="margin-top:6px">
+        <li>Preço por FP entregue (892 FP no run): R$ [ — ]/FP</li>
+        <li>Bônus de qualidade (cobertura ≥ 80% + gates): + [ — ] %</li>
+        <li>Retenção: 10–20% liberado no aceite de cada onda</li>
+      </ul>
+      <p style="font-size:12.6px;color:var(--muted);margin:8px 0 0"><strong>Quando usar:</strong> cliente
+      exige compromisso com resultado.<br><strong>Atenção:</strong> exige acordo prévio sobre a contagem de
+      FP — o pipeline já a produz de forma auditável.</p>
+    </div>
+    <div class="card" style="border-color:var(--accent);border-width:2px">
+      <h5>Modelo C — POC Fixa → Escala por Onda <span class="b ga">recomendado</span></h5>
+      <ul class="clean" style="margin-top:6px">
+        <li><strong>Fase 0 — POC:</strong> 1 sistema · F0→F3S + F4 em 1 BC piloto · 3–4 semanas · preço fixo</li>
+        <li><strong>Fase 1 — Onda 1:</strong> implementação da onda de baixa complexidade · preço fixo por onda</li>
+        <li><strong>Fase N:</strong> ondas subsequentes conforme o wave model</li>
+      </ul>
+      <p style="font-size:12.6px;color:var(--muted);margin:8px 0 0"><strong>Quando usar:</strong> entrada em
+      cliente novo — é o modelo indicado para esta POC.<br><strong>Vantagem:</strong> risco limitado; cada
+      onda tem escopo, critério de aceite e gate próprios.</p>
+    </div>
+  </div>
+
+  <h3>6.4 Estrutura da POC proposta (4 semanas)</h3>
+  <div class="tl">
+    <div class="it"><div class="tm">Semana 1</div><div class="tt">Onboarding e habilitação</div><div class="td">Acesso ao repositório legado, configuração de stack-alvo, definição da política de segurança e do modo de execução do modelo de IA.</div></div>
+    <div class="it"><div class="tm">Semana 2</div><div class="tt">F0 → F2 · AS-IS e TO-BE</div><div class="td">Execução do diagnóstico e da arquitetura; apresentação do AS-IS e do TO-BE ao comitê.</div></div>
+    <div class="it"><div class="tm">Semana 3</div><div class="tt">F3 → F3S · Protótipo e backlog</div><div class="td">Protótipo navegável e backlog executável; validação com os squads do banco.</div></div>
+    <div class="it"><div class="tm">Semana 4</div><div class="tt">F4 piloto + entrega</div><div class="td">Codegen assistido no BC piloto, Security &amp; Compliance Report e apresentação executiva.</div></div>
+  </div>
+
+  <h3>6.5 Premissas comerciais</h3>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Premissa</th></tr></thead>
+    <tbody>
+      <tr><td>P1</td><td>O banco fornece acesso de leitura ao repositório legado e ao dicionário de dados</td></tr>
+      <tr><td>P2</td><td>O modelo de IA executa em ambiente aprovado pelo banco (nuvem privada ou tenant dedicado) — <strong>definir antes da POC</strong></td></tr>
+      <tr><td>P3</td><td>O código-fonte do cliente <strong>não</strong> é usado para treinamento de modelo — cláusula contratual obrigatória</td></tr>
+      <tr><td>P4</td><td>A propriedade intelectual dos artefatos gerados é do banco; a plataforma permanece da Avanade</td></tr>
+      <tr><td>P5</td><td>Os gates de segurança do banco (SAST/DAST/pentest) são integrados, não substituídos</td></tr>
+      <tr><td>P6</td><td>Versão da plataforma congelada durante a POC</td></tr>
+      <tr><td>P7</td><td>Alocação do banco: 1 arquiteto + 1 tech lead + 1 analista de negócio (part-time)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.6 Argumento de ROI</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Dimensão</th><th>Baseline tradicional</th><th>Com AVA Fabric</th><th>Ganho</th></tr></thead>
+    <tbody>
+      <tr><td>Discovery + arquitetura + backlog (254 KLOC)</td><td>6–10 semanas de squad</td><td>≈ 4 h de máquina + 1–2 semanas de validação humana</td><td><strong>~70–80%</strong> de redução no ciclo de planejamento</td></tr>
+      <tr><td>Rastreabilidade regra → código</td><td>Manual, parcial, não auditável</td><td>394 tasks com <code>source_refs</code> automáticos</td><td>Auditoria viabilizada</td></tr>
+      <tr><td>Estimativa</td><td>Julgamento de especialista</td><td>FP/SP/horas com fórmula e contingência explícitas</td><td>Defensável em comitê</td></tr>
+      <tr><td>Custo de IA</td><td>—</td><td>≈ US$ 800–1.100 por migração</td><td>Irrelevante frente a 3.323 h</td></tr>
+      <tr><td>Implementação (F4)</td><td>100% humano</td><td>Assistido, com humano no gate de build</td><td><strong>A quantificar na POC</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <h2><span class="num">7</span>Riscos da POC e Mitigação</h2>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Risco</th><th>Prob.</th><th>Impacto</th><th>Mitigação</th></tr></thead>
+    <tbody>
+      <tr><td>R1</td><td>Build gate do F4 falhar novamente e frustrar expectativa</td><td><span class="b alpha">Alta</span></td><td><span class="b beta">Médio</span></td><td>Posicionar F4 como <strong>assistido</strong> desde o kickoff; corrigir NU1008 e containerizar toolchain antes da POC</td></tr>
+      <tr><td>R2</td><td>Política do banco impedir envio de código a modelo externo</td><td><span class="b beta">Média</span></td><td><span class="b alpha">Alto</span></td><td>Definir modo de execução (VPC/tenant dedicado) na semana 0; ter alternativa on-premise</td></tr>
+      <tr><td>R3</td><td>Legado em COBOL/mainframe com peculiaridades não cobertas</td><td><span class="b beta">Média</span></td><td><span class="b beta">Médio</span></td><td>Escolher sistema piloto em tecnologia já validada (.NET/Delphi/VB)</td></tr>
+      <tr><td>R4</td><td>Expectativa de "IA que migra sozinha"</td><td><span class="b alpha">Alta</span></td><td><span class="b alpha">Alto</span></td><td>Comunicar os índices da §3 com transparência: 98% em planejamento, assistido em codegen</td></tr>
+      <tr><td>R5</td><td>Reexecuções de fase inflarem prazo</td><td><span class="b beta">Média</span></td><td><span class="b ga">Baixo</span></td><td>Congelar versão; usar branch estabilizado; <code>runner-state</code> permite retomada</td></tr>
+      <tr><td>R6</td><td>Compliance de segurança ficar CONDITIONAL</td><td><span class="b alpha">Alta</span></td><td><span class="b beta">Médio</span></td><td>Habilitar <code>security_enabled_*: true</code> e plugar SAST/DAST do banco desde o início</td></tr>
+      <tr><td>R7</td><td>Validação das 436 regras pelo negócio demorar</td><td><span class="b beta">Média</span></td><td><span class="b beta">Médio</span></td><td>Usar <code>review_pack.csv</code> para revisão em lote; priorizar regras dos BCs do piloto</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+  <h2><span class="num">8</span>Roteiro de Demonstração (90 min)</h2>
+  <div class="tl">
+    <div class="it"><div class="tm">0–10 min · Contexto</div><div class="tt">Diagrama do pipeline F0→F8 e os 110 agentes</div><div class="td">"Não é um chatbot, é uma linha de produção."</div></div>
+    <div class="it"><div class="tm">10–25 min · AS-IS</div><div class="tt">master-report · metrics.json · C4 · ER diagram · catálogo de 436 regras</div><div class="td">"254 mil linhas compreendidas em 38 minutos."</div></div>
+    <div class="it"><div class="tm">25–40 min · TO-BE</div><div class="tt">Blueprint · 8 ADRs · bounded context map · OpenAPI</div><div class="td">"Arquitetura com decisões justificadas e contratos."</div></div>
+    <div class="it"><div class="tm">40–50 min · Plano e número</div><div class="tt">Effort calculator (3.323 h / 892 FP) · wave model · Gantt</div><div class="td">"Número defensável em comitê de investimento."</div></div>
+    <div class="it"><div class="tm">50–60 min · Protótipo</div><div class="tt"><code>prototype/index.html</code> navegável</div><div class="td">"O negócio valida a tela antes de existir código."</div></div>
+    <div class="it"><div class="tm">60–72 min · Backlog executável</div><div class="tt"><code>traceability.csv</code> · grafo de 2.991 dependências · 15 ondas</div><div class="td">"Squads do banco recebem trabalho pronto e rastreável."</div></div>
+    <div class="it"><div class="tm">72–82 min · Segurança e compliance</div><div class="tt">LGPD Arts. 46–50 · STRIDE · checklist de pentest · linhas CISO/DPO</div><div class="td">"Compliance por construção."</div></div>
+    <div class="it"><div class="tm">82–90 min · Transparência</div><div class="tt"><code>pipeline-status.html</code> · <code>GENERATION_LOG.md</code> com a falha real de build</div><div class="td">"Mostramos inclusive o que falhou — e por quê."</div></div>
+  </div>
+  <div class="note ok">
+    <p><strong>Recomendação de tom:</strong> abrir o <code>GENERATION_LOG.md</code> com a falha de build é
+    um <strong>ativo de credibilidade</strong> em conversa com banco. Demonstra que o produto instrumenta e
+    reporta falha em vez de mascará-la — exatamente o comportamento que uma área de riscos precisa ver.</p>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="s9">
+  <h2><span class="num">9</span>Conclusão e Recomendação</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Pergunta do cliente</th><th>Resposta baseada em evidência</th></tr></thead>
+    <tbody>
+      <tr><td>O produto está maduro?</td><td><strong>Sim para análise, arquitetura e planejamento</strong> (F0–F3S em GA, gates 92,5%–100%). <strong>Beta para geração de código</strong> (F4).</td></tr>
+      <tr><td>Qual a assertividade?</td><td><strong>98%</strong> de conformidade de artefato · <strong>100%</strong> de rastreabilidade · <strong>0%</strong> de prontidão de build no F4 na 1ª passada — com causa raiz identificada e corrigível.</td></tr>
+      <tr><td>Serve para o meu caso?</td><td>Sim para inventário de regras, assessment regulatório, arquitetura TO-BE, estimativa e backlog. Codegen entra como <strong>piloto assistido</strong>.</td></tr>
+      <tr><td>O que eu recebo?</td><td><strong>232 artefatos</strong>, dos quais 12 de nível executivo/regulatório — incluindo Security &amp; Compliance Report com linhas de assinatura de CISO e DPO.</td></tr>
+      <tr><td>Fico preso à ferramenta?</td><td><strong>Não.</strong> O TO-BE é modular, contratado por OpenAPI, com ADRs e IaC — evolui de forma autônoma.</td></tr>
+      <tr><td>Quanto custa?</td><td>Custo de IA medido: <strong>≈ US$ 800–1.100</strong> por migração deste porte. Precificação proposta por <strong>valor</strong> (Modelo C para a POC).</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note ok">
+    <p><strong>Recomendação final:</strong> aprovar a POC no <strong>Modelo C (preço fixo, 4 semanas)</strong>,
+    escopo <strong>F0→F3S completo + F4 em 1 bounded context piloto</strong>,
+    <code>security_enabled_*: true</code>, stack-alvo <strong>.NET 8 + Angular</strong>, execução em
+    ambiente aprovado pelo banco.</p>
+  </div>
+
+  <h4>Pré-requisitos antes do kickoff</h4>
+  <ul class="clean">
+    <li>Corrigir NU1008 no template de scaffold .NET.</li>
+    <li>Containerizar o runtime de verificação (.NET SDK + Angular CLI).</li>
+    <li>Definir e homologar o modo de execução do modelo de IA com a área de segurança do banco.</li>
+    <li>Congelar a versão da plataforma.</li>
+  </ul>
+</section>
+
+<!-- ============ ANEXO ============ -->
+<section id="anexo">
+  <h2><span class="num">A</span>Fontes de Evidência</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Afirmação</th><th>Arquivo de origem</th></tr></thead>
+    <tbody>
+      <tr><td>Métricas do legado</td><td><code>projects/nopcommerce-04/outputs/asis/metrics.json</code></td></tr>
+      <tr><td>Catálogo de regras</td><td><code>asis/ast-raw/dotnet/brs/business_rules_catalog.json</code></td></tr>
+      <tr><td>Readiness gate</td><td><code>readiness-gate/wave-1/readiness-gate-status.json</code></td></tr>
+      <tr><td>Compliance SpecKit</td><td><code>tobe/speckit/compliance-status.json</code></td></tr>
+      <tr><td>Grafo de tasks / estado</td><td><code>tobe/speckit/traceability.json</code> · <code>tasks-state.json</code></td></tr>
+      <tr><td>Métricas de execução F4</td><td><code>pipeline_runner/runner-state.json</code></td></tr>
+      <tr><td>Falhas de build</td><td><code>tobe/source-code/{dotnet,angular}/GENERATION_LOG.md</code></td></tr>
+      <tr><td>Estimativa de esforço</td><td><code>tobe/docs/effort-calculator.md</code> · <code>ai-estimation-report.md</code></td></tr>
+      <tr><td>Segurança e compliance</td><td><code>deliverables/security-compliance-{report.md,summary.json}</code></td></tr>
+      <tr><td>Composição de agentes</td><td><code>python src/shared/tools/agent_registry.py</code> · <code>module.yaml</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>
+  <strong>AVA Fabric Agents — Dossiê de POC (Setor Bancário)</strong> · v1.0 · 2026-08-20 ·
+  Avanade Migration Factory<br>
+  Documento gerado a partir de evidência de execução real do projeto <code>nopcommerce-04</code>.
+  Nenhum número é estimado sem indicação explícita. Uso interno.
+</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,654 @@
+# project-config.yaml — Template para novo projeto AVA Fabric
+# Copie este arquivo para projects/{PROJECT_NAME}/context/project-config.yaml
+# e preencha os valores antes de iniciar a esteira.
+
+project_name: ""                        # Ex: "Meu-ERP", "Projeto-X"
+repository_path: ""                     # Caminho absoluto do repo legado
+legacy_technology: "delphi"             # delphi | dotnet | java | cobol | vb6 | vbnet | powerbuilder
+
+# ─── AST Analyzers ─────────────────────────────────────────────────────────
+# Mapeia o analisador AST de cada linguagem legada suportada.
+# Se omitido, os utilitários tentam resolver via variáveis de ambiente ou
+# repositórios irmãos (fallback). A chave `ava_ast_analyzer_path` continua
+# disponível para compatibilidade legada (Delphi apenas).
+ava_ast_analyzers:
+  delphi: ""
+  dotnet: ""
+  java: ""
+ava_ast_analyzer_path: ""          # DEPRECATED: mantido apenas para compatibilidade legada Delphi
+trace_id: ""                            # Gerado automaticamente pelo orchestrator
+scope_modules: "all"                    # "all" ou lista: ["financeiro", "cadastro"]
+module_partitioner_resolution: null     # Optional: Override resolução Leiden (ex: 1.5). Omitir para auto-tune.
+module_override_file: ""                # Optional: Caminho para module-override.json (bypassa detecção auto)
+
+# ── SQL IR & MER Generation ───────────────────────────────────────────────
+sql_ir_generator:
+  enabled: true                       # false = pula geração do sql-ir.json
+  infer_relationships: true           # inferir FKs por convenção de nome
+  include_external_refs: true         # incluir referências a entidades fora do escopo
+  min_confidence: "medium"            # low | medium | high — filtro de confiança para inferências
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Modernização Parcial (Strangler Fig Pattern)
+# Controla se o pipeline moderniza todos os BCs ou apenas um subconjunto.
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# modernization_scope: Escopo da modernização.
+#   "full"    → Pipeline completo F1→F2→F3→F5→F7→F6 (padrão).
+#               Todos os bounded contexts em scope_modules são processados.
+#   "partial" → Modernização incremental via Strangler Fig pattern.
+#               Apenas os BCs em target_modules são migrados.
+#               Ativa: coexistence-strategy ANTES de F2 (passo 0.5).
+modernization_scope: "full"
+#
+# target_modules: Lista de BCs a modernizar (usado quando modernization_scope = "partial").
+#   Formato: lista YAML de strings com os IDs dos BCs (devem estar em scope_modules).
+#   Exemplo: ["financeiro", "cadastro"]
+#   Ignorado quando modernization_scope = "full".
+target_modules: []
+client_name: "Avanade"                         # Nome do cliente
+pm_name: "Rafael Almeida"                             # Nome do PM da fabrica
+tech_lead_name: "Thomaz Bandeira"                      # Nome do Tech Lead
+sponsor_name: ""                        # Nome do Sponsor do projeto
+focal_point_name: ""                    # Nome do Focal Point do projeto
+language: "en"                          # pt | en — idioma dos artefatos gerados (default: pt)
+country: ""                             # ISO 3166-1 alpha-2: "BR", "US", "DE", "GB", "FR", etc.
+                                        # Usado para resolver regulações de compliance automaticamente:
+                                        #   BR → LGPD | US → CCPA (+ HIPAA se healthcare)
+                                        #   EU/EEA → GDPR | GB → UK-GDPR
+
+pipeline_mode: "generic"                # "build-cycle" | "generic"
+
+# ── Pipeline Runner ─────────────────────────────────────────────────────────
+# Controles experimentais do pipeline_runner_19.py. Quando ativados, substituem
+# ou complementam os passos legacy sem alterar o comportamento dos projetos
+# existentes (opt-in).
+#
+#   f4s_enabled: true → Executa F4S (SpecKit-driven git-backed codegen) no lugar
+#                       de F4 legacy. Requer F3S previamente concluído.
+pipeline:
+  f4s_enabled: false
+
+# --- Arquitetura de Referencia (fonte unica de verdade) -----------------------
+reference_architecture_file: "src/shared/data/reference-architecture.yaml"
+architecture_backlog_file: "src/shared/data/architecture-backlog.yaml"
+overrides:
+  architecture_patterns:
+    cqrs: false          # Decided: no CQRS for Meu-ERP — use Application Services pattern
+    mediator: "none"     # MediatR not used; remove MediatR packages from CPM
+    secondary_patterns:
+      - "repository"
+      - "domain-events"   # Domain events kept; dispatched directly, not via MediatR pipeline
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Copyright Configuration
+# Lidos pelo agente coder-dotnet para compor o cabeçalho de copyright de TODOS
+# os artefatos gerados: arquivos .cs (linha 1), DLLs, EXEs e pacotes NuGet
+# (via tag <Copyright> em Directory.Build.props — embutida pelo compilador .NET).
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# copyright: Texto exato do copyright presente nos arquivos fonte legados
+#   (Delphi/.PAS). Copiar sem alteração. Deixar vazio se não houver copyright.
+#   Ex: "Copyright (c) 2024 ACME S.A. All rights reserved."
+copyright: ""
+#
+# copyright_suffix: Sufixo de migração — appended ao copyright legado com
+#   espaço separador automático. Se copyright estiver vazio, o suffix é
+#   usado sozinho (sem espaço inicial). Alterar apenas se o projeto usar
+#   outra entidade receptora.
+#
+#   Regra de composição (aplicada pelo agente coder-dotnet):
+#     copyright não-vazio + suffix não-vazio → "{copyright} {suffix}"
+#     copyright vazio    + suffix não-vazio → "{suffix}"  (sem espaço)
+#     copyright não-vazio + suffix vazio    → "{copyright}"
+#     ambos vazios                          → cabeçalho omitido
+copyright_suffix: "Migrated: Avanade brazilian Engineering Hub"
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pipeline Mode — Determina qual esteira de geração de código usar.
+# Lido por todos os agentes de geração (IaC, backend, frontend) para garantir
+# que apenas um pipeline escreva nos outputs do projeto.
+#
+#   "build-cycle" → Usar agentes Build Cycle:
+#                   ava-build-cycle-iac, ava-build-cycle-dotnet-scaffold,
+#                   ava-build-cycle-efcore, ava-build-cycle-cqrs,
+#                   ava-build-cycle-minimal-apis, ava-build-cycle-angular,
+#                   ava-build-cycle-ngrx
+#                   Requerido: ConfigStack.yaml + Readiness Gate aprovado.
+#                   build-cycle só disponível para stacks com templates em tech-stack/templates/.
+#                   Stubs: outros stacks fazem fallback para generic automaticamente.
+#
+#   "generic"     → Usar agentes genéricos BMAD F3/F7:
+#                   ava-stack-orchestrator + agente resolvido de tobe_stack.backend_framework
+#                   + agente resolvido de tobe_stack.frontend_framework + ava-devops-iac
+#                   Para projetos multi-cloud ou qualquer stack em ConfigStack.yaml.
+#
+# Stacks suportados (tobe_stack.backend_framework):
+#   dotnet (impl.) | spring-boot (stub) | fastapi (stub) | gin (stub) | nestjs (stub)
+# Stacks suportados (tobe_stack.frontend_framework):
+#   angular (impl.) | react (stub) | blazor (stub) | vue (stub)
+# Cloud providers suportados (cloud_provider):
+#   azure (impl.) | aws (stub) | gcp (stub) | k8s-native (stub)
+#
+# ATENÇÃO: Não alterar após início da geração — mudar pipeline_mode no meio do projeto
+#          pode causar sobreposição de artefatos nos outputs.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Paths resolvidos automaticamente a partir de project_name
+# Não editar manualmente — usados pelos agentes em runtime
+outputs_base_path: "projects/{project_name}/outputs"
+context_base_path: "projects/{project_name}/context"
+inputs_base_path: "projects/{project_name}/inputs"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TO-BE Reference Architecture Configuration
+# Os agentes de F2 (TO-BE) leem estas seções para guiar o design e geração.
+# Preencha conforme a arquitetura-alvo do projeto.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stack de Origem e Destino — PONTO ÚNICO DE ENTRADA
+# Todos os campos necessários para configurar um projeto estão aqui.
+# Não existe mais um arquivo separado de configuração de stack.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Stack de Origem (sistema legado)
+# legacy_technology já declarado acima ↑
+
+# Stack de Destino
+tobe_stack:
+  backend_framework: "dotnet"           # dotnet ✅ | spring-boot 🚧 | fastapi 🚧 | gin 🚧 | nestjs 🚧
+  backend_version: "10.0"               # Versão LTS do framework (ex: "10.0" .NET | "21" Java | "3.12" Python)
+  backend_language: "csharp"            # csharp | java | python | go | typescript
+  # dotnet_sdk_version: "10.0.100"      # OPCIONAL — pin de SDK em global.json. Comentado de propósito:
+                                        # sem a chave, o SDK vem de src/shared/templates/dotnet-scaffold/
+                                        # versions.yaml, indexado por backend_version — fonte única, sem drift.
+                                        # Descomente só para travar um patch específico, e use SEMPRE versão
+                                        # exata MAJOR.MINOR.PATCH: global.json não aceita "10.0.x". Quem faz o
+                                        # SDK flutuar é rollForward=latestFeature, que o scaffold já escreve.
+  frontend_framework: "angular"         # angular ✅ | react 🚧 | blazor 🚧 | vue 🚧
+  frontend_version: "17"                # Major version do framework frontend (Angular, React, Vue, Svelte)
+  node_version: "22"                    # Versão Node.js para imagem Docker (NÃO é frontend_version)
+                                        # Deve coincidir com a versão em Dockerfile.frontend quando gerado
+                                        # ex: Angular 17 → node:20; Angular 18+ → node:22
+  frontend_language: "typescript"       # typescript | javascript
+  runtime: "aspnet-kestrel"             # aspnet-kestrel | azure-functions | container
+  background_jobs: "none"               # hangfire | quartz | azure-functions | none
+  package_manager: "npm"                # npm | pnpm | yarn
+  api_client_generation: "openapi-nswag" # openapi-nswag | kiota | none
+  additional_languages: []              # ex: ["python"] para scripts de migração de dados
+
+cloud_provider: "azure"                 # azure ✅ | aws 🚧 | gcp 🚧 | k8s-native 🚧
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Padrões Arquiteturais
+# ─────────────────────────────────────────────────────────────────────────────
+architecture_patterns:
+  primary_style: "clean-architecture"   # clean-architecture | hexagonal | vertical-slice | n-tier
+  secondary_patterns:
+    - "repository"
+    - "domain-events"
+  evolution_roadmap: "modular-monolith-to-microservices"
+  cqrs: true                            # Command/Query Responsibility Segregation
+  ddd: true                             # Domain-Driven Design
+  event_driven: false
+  mediator: "mediatr"                   # mediatr | wolverine | none
+  caching_strategy: "distributed"       # none | memory | distributed | hybrid
+  api_style:
+    - rest
+    - grpc
+  api_versioning_strategy: "url-path"   # url-path | header | query-string
+  bounded_contexts: []                  # ex: ["Pedidos", "Estoque", "Financeiro"]
+  context_map_strategy: "acl"
+  async_communication: false
+  async_broker: ""                      # azure-service-bus | rabbitmq | kafka
+
+solution_layers:
+  - Domain
+  - Application
+  - Infrastructure
+  - Presentation
+  - Tests
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Persistência
+# ─────────────────────────────────────────────────────────────────────────────
+persistence:
+  engine: "sqlserver"                   # sqlserver | postgresql | mysql | cosmosdb | mongodb
+  orm: "efcore"                         # efcore | dapper | nhibernate | none
+  read_model: "dapper"
+  migration_strategy: "code-first"      # code-first | db-first | hybrid
+  read_replica: false
+  connection_source: "azure-keyvault"   # REQUIRED by build-cycle agents
+  cache_provider: "redis"               # redis | memcached | azure-cache
+  connection_resiliency:
+    enabled: true
+    retry_count: 3
+    strategy: "exponential-backoff"
+  multi_tenancy:
+    enabled: false
+    strategy: "schema-per-tenant"
+  audit_fields: true
+  soft_delete: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Autenticação e Autorização
+# ─────────────────────────────────────────────────────────────────────────────
+auth:
+  provider: "azure-ad"                  # azure-ad | azure-ad-b2c | keycloak | identity-server | auth0 | aspnet-identity
+  protocol: "oidc"                      # oidc | saml | oauth2
+  rbac: true
+  policy_based: true
+  mfa: true
+  roles:
+    - Admin
+    - Manager
+    - User
+    - ReadOnly
+  token_expiry_minutes: 60
+  refresh_token: true
+  cors_policy: "strict"                 # strict | permissive | none
+  data_encryption_at_rest: true
+  https_only: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Observabilidade
+# ─────────────────────────────────────────────────────────────────────────────
+observability:
+  apm: "application-insights"           # application-insights | datadog | new-relic | dynatrace
+  logging: "serilog"                    # serilog | nlog | built-in
+  log_sink: "azure-monitor"             # azure-monitor | elasticsearch | seq | splunk
+  tracing: "opentelemetry"              # opentelemetry | zipkin | jaeger | none
+  metrics: "prometheus"                 # prometheus | azure-monitor-metrics | none
+  health_checks: true
+  log_level_default: "Information"
+  log_retention_days: 90
+  structured_logging: true
+  correlation_id: true
+  alerting:
+    enabled: true
+    tool: "azure-monitor"               # azure-monitor | pagerduty | opsgenie
+    channels:
+      - "email"
+      - "teams"
+  dashboards:
+    tool: "azure-workbooks"             # azure-workbooks | grafana | datadog
+    default_dashboards:
+      - "golden-signals"
+      - "business-kpis"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Infraestrutura e CI/CD
+# ─────────────────────────────────────────────────────────────────────────────
+infrastructure:
+  services:
+    - app-service
+    - azure-sql
+    - azure-cache-redis
+    - azure-key-vault
+    - azure-monitor
+  region: "brazilsouth"
+  iac_tool: "terraform"                 # terraform | bicep | pulumi
+  container_orchestration: "none"       # none | aks | aca | ecs
+  deployment_strategy: "blue-green"     # rolling | blue-green | canary
+  environment_strategy: "dev-staging-prod"
+  ci_cd:
+    tool: "azure-devops"                # azure-devops | github-actions | gitlab-ci
+    pipeline_as_code: true
+    artifact_registry: "azure-container-registry"
+    runner_image: "ubuntu-latest"
+  environments:
+    - name: "dev"
+      auto_deploy: true
+      requires_approval: false
+    - name: "staging"
+      auto_deploy: false
+      requires_approval: true
+    - name: "prod"
+      auto_deploy: false
+      requires_approval: true
+  networking:
+    vnet_integration: true
+    private_endpoints: true
+    waf_enabled: true
+  scaling:
+    strategy: "horizontal"
+    min_instances: 1
+    max_instances: 10
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build Runner Configuration
+# Controla como o ava-stack-build-validator executa as compilações.
+# Padrão: "auto" — usa Docker se disponível, fallback para toolchain local.
+# ─────────────────────────────────────────────────────────────────────────────
+build_runner:
+  mode: "auto"              # "container" | "local" | "auto"
+                            # "container" → sempre usa containers (Docker ou Podman — requer runtime instalado)
+                            # "local"     → usa toolchain local (comportamento legado)
+                            # "auto"      → prefere container; fallback para local se indisponível
+  container_runtime: "auto" # "docker" | "podman" | "auto"
+                            # "auto"   → detecta automaticamente (docker → podman → nenhum)
+                            # "docker" → usa Docker exclusivamente
+                            # "podman" → usa Podman exclusivamente
+  cache_volumes: true       # true → reutiliza volumes Docker/Podman nomeados entre execuções
+                            # (ava-nuget-{project}, ava-npm-cache-{project}, ava-node-modules-{project})
+  platform: ""              # ex: "linux/amd64" — override para hosts ARM (Apple M1/M2/M3)
+                            # Deixar vazio para detecção automática via build_runner.py
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build Output / Long Path Mitigation (.NET Windows only)
+# Controla se Directory.Build.props redireciona bin/obj para fora do repo,
+# encurtando caminhos e evitando erros de "O nome do arquivo ou a extensao
+# e muito grande" durante build/teste no Windows (MAX_PATH = 260).
+#
+#   redirect_to_short_path: false → sem redirecionamento (padrao).
+#   redirect_to_short_path: true  → habilita redirecionamento.
+#   short_path_root:              raiz para os diretorios bin/obj.
+#   condition:                    quando aplicar:
+#     "always"          → sempre que redirect_to_short_path=true
+#     "max_path_risk"   → so quando o scaffold detectar risco de MAX_PATH
+#     "never"           → nunca (mesmo com redirect_to_short_path=true)
+#
+# O redirecionamento adiciona BaseOutputPath/BaseIntermediateOutputPath e um
+# target CreateBaseOutputDirs em Directory.Build.props. Default: desligado.
+# ─────────────────────────────────────────────────────────────────────────────
+build_output:
+  redirect_to_short_path: false     # true = habilita redirecionamento opt-in
+  short_path_root: "C:\\avaout"     # raiz padrao para bin/obj
+  condition: "max_path_risk"        # "always" | "max_path_risk" | "never"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Quality Gates
+# ─────────────────────────────────────────────────────────────────────────────
+quality_gates:
+  coverage_unit_min: 90
+  coverage_integration_min: 70
+  coverage_e2e_min: 80
+  cyclomatic_complexity_max: 10
+  cognitive_complexity_max: 15
+  code_duplication_max_percent: 3
+  critical_vulnerabilities_allowed: 0
+  sonar_quality_gate: "Sonar Way"
+  breaking_change_policy: "blocked"
+  max_tech_debt_hours: 40
+  test_pyramid:
+    unit_framework: "xunit"
+    integration_framework: "xunit"
+    e2e_framework: "playwright"
+    contract_testing: "none"
+    mutation_testing: false
+  performance_tests:
+    enabled: false
+    tool: "k6"
+    baseline_rps: 500
+    p95_latency_ms: 300
+  sast_tool: "sonarqube"
+  dast_tool: "none"
+
+  # ── CVE Policy ─────────────────────────────────────────────────────────────
+  cve_policy:
+    # Modo de tratamento de CVEs detectadas pelo npm audit / govulncheck / pip-audit.
+    # zero_tolerance   : qualquer CVE high/critical bloqueia o build (padrão).
+    # exceptions_allowed: CVEs listadas em accepted_exceptions são permitidas
+    #                     até a data de expiração (campo expiry).
+    mode: "zero_tolerance"             # zero_tolerance | exceptions_allowed
+    accepted_exceptions: []
+    # Exemplo de exceção (ativar apenas com mode: exceptions_allowed):
+    # accepted_exceptions:
+    #   - cve_id: "CVE-2024-XXXXX"
+    #     package: "nome-do-pacote"
+    #     reason:  "upstream fix indisponível — mitigado via WAF rule #42"
+    #     expiry:  "2026-12-31"        # ISO date — exceção expirada é tratada como bloqueante
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Architecture Style Template (TO-BE)
+# Referência explícita ao template de estilo arquitetural que guia as seções
+# Solution Structure, Layers, Patterns e Mermaid Scaffold do blueprint TO-BE.
+# O agente ava-tobe-architecture-design lê este arquivo como fonte canônica.
+#
+# Valores disponíveis:
+#   src/modules/ava-fabric-agents/shared/templates/architecture/simple-monolith.md
+#   src/modules/ava-fabric-agents/shared/templates/architecture/vertical-slice.md
+#   src/modules/ava-fabric-agents/shared/templates/architecture/modular-monolith.md
+#   src/modules/ava-fabric-agents/shared/templates/architecture/strangler-fig.md
+#   src/modules/ava-fabric-agents/shared/templates/architecture/microservices.md
+#
+# Omitir (ou deixar vazio) → padrão Clean Architecture com DDD + CQRS (comportamento legado).
+# ─────────────────────────────────────────────────────────────────────────────
+architecture_style_file: ""             # Ex: "src/modules/ava-fabric-agents/shared/templates/architecture/modular-monolith.md"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Security Configuration
+# security_enabled_asis: false  → segurança NÃO roda automaticamente na esteira ASIS.
+#                            Para executar separado: invocar @ava-asis-security-orchestrator diretamente.
+# security_enabled_asis: true   → roda no Phase A junto com os demais agentes (comportamento legado).
+#
+# security_enabled_tobe: false  → segurança TO-BE permanece como PLACEHOLDER e NÃO é executada.
+#                            Fase 1.6, Fase 4.8 e entregável de compliance são pulados com aviso;
+#                            pipeline continua sem bloqueio. Este é o default intencional.
+# security_enabled_tobe: true   → executa os agentes de segurança TO-BE (comportamento legado).
+# ─────────────────────────────────────────────────────────────────────────────
+security_enabled_asis: false          # default: false — executar standalone sob demanda
+security_enabled_tobe: false          # default: false — segurança TO-BE desabilitada (placeholder)
+# ───────────────────────────────────────────────────────────────────────────────
+# Timing / Benchmark Configuration
+# timing_benchmark_enabled: true  → coleta timestamps NTP por agente; exibe tabelas MACRO + DETALHE
+#                                    com Inicio BRZ, Fim BRZ, Duração e total human-friendly.
+# timing_benchmark_enabled: false → SKIP chamadas NTP; exibe apenas tabela DETALHE com Fase + Status
+#                                    (sem colunas de tempo, sem MACRO). útil para reduzir overhead.
+# ─────────────────────────────────────────────────────────────────────────────
+timing_benchmark_enabled: true           # default: true — coletar e exibir benchmark de tempo
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Context Budget Configuration (esteira AS-IS / F1)
+# Limiares, em tokens comprimidos, que o ava-asis-orchestrator usa para decidir
+# COMO despachar os agentes da Phase A · Wave 2 — medido a partir de
+# outputs/asis/ast-raw/{language}/compressed/manifest.json (produzido pelo Step 0).
+#
+#   total <= inline_threshold                       → execution_mode: subagent
+#     Dispatch normal via SubAgent (contexto isolado). Caminho padrão.
+#   inline_threshold < total <= bc_scoped_threshold → execution_mode: inline
+#     Orquestrador lê o spec e executa os Steps na própria sessão — evita a
+#     penalidade de reconstrução de contexto a cada restart de subagente.
+#   total > bc_scoped_threshold                     → execution_mode: bc_scoped
+#     1 dispatch por bounded context (via compressed/module-partition.json),
+#     mantendo cada chamada abaixo de ~100K tokens.
+#
+# AMBOS OS CAMPOS SÃO OPCIONAIS — se ausentes, valem os defaults abaixo.
+# Só declare quando quiser desviar do default. Exemplos:
+#   context_budget_inline_threshold: 250000    # modelo com janela menor → degrada antes
+#   context_budget_bc_scoped_threshold: 99999999  # desabilita bc_scoped na prática
+#
+# Diagnóstico (não altera nada, só mede):
+#   python src/modules/ava-fabric-agents/asis-diagnostic/utils/context_budget.py --project {PROJECT}
+#
+# Referências: docs/guia-repositorios-legados-grandes.md §5 ·
+#              docs/issues/ISSUE-002-agent-stuck-pipeline-performance.md ·
+#              specs/030-asis-pipeline-context-budget-dispatch-guard
+# ─────────────────────────────────────────────────────────────────────────────
+# context_budget_inline_threshold: 400000     # default: 400000 — acima disto → inline
+# context_budget_bc_scoped_threshold: 700000  # default: 700000 — acima disto → bc_scoped
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Headroom — compressão de contexto (tool + proxy interceptor)
+# Override por projeto dos defaults de src/shared/tools/headroom/headroom.yaml.
+#
+# Precedência (forte → fraco):
+#   1. variáveis de ambiente (HEADROOM_* / AVA_FOUNDRY_* / ANTHROPIC_TARGET_API_URL)
+#   2. este bloco
+#   3. src/shared/tools/headroom/headroom.yaml
+#
+# TODO O BLOCO É OPCIONAL — omitido, valem os defaults da tool. Declare apenas
+# o que quiser desviar; o merge é recursivo, então `headroom: {proxy: {port: 8788}}`
+# altera só a porta e preserva o resto.
+#
+# ATENÇÃO ao modelo: o endpoint da esteira é Anthropic-compatible
+# (…services.ai.azure.com/anthropic), NÃO Azure OpenAI. Ver copilot-cli-v1.bat.
+#
+# Diagnóstico (não altera nada, só mede):
+#   python src/shared/tools/headroom/headroom_config.py -p {PROJECT}
+#   python src/shared/tools/headroom/headroom_tool.py -p {PROJECT} doctor
+#   python src/shared/tools/headroom/headroom_tool.py -p {PROJECT} stats
+#
+# Referências: src/shared/tools/headroom/README.md ·
+#              specs/031-headroom-context-compression-proxy
+# ─────────────────────────────────────────────────────────────────────────────
+# headroom:
+#   enabled: true                       # false = desliga a tool neste projeto
+#   model: "claude-sonnet-4-6"          # modelo do deployment Foundry
+#   context_limit: 200000               # janela do modelo, em tokens
+#   proxy:
+#     port: 8787
+#     upstream: "https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic"
+#   observability:
+#     metrics_file: "outputs/observability/headroom-metrics.jsonl"
+
+# Migration Design Gate Configuration
+# Gate de qualidade que valida completude e consistência de TODOS os artefatos
+# da fase F2 (Migration Design) ANTES de autorizar transição para Build Cycle (F3).
+# Referência: src/shared/checklists/migration-design-checklist.md
+# ─────────────────────────────────────────────────────────────────────────────
+migration_design_gate:
+  enabled: true                           # true = gate executa automaticamente após Fase 8
+                                          # false = gate desabilitado (não recomendado)
+  
+  threshold_pct: 85                       # Score mínimo (%) para APPROVED_WITH_MINOR_GAPS
+                                          # 100% = apenas APPROVED (todos os critérios atendidos)
+                                          # 85-99% = APPROVED_WITH_MINOR_GAPS (gaps 🟢 apenas)
+                                          # 70-84% = NEEDS_REMEDIATION (gaps 🟡 — bloqueado)
+                                          # <70% = BLOCKED (gaps 🔴 ou score crítico)
+  
+  auto_execute_after_phase_8: true        # true = gate executa automaticamente após Fase 8
+                                          # false = requer invocação manual
+  
+  block_build_cycle_if_fail: true         # true = Build Cycle (F3) bloqueado se veredicto != APPROVED
+                                          # false = continua com warning (NÃO RECOMENDADO)
+  
+  generate_evidence_report: true          # true F= gera migration-design-gate-evidence.json
+                                          # false = apenas migration-design-gate-report.md
+  
+  evidence_output_path: "outputs/tobe/docs/migration-design-gate-evidence.json"
+                                          # Path relativo ao projeto para evidência JSON
+  
+  report_output_path: "outputs/tobe/docs/migration-design-gate-report.md"
+                                          # Path relativo ao projeto para relatório markdown
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Requestor Inspection & Validation
+# Atualizar após sessão de inspeção formal com o Requestor (cliente/sponsor).
+# Gate obrigatório entre F2 (Migration Design) e F3 (Build Cycle).
+# Preenchido pelo agente @ava-requestor-inspection na geração do pacote.
+# PM atualiza status para "APPROVED" após sessão com o Requestor.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Package Approval Document — Human SME Sign-Off
+# Atualizar após sessão de revisão técnica com o Human SME.
+# Gate entre F2 (Migration Design) e F3 (Build Cycle).
+# Documento gerado pelo agente @ava-deliverable-package-approval-doc.
+# PM atualiza status para "APPROVED" após coleta de assinatura do Human SME.
+# ─────────────────────────────────────────────────────────────────────────────
+package_approval_doc:
+  status: "PENDING"        # PENDING | APPROVED | BLOCKED
+  approved_by: ""          # Nome do Human SME que assinou formalmente
+  approval_date: ""        # ISO 8601: "2026-MM-DD"
+  notes: ""                # Condicionantes técnicas ou observações do SME
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Strategy Align — PM-Led Alignment Session with Requestor
+# Sessão facilitada pelo PM com o Requestor para validar soluções, priorizar
+# BCs, alinhar dependências de infra e registrar aprovação formal do pacote.
+# Gate soft/informacional — não bloqueia a esteira.
+# Documento gerado pelo agente @ava-deliverable-strategy-align.
+# PM atualiza status para "COMPLETED" após conduzir a sessão.
+# ─────────────────────────────────────────────────────────────────────────────
+requestor_inspection:
+  status: "PENDING"        # PENDING | APPROVED | BLOCKED
+  approved_by: ""          # Nome do Requestor que aprovou formalmente
+  approval_date: ""        # ISO 8601: "2026-MM-DD"
+  notes: ""                # Condicionantes ou observações do Requestor
+strategy_align:
+  status: "PENDING"        # PENDING | COMPLETED | DEFERRED
+  session_date: ""         # ISO 8601: "2026-MM-DD"
+  facilitator: ""          # Nome do PM que conduziu a sessão
+  attendees: []            # Lista de participantes
+  bc_priorities_confirmed: false
+  infra_deps_aligned: false
+  pilot_poc_decision: ""   # "NONE" | "PILOT" | "POC"
+  formal_approval: false
+  record_path: ""          # Path do strategy-align-record.md gerado
+  notes: ""
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Readiness Gate — Sign-offs por Wave
+# Preencher após aprovação formal na sessão de Requestor Inspection (K1/K2/K3).
+# Referência: src/shared/checklists/readiness-gate-checklist.md
+# ─────────────────────────────────────────────────────────────────────────────
+signoffs:
+  architecture_approved_by_client: false  # true após aprovação formal do Cliente na arquitetura TO-BE
+  spec_kit_approved: false                # true após revisão e aprovação formal do Spec Kit
+  sponsor_signoff: false                  # true após sign-off formal do Sponsor do projeto
+  stakeholder_signoff: false              # true após sign-off dos Stakeholders envolvidos
+  signoff_date: ""                        # ISO 8601: "2026-05-18" — data do sign-off mais recente
+  signed_by: ""                           # Nome do responsável pelo sign-off registrado
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Wave Approval — Configuração de Testes de Paridade Funcional
+# Usados pelo agente @ava-devops-compare-version para executar golden dataset,
+# disparar chamadas simultâneas AS-IS × TO-BE e calcular score de paridade por BC.
+# Referência: src/modules/ava-fabric-agents/devops-agents/agents/compare-version-agent.md
+# ─────────────────────────────────────────────────────────────────────────────
+wave_approval:
+  thresholds:
+    parity_pct: 99.5            # Paridade funcional mínima (%) — global e por BC
+    latency_avg_ms: 500         # Latência média máxima (ms)
+    latency_p95_ms: 1000        # Latência P95 máxima (ms)
+    throughput_min: 100         # Throughput mínimo (req/s)
+    error_rate_max_pct: 1.0     # Error rate máximo (%)
+    line_coverage_pct: 80       # Cobertura de linha mínima (%)
+    branch_coverage_pct: 70     # Cobertura de branch mínima (%)
+    vuln_high_max: 0            # Vulnerabilidades altas máximas
+    fp_coverage_pct: 95         # FPs cobertos por testes (%)
+
+  # Endpoints por operação presente no golden dataset.
+  # Preencher um bloco por operação antes de executar @ava-devops-compare-version.
+  # Exemplo:
+  #   CriarPedido:
+  #     asis_url: "http://legado.host/api/pedidos"
+  #     tobe_url: "http://migrado.host/api/pedidos"
+  parity_endpoints: {}          # Preencher por operação do golden dataset
+
+  timeout_ms: 30000             # Timeout por chamada individual (ms) — default: 30 s
+  numeric_tolerance: 0          # Delta máximo para campos numéricos (0 = match exato)
+  ignore_tz: true               # Ignorar timezone em comparação de campos de data/hora
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Quality Gates — Thresholds para o pipeline de CI gerado por @ava-devops-ci
+# Lidos por ci-agent (Step 0) para gerar os gates no GitHub Actions e Azure DevOps.
+# Se esta seção estiver ausente, o agente usa os defaults abaixo e emite aviso.
+#
+# Defaults (aplicados quando a seção ou campo individual estiver ausente):
+#   coverage.line_min         → 80   (%)
+#   coverage.branch_min       → 70   (%)
+#   sonar.quality_gate        → "pass"
+#   sonar.max_blocker_issues  → 0
+#   sonar.max_critical_issues → 0
+#   owasp.max_critical_cve    → 0
+#   docker.trivy_max_critical → 0
+# ─────────────────────────────────────────────────────────────────────────────
+quality_gates:
+  coverage:
+    line_min: 80              # % — cobertura de linha mínima para o gate CI (default: 80)
+    branch_min: 70            # % — cobertura de branch mínima para o gate CI (default: 70)
+  sonar:
+    quality_gate: "pass"      # "pass" | "<custom profile>" — default: "pass"
+    max_blocker_issues: 0     # default: 0 — issues blocker permitidos
+    max_critical_issues: 0    # default: 0 — issues critical permitidos
+  owasp:
+    max_critical_cve: 0       # default: 0 — CVEs críticos permitidos em dependências
+  docker:
+    trivy_max_critical: 0     # default: 0 — vulnerabilidades críticas Trivy permitidas
+# ─────────────────────────────────────────────────────────────────────────────

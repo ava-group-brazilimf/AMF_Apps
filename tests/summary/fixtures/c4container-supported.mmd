@@ -1,0 +1,10 @@
+C4Container
+  Person(user, "User", "Reviewer")
+  System_Ext(ext, "External", "Dependency")
+  Container_Boundary(app, "Application") {
+    Container(api, "API", "Runtime", "Service")
+    ContainerDb(db, "Database", "SQL", "Data")
+  }
+  Rel(user, api, "Uses")
+  Rel(api, db, "Persists")
+  Rel(api, ext, "Calls")

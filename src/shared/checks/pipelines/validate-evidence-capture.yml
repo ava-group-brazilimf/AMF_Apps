@@ -1,0 +1,232 @@
+# validate-evidence-capture.yml
+# Azure DevOps pipeline — validates ava-qa-evidence-capture artifacts
+#
+# Stages:
+#   1. ValidateAgentSpec      — checks evidence-capture-agent.md completeness
+#   2. RunCheckSuite          — runs evidence_capture Python check suite
+#   3. CompliancePackageCheck — validates all 4 mandatory evidence types
+#
+# Trigger: PR or push touching agent spec, check suite, or QA evidence outputs.
+# Manual run: set projectName parameter.
+
+trigger:
+  paths:
+    include:
+      - src/modules/ava-fabric-agents/qa-agents/agents/evidence-capture-agent.md
+      - src/shared/checks/suites/evidence_capture.py
+
+pr:
+  paths:
+    include:
+      - src/modules/ava-fabric-agents/qa-agents/agents/evidence-capture-agent.md
+      - src/shared/checks/suites/evidence_capture.py
+      - projects/**/outputs/qa/evidence-capture*
+      - projects/**/outputs/qa/parity-dashboard*
+
+parameters:
+  - name: projectName
+    displayName: "Project name (must match a folder under projects/)"
+    type: string
+    default: "Meu-ERP"
+
+variables:
+  pythonVersion: "3.11"
+
+stages:
+  # ──────────────────────────────────────────────────────────────────────────
+  # Stage 1 — Agent Spec Validation
+  # ──────────────────────────────────────────────────────────────────────────
+  - stage: ValidateAgentSpec
+    displayName: "1 — Validate agent spec structure"
+    jobs:
+      - job: CheckAgentMd
+        displayName: "evidence-capture-agent.md completeness"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+
+          - script: |
+              AGENT_FILE="src/modules/ava-fabric-agents/qa-agents/agents/evidence-capture-agent.md"
+              echo "Checking required sections in: $AGENT_FILE"
+              echo ""
+
+              SECTIONS=(
+                "## Skills"
+                "## Input Contract"
+                "## Output Contract"
+                "## Execution Algorithm"
+                "## Failure Modes"
+                "EvidenceCollector"
+                "ParityAnalyzer"
+                "DashboardBuilder"
+                "CompliancePackager"
+                "APPROVED_FOR_ACCEPTANCE"
+                "BLOCKED_PENDING_REMEDIATION"
+                "parity-dashboard"
+                "compliance-package"
+                "COLLECT-EVIDENCE"
+                "ANALYZE-PARITY"
+                "BUILD-DASHBOARD"
+                "PACKAGE-COMPLIANCE"
+              )
+
+              FAILED=0
+              for SECTION in "${SECTIONS[@]}"; do
+                if grep -q "$SECTION" "$AGENT_FILE"; then
+                  echo "  ✅  $SECTION"
+                else
+                  echo "  ❌  MISSING: $SECTION"
+                  FAILED=1
+                fi
+              done
+
+              exit $FAILED
+            displayName: "CHK-SPEC-001 Required sections present"
+
+          - script: |
+              AGENT_FILE="src/modules/ava-fabric-agents/qa-agents/agents/evidence-capture-agent.md"
+
+              VERSION=$(grep -oP '(?<=version: ")[^"]+' "$AGENT_FILE" | head -1)
+              echo "Detected version: $VERSION"
+
+              if [[ -z "$VERSION" ]]; then
+                echo "❌ version field missing from YAML frontmatter"
+                exit 1
+              fi
+
+              MAJOR=$(echo "$VERSION" | cut -d. -f1)
+              if [[ "$MAJOR" -lt 2 ]]; then
+                echo "❌ Expected version >= 2.0.0, found $VERSION"
+                exit 1
+              fi
+
+              echo "✅ Version OK: $VERSION"
+            displayName: "CHK-SPEC-002 Agent version >= 2.0.0"
+
+          - script: |
+              AGENT_FILE="src/modules/ava-fabric-agents/qa-agents/agents/evidence-capture-agent.md"
+
+              # Verify EC trigger keyword present in description
+              if grep -q '"EC"' "$AGENT_FILE"; then
+                echo "✅ EC trigger keyword present"
+              else
+                echo "❌ EC trigger keyword missing from description — qa-orchestrator won't route correctly"
+                exit 1
+              fi
+
+              # Verify governance-apps reference present
+              if grep -q "governance-apps" "$AGENT_FILE"; then
+                echo "✅ @governance-apps i18n reference present"
+              else
+                echo "❌ @governance-apps i18n reference missing"
+                exit 1
+              fi
+            displayName: "CHK-SPEC-003 Routing trigger and i18n reference"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Stage 2 — Python Check Suite
+  # ──────────────────────────────────────────────────────────────────────────
+  - stage: RunCheckSuite
+    displayName: "2 — Run evidence_capture check suite"
+    dependsOn: ValidateAgentSpec
+    jobs:
+      - job: EvidenceCaptureChecks
+        displayName: "python -m src.shared.checks --suite evidence_capture"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "$(pythonVersion)"
+            displayName: "Use Python $(pythonVersion)"
+
+          - script: pip install --quiet pyyaml
+            displayName: "Install dependencies"
+
+          - script: |
+              python -m src.shared.checks \
+                --project "${{ parameters.projectName }}" \
+                --suite evidence_capture \
+                --verbose
+            displayName: "CHK-SUITE evidence_capture suite (project: ${{ parameters.projectName }})"
+            continueOnError: false
+
+          - script: |
+              python -m src.shared.checks \
+                --project "${{ parameters.projectName }}" \
+                --suite all \
+                --verbose
+            displayName: "CHK-REGRESSION Full suite (regression guard)"
+            continueOnError: true
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Stage 3 — Compliance Package Completeness (4 evidence types)
+  # ──────────────────────────────────────────────────────────────────────────
+  - stage: CompliancePackageCheck
+    displayName: "3 — Compliance package — 4 evidence types"
+    dependsOn: RunCheckSuite
+    condition: succeeded()
+    jobs:
+      - job: ValidatePackage
+        displayName: "Validate all 4 mandatory evidence types present"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+
+          - script: |
+              PROJECT="${{ parameters.projectName }}"
+              BASE="projects/$PROJECT/outputs/qa"
+              echo "Project : $PROJECT"
+              echo "Base    : $BASE"
+              echo ""
+              echo "── Compliance Package: 4 Evidence Types Check ──────────────────"
+
+              FAILED=0
+
+              # Type 1 — Screenshots / identical outputs index
+              if [[ -f "$BASE/evidence-capture/screenshots/index.md" ]]; then
+                echo "  ✅  Type 1: Screenshots index present"
+              else
+                echo "  ⚠️   Type 1: INCOMPLETE_EVIDENCE: screenshots — index.md not found"
+                FAILED=1
+              fi
+
+              # Type 2 — Execution logs
+              if [[ -f "$BASE/evidence-capture/logs/execution-summary.md" ]]; then
+                echo "  ✅  Type 2: Execution logs present"
+              else
+                echo "  ⚠️   Type 2: INCOMPLETE_EVIDENCE: logs — execution-summary.md not found"
+                FAILED=1
+              fi
+
+              # Type 3 — Diff reports
+              DIFF_COUNT=$(find "$BASE/evidence-capture/diffs/" -name "*.md" 2>/dev/null | wc -l)
+              if [[ "$DIFF_COUNT" -ge 1 ]]; then
+                echo "  ✅  Type 3: Diff reports present ($DIFF_COUNT file(s))"
+              else
+                echo "  ⚠️   Type 3: INCOMPLETE_EVIDENCE: diffs — no .md files in evidence-capture/diffs/"
+                FAILED=1
+              fi
+
+              # Type 4 — Parity dashboard with numeric score
+              if [[ -f "$BASE/parity-dashboard.md" ]] && grep -qE "[0-9]+[.,]?[0-9]*\s*%" "$BASE/parity-dashboard.md"; then
+                echo "  ✅  Type 4: Parity dashboard with numeric score present"
+              else
+                echo "  ⚠️   Type 4: INCOMPLETE_EVIDENCE: parity-dashboard — file missing or no numeric score"
+                FAILED=1
+              fi
+
+              echo ""
+              echo "────────────────────────────────────────────────────────────────"
+              if [[ "$FAILED" -eq 0 ]]; then
+                echo "✅  All 4 evidence types present → COMPLIANT FOR ACCEPTANCE"
+              else
+                echo "⚠️   Compliance package incomplete — review INCOMPLETE_EVIDENCE items above"
+              fi
+
+              exit $FAILED
+            displayName: "CHK-COMPLIANCE-001 All 4 evidence types present"

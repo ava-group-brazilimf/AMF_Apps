@@ -1,0 +1,100 @@
+# Angular Scaffold Manifest — Mandatory Files
+# Consumed by: verify_scaffold.py, coder-angular-frontend, orchestrator-stack, build-validator
+# Each entry: path (relative to frontend root), category, blocking (hard-stop if missing), error_if_missing
+#
+# blocking: true  → HARD STOP — ng build cannot succeed without this file
+# blocking: false → WARNING — build may succeed but project is incomplete
+
+manifest_id: angular
+version: "2.0.0"
+description: "Mandatory files for any Angular project scaffold. Desde a spec 042 a árvore é
+  produzida deterministicamente por f4s_angular_scaffold.py a partir de
+  src/shared/templates/angular-scaffold/ — toda entrada blocking abaixo corresponde a um
+  template real. Ao acrescentar uma entrada aqui, acrescente também o template."
+
+files:
+  # ─── Config (project root) ─────────────────────────────────────────────────
+  - path: "package.json"
+    category: config
+    blocking: true
+    error_if_missing: "npm ci fails: ENOENT package.json"
+
+  - path: "angular.json"
+    category: config
+    blocking: true
+    error_if_missing: "ng build fails: Could not find an 'angular.json' file"
+
+  - path: "tsconfig.json"
+    category: config
+    blocking: true
+    error_if_missing: "ng build fails: Cannot find tsconfig.json"
+
+  - path: "tsconfig.app.json"
+    category: config
+    blocking: true
+    error_if_missing: "ng build fails: tsconfig.app.json referenced in angular.json not found"
+
+  - path: "tsconfig.spec.json"
+    category: config
+    blocking: true
+    error_if_missing: "angular.json (target test) referencia tsconfig.spec.json; arquivo ausente reproduz o defeito B1"
+
+  - path: ".gitignore"
+    category: config
+    blocking: true
+    error_if_missing: "sem .gitignore o commit inicial arrasta node_modules/ e dist/ para o repo"
+
+  # ─── Entry Points ──────────────────────────────────────────────────────────
+  - path: "src/index.html"
+    category: entry-point
+    blocking: true
+    error_if_missing: "ng build fails: Cannot find file 'src/index.html'"
+
+  - path: "src/main.ts"
+    category: entry-point
+    blocking: true
+    error_if_missing: "ng build fails: browser entry point 'src/main.ts' not found"
+
+  - path: "src/styles.scss"
+    category: entry-point
+    blocking: true
+    error_if_missing: "ng build fails: ENOENT styles referenced in angular.json"
+
+  # ─── App Bootstrap ─────────────────────────────────────────────────────────
+  - path: "src/app/app.component.ts"
+    category: app-bootstrap
+    blocking: true
+    error_if_missing: "ng build fails: TS2307 Cannot find module './app/app.component'"
+
+  - path: "src/app/app.config.ts"
+    category: app-bootstrap
+    blocking: true
+    error_if_missing: "ng build fails: TS2307 Cannot find module './app/app.config'"
+
+  - path: "src/app/app.routes.ts"
+    category: app-bootstrap
+    blocking: true
+    error_if_missing: "ng build fails: TS2307 Cannot find module './app/app.routes'"
+
+  # ─── Environments ──────────────────────────────────────────────────────────
+  - path: "src/environments/environment.ts"
+    category: environments
+    blocking: true
+    error_if_missing: "ng build fails: TS2307 Cannot find module '../environments/environment'"
+
+  - path: "src/environments/environment.prod.ts"
+    category: environments
+    blocking: true
+    error_if_missing: "ng build --configuration production fails: fileReplacements target not found"
+
+  # ─── Assets referenciados por angular.json ─────────────────────────────────
+  - path: "src/favicon.ico"
+    category: asset
+    blocking: true
+    error_if_missing: "angular.json declara assets: [src/favicon.ico]; arquivo ausente falha o build"
+
+  # ─── App shell ─────────────────────────────────────────────────────────────
+  - path: "README.md"
+    category: docs
+    blocking: false
+    error_if_missing: "projeto sem instruções de execução (build não afetado)"

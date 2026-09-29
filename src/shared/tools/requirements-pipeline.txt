@@ -1,0 +1,16 @@
+# AVA Fabric — CLI da esteira (src/shared/tools/ava_pipeline.py)
+#
+# EXCEÇÃO CONSCIENTE à convenção stdlib-only do repo (invariante IV7), contida
+# em dois módulos: sdk_engine.py e pipeline_config.py.
+#
+#   - `anthropic` só é importado por --engine sdk, e DENTRO de make_client().
+#     Quem roda --engine copilot não precisa dele: aquele motor delega para o
+#     agent_runner.py, que fala com o GitHub Copilot CLI por subprocess.
+#   - `pyyaml` já é dependência de facto do repo (context_budget.py,
+#     module_partitioner.py, agent_runner.py) e é importado defensivamente.
+#
+# Instalação (venv principal do repo, NÃO o venv isolado do headroom):
+#   pip install -r src/shared/tools/requirements-pipeline.txt
+
+anthropic>=0.60
+pyyaml>=6.0

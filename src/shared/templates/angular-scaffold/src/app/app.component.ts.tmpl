@@ -1,0 +1,60 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+/** Shell da aplicação.
+ *
+ * GUARDRAIL: o AppComponent importa apenas `RouterOutlet` e componentes de layout.
+ * `MsalRedirectComponent` NÃO é standalone e nunca pode entrar neste `imports`.
+ */
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <header class="app-header">
+      <h1 class="app-title">{{ title }}</h1>
+      <nav class="app-nav">
+%%bc_nav_block%%
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <router-outlet />
+    </main>
+  `,
+  styles: [
+    `
+      .app-header {
+        display: flex;
+        align-items: baseline;
+        gap: 1.5rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e4e7eb;
+      }
+      .app-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .app-nav {
+        display: flex;
+        gap: 1rem;
+      }
+      .app-nav a {
+        color: #52606d;
+        text-decoration: none;
+      }
+      .app-nav a.active {
+        color: #1e3a8a;
+        font-weight: 600;
+      }
+      .app-main {
+        padding: 1.5rem;
+      }
+    `,
+  ],
+})
+export class AppComponent {
+  protected readonly title = '%%app_title%%';
+}

@@ -1,0 +1,20 @@
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+
+import { routes } from './app.routes';
+
+/** Providers raiz da aplicação.
+ *
+ * O scaffold registra apenas o essencial para o app subir: roteamento, HttpClient e
+ * change detection. Autenticação (MSAL) e state management (NgRx) são acrescentados
+ * pelo codegen de features, junto com o código que os consome — ver as restrições em
+ * `tech-stack/scaffolds/angular-scaffold.md`.
+ */
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes, withComponentInputBinding()),
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
+};

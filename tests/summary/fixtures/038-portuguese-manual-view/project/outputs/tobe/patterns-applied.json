@@ -1,0 +1,34 @@
+{
+  "patterns": [
+    {
+      "pattern_name": "Cache-Aside",
+      "layer": "Infrastructure",
+      "justification": "A estratégia de cache reduz a latência das consultas repetidas.",
+      "reference_artifact": "outputs/tobe/docs/architecture-blueprint.md",
+      "trade_offs": [
+        "Maior consumo de memória",
+        "Invalidation must remain deterministic"
+      ],
+      "adr_reference": "ADR-005-caching-strategy.md"
+    },
+    {
+      "pattern_name": "Repository",
+      "layer": "Application",
+      "justification": "The repository abstraction isolates persistence concerns from use cases.",
+      "reference_artifact": "outputs/tobe/docs/decisions/ADR-006-repository.md",
+      "trade_offs": ["Additional abstraction", "Testes ficam mais simples"],
+      "adr_reference": "ADR-006-repository.md"
+    },
+    {
+      "pattern_name": "Eventos de Domínio",
+      "layer": "Domínio / Application",
+      "justification": "A regra é publicada no domínio, but the handler remains responsible for integration.",
+      "reference_artifact": "outputs/tobe/diagrams/c4-component.mmd",
+      "trade_offs": [
+        "Acoplamento temporal entre handlers",
+        "Requires clear ownership"
+      ],
+      "adr_reference": "ADR-007-domain-events.md"
+    }
+  ]
+}

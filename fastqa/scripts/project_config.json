@@ -1,0 +1,213 @@
+{
+    "metadata": {
+        "created_at": "2026-02-22T20:45:29.229Z",
+        "updated_at": "2026-02-22T20:45:29.229Z",
+        "version": "5.0",
+        "status": "configured",
+        "active_journey": null
+    },
+    "analysis": {
+        "purpose": "Avanade",
+        "application_description": "Avanade",
+        "domain": ""
+    },
+    "team": {
+        "project": "Factory Apps",
+        "squad": "Torre Apps",
+        "integration": "Nenhuma"
+    },
+    "project_management": {
+        "tool": "Nenhuma",
+        "azure_devops": {
+            "enabled": false,
+            "org_url": "${env:AZURE_DEVOPS_ORG_URL}",
+            "project": "${env:AZURE_DEVOPS_DEFAULT_PROJECT}",
+            "pat": "${env:AZURE_DEVOPS_PAT}",
+            "test_plan_id": null,
+            "test_suite_id": null,
+            "pipeline_definition_id": null,
+            "variable_group_id": null,
+            "repository_name": null
+        },
+        "jira": {
+            "enabled": false,
+            "url": "",
+            "project_key": "",
+            "api_token": ""
+        }
+    },
+    "platform": {
+        "type": "Desktop",
+        "details": {
+            "browsers": [
+                "Chrome",
+                "Firefox",
+                "Edge"
+            ],
+            "devices": [],
+            "api_base_url": "",
+            "swagger_url": "",
+            "apk_path": "",
+            "desktop_app_path": "",
+            "mobile_capabilities": {
+                "platform_name": "",
+                "platform_version": "",
+                "device_name": "",
+                "automation_name": "",
+                "auto_grant_permissions": true,
+                "app_path": "",
+                "app_package": "",
+                "app_activity": "",
+                "bundle_id": "",
+                "appium_server_url": "http://localhost:4723"
+            }
+        }
+    },
+    "testing_approach": {
+        "use_gherkin_bdd": false,
+        "test_case_format": "step_by_step",
+        "test_management_tool": "Nenhuma",
+        "wizard_preferences": {},
+        "test_levels": [
+            "Funcional",
+            "E2E"
+        ],
+        "testBalance": {
+            "negative": 60,
+            "positive": 40
+        },
+        "validationWeights": {
+            "coverage": 25,
+            "automability": 25,
+            "gherkinQuality": 25,
+            "traceability": 25
+        },
+        "validationReuse": {
+            "base": 70,
+            "increment": 5,
+            "cap": 95
+        }
+    },
+    "connectors": {
+        "output": {
+            "automation_framework": "Playwright",
+            "language": "TypeScript"
+        },
+        "input": {
+            "type": {
+                "name": "JSON (.json)",
+                "supportedPlatforms": [
+                    "Web",
+                    "API",
+                    "Mobile",
+                    "Desktop"
+                ]
+            },
+            "sources": [
+                {
+                    "name": "JSON (.json)",
+                    "supportedPlatforms": [
+                        "Web",
+                        "API",
+                        "Mobile",
+                        "Desktop"
+                    ]
+                }
+            ]
+        }
+    },
+    "folder_structure": {
+        "root": "fastqa",
+        "directories": [],
+        "mode": "scaffold",
+        "custom_paths": {
+            "tests": "",
+            "pages": "",
+            "config": "",
+            "automation_root": "",
+            "results": ""
+        }
+    },
+    "avanade_code": {
+        "enabled": false,
+        "mode": "Não instalar no momento",
+        "configured_at": null
+    },
+    "productivity_baselines": {
+        "artifacts_per_day_traditional": 3,
+        "time_to_automation_days": 5,
+        "test_generation_days": 2,
+        "effort_reduction_target_pct": 55
+    },
+    "effort_estimation": {
+        "_comment": "Define as atividades consideradas na estimativa de esforço e quais são aceleradas pelo FastQA. Use 'fastqa_accelerated: true' para atividades onde o LLM executa o trabalho pesado — o esforço estimado deve refletir apenas revisão/supervisão humana. Use 'fastqa_accelerated: false' para atividades 100% manuais.",
+        "activities": [
+            {
+                "id": "requirements_review",
+                "label": "Revisão de requisitos",
+                "fastqa_accelerated": true,
+                "fastqa_agents": [
+                    "fastqa_0.1_pbi_loader",
+                    "fastqa_1.1_gap_identifier",
+                    "fastqa_1.3_requirements_analyzer"
+                ],
+                "description": "Leitura, análise de gaps e síntese de requisitos são feitas pelos agentes FastQA. O esforço humano restante é a validação e aprovação do que foi gerado, não a análise em si."
+            },
+            {
+                "id": "test_writing",
+                "label": "Escrita de cenários de teste",
+                "fastqa_accelerated": true,
+                "fastqa_agents": [
+                    "fastqa_2.1_gherkin_writer",
+                    "fastqa_2.2_validator"
+                ],
+                "description": "Geração e validação dos cenários Gherkin são feitas pelos agentes FastQA. O esforço humano é a revisão crítica dos cenários gerados, ajustes pontuais e aprovação final."
+            },
+            {
+                "id": "automation",
+                "label": "Automação de testes",
+                "fastqa_accelerated": true,
+                "fastqa_agents": [
+                    "fastqa_4.3_run_guide",
+                    "fastqa_4.3_verify_and_fix"
+                ],
+                "description": "Geração do código de automação (Playwright/outro) é feita pelo agente FastQA. O esforço humano é revisão do código gerado, ajustes de seletores, integração com CI e validação de execução."
+            },
+            {
+                "id": "data_preparation",
+                "label": "Preparação de massa de dados",
+                "fastqa_accelerated": false,
+                "fastqa_agents": [],
+                "description": "Criação, configuração e carga de dados de teste no ambiente. Atividade ainda 100% manual — requer acesso ao ambiente, conhecimento de negócio e manipulação direta de sistemas ou bancos de dados."
+            },
+            {
+                "id": "artifact_review",
+                "label": "Revisão e aprovação de artefatos gerados pela IA",
+                "fastqa_accelerated": false,
+                "fastqa_agents": [],
+                "description": "Validação crítica humana de TODO conteúdo produzido pelo FastQA antes de ser usado como referência oficial. Inclui checagem de cobertura, aderência às regras de negócio e conformidade com padrões do time. Atividade 100% manual e obrigatória no fluxo híbrido."
+            },
+            {
+                "id": "manual_execution",
+                "label": "Execução manual de testes",
+                "fastqa_accelerated": false,
+                "fastqa_agents": [],
+                "description": "Execução dos casos de teste manualmente no ambiente configurado. Atividade 100% manual — requer interação humana com a aplicação, coleta de evidências e julgamento contextual dos resultados."
+            },
+            {
+                "id": "results_analysis",
+                "label": "Análise de resultados e evidências",
+                "fastqa_accelerated": false,
+                "fastqa_agents": [],
+                "description": "Avaliação dos resultados de execução, screenshots, logs e outputs dos testes. Decisão sobre pass/fail requer julgamento humano contextualizado. Atividade 100% manual."
+            },
+            {
+                "id": "bug_triage",
+                "label": "Registro e triagem de bugs",
+                "fastqa_accelerated": false,
+                "fastqa_agents": [],
+                "description": "Abertura de defeitos, priorização, vinculação com requisitos e comunicação com o time de desenvolvimento. Atividade 100% manual — requer conhecimento de negócio, impacto e contexto do projeto."
+            }
+        ]
+    }
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "design-tokens.schema.json",
+  "title": "DesignTokens",
+  "description": "Schema for design-tokens.json produced by ava-prototype and consumed by ava-stack-angular-frontend and ava-stack-react-frontend.",
+  "type": "object",
+  "required": ["schema_version", "generated_by", "project_name", "spacing", "colors", "typography", "layout"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version. Fixed '1.0' for this spec."
+    },
+    "generated_by": {
+      "type": "string",
+      "const": "ava-prototype",
+      "description": "Always 'ava-prototype'."
+    },
+    "project_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Resolved from project-config.yaml."
+    },
+    "spacing": {
+      "type": "object",
+      "required": ["base_unit", "xs", "sm", "md", "lg", "xl", "xxl"],
+      "additionalProperties": false,
+      "properties": {
+        "base_unit": { "$ref": "#/definitions/cssLength" },
+        "xs":        { "$ref": "#/definitions/cssLength" },
+        "sm":        { "$ref": "#/definitions/cssLength" },
+        "md":        { "$ref": "#/definitions/cssLength" },
+        "lg":        { "$ref": "#/definitions/cssLength" },
+        "xl":        { "$ref": "#/definitions/cssLength" },
+        "xxl":       { "$ref": "#/definitions/cssLength" }
+      }
+    },
+    "colors": {
+      "type": "object",
+      "required": ["primary", "secondary", "background", "surface", "on_primary", "error", "warning", "success"],
+      "additionalProperties": false,
+      "properties": {
+        "primary":    { "$ref": "#/definitions/cssColor" },
+        "secondary":  { "$ref": "#/definitions/cssColor" },
+        "background": { "$ref": "#/definitions/cssColor" },
+        "surface":    { "$ref": "#/definitions/cssColor" },
+        "on_primary": { "$ref": "#/definitions/cssColor" },
+        "error":      { "$ref": "#/definitions/cssColor" },
+        "warning":    { "$ref": "#/definitions/cssColor" },
+        "success":    { "$ref": "#/definitions/cssColor" }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "required": ["font_family_base", "font_family_heading", "font_size_base", "font_size_sm", "font_size_lg", "line_height_base"],
+      "additionalProperties": false,
+      "properties": {
+        "font_family_base":    { "type": "string", "minLength": 1 },
+        "font_family_heading": { "type": "string", "minLength": 1 },
+        "font_size_base":      { "$ref": "#/definitions/cssLength" },
+        "font_size_sm":        { "$ref": "#/definitions/cssLength" },
+        "font_size_lg":        { "$ref": "#/definitions/cssLength" },
+        "line_height_base":    { "type": "string", "minLength": 1, "description": "Unitless ratio or CSS value." }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "required": ["sidebar_width", "sidebar_collapsed_width", "header_height", "content_padding", "max_content_width"],
+      "additionalProperties": false,
+      "properties": {
+        "sidebar_width":           { "$ref": "#/definitions/cssLength" },
+        "sidebar_collapsed_width": { "$ref": "#/definitions/cssLength" },
+        "header_height":           { "$ref": "#/definitions/cssLength" },
+        "content_padding":         { "$ref": "#/definitions/cssLength" },
+        "max_content_width":       { "$ref": "#/definitions/cssLength" }
+      }
+    }
+  },
+  "definitions": {
+    "cssLength": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?(px|rem|em|%|vh|vw|pt)?$",
+      "description": "CSS length value with optional unit (px, rem, em, %, vh, vw, pt) or bare number."
+    },
+    "cssColor": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Valid CSS color string: hex (#rrggbb or #rgb), rgb(), rgba(), hsl(), hsla(), or named color."
+    }
+  }
+}

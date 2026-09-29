@@ -1,0 +1,14 @@
+import { Routes } from '@angular/router';
+
+/** Rotas do bounded context %%bc_title%%.
+ *
+ * O scaffold cria apenas a rota raiz do BC. O codegen de features acrescenta as
+ * demais, sempre com `loadComponent` apontando para arquivos que existem.
+ */
+export const %%bc_camel%%Routes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./%%bc_kebab%%-home.component').then((m) => m.%%bc_pascal%%HomeComponent),
+  },
+];

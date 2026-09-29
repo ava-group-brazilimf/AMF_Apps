@@ -1,0 +1,41 @@
+name: summary
+display_name: "AVA Fabric Summary"
+version: "1.6.0"
+description: |
+  Consolida todos os relatórios gerados pelos workflows AS-IS e TO-BE
+  e produz um relatório HTML interativo no padrão visual Avanade.
+  Pode ser executado após qualquer fase ou de forma independente.
+
+agents:
+  - id: ava-summary
+    file: agents/summary-agent.md
+    skill: ava-summary
+  - id: ava-summary-validate
+    file: agents/summary-validate-agent.md
+  - id: ava-summary-remediation
+    file: agents/summary-remediation-agent.md
+    skill: ava-summary-remediation
+
+workflows:
+  - id: generate-summary
+    file: workflows/generate-summary/workflow.md
+    triggers: ["GS", "SAS", "STO", "SI"]
+
+templates:
+  html: templates/html/summary-template.html
+  sections: templates/sections/
+
+outputs:
+  base_path: "projects/{project_name}/outputs/summary"
+  files:
+    - "AVA-FABRIC-SUMMARY-{{PROJECT_NAME}}-{{DATE}}.html"
+    - "index.md"
+    - "summary-data.json"
+
+# Pode ser ativado independentemente — não requer nenhuma fase anterior
+standalone: true
+
+# Pode ser ativado pelos orchestrators ao final de qualquer fase
+hooks:
+  after: ["ava-asis-orchestrator", "ava-tobe-orchestrator"]
+  trigger_code: "GS"

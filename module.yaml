@@ -1,0 +1,27 @@
+name: ava-fabric-agents
+version: "1.0.0"
+description: "Fábrica de Agentes especializada em diagnóstico e migração de aplicações legadas para stacks modernas. Stack resolvida em runtime de tobe_stack.* em ConfigStack.yaml."
+author: "AVA Fabric Team"
+bmad_version: ">=6.0.0"
+# Numeração conforme a emenda v1.4.0 da Constituição (.specify/memory/constitution.md
+# § Project Reference), que promoveu prototype a F3 e trocou tech-stack F3→F4,
+# devops F7→F6 e deliverables F6→F7. Os comentários abaixo carregavam a numeração
+# antiga e divergiam da fonte autoritativa (specs/032).
+#
+# Fonte executável desta tabela: src/shared/tools/agent_registry.py (PHASE_BY_MODULE).
+# Contagens conferidas por `python src/shared/tools/agent_registry.py`.
+modules:
+  - asis-diagnostic     # F1: 21 agentes — diagnóstico do legado (Delphi, VB6, COBOL, VBNet, PowerBuilder)
+  - tobe-architecture   # F2: 22 agentes — design da arquitetura TO-BE
+  - prototype           # F3: 1 agente   — demo navegável
+  - speckit             # F3S: 7 agentes — constitution · specs · plans · tasks · compliance (specs/039)
+  - tech-stack          # F4: 13 agentes — codegen (dotnet ✅, spring-boot 🚧, fastapi 🚧, gin 🚧, nestjs 🚧)
+  - qa-agents           # F5: 14 agentes — qualidade, automação e bridge FastQA
+  - devops-agents       # F6: 15 agentes — IaC · CI/CD · paridade
+  - deliverables        # F7: 10 agentes — entrega ao cliente
+  - summary             # F8: 3 agentes  — relatório HTML consolidado
+shared:
+  templates: src/shared/templates
+  data: src/shared/data
+  schemas: src/shared/schemas
+  checklists: src/shared/checklists

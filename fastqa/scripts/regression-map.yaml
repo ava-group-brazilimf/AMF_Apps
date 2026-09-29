@@ -1,0 +1,59 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# FastQA — Regression Map
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# Conecta áreas funcionais da APLICAÇÃO (código de produção) aos testes
+# existentes no repositório de testes. Usado pelo agente de regressão
+# para identificar quais testes executar quando um PR da aplicação é criado.
+#
+# Gerado por: @fastqa:generate_regression_map
+# Atualização manual: edite app_patterns para refinar os mapeamentos
+#
+# ───────────────────────────────────────────────────────────────────────────
+
+version: "1.0"
+
+areas:
+  # ── Exemplo de área funcional ──────────────────────────────────────────
+  #
+  # login:
+  #   description: "Autenticação e sessão do usuário"
+  #   app_patterns:
+  #     - "**/auth/**"
+  #     - "**/login/**"
+  #     - "**/session/**"
+  #   tests:
+  #     - "login.spec.ts"
+  #     - "session.spec.ts"
+  #   features:
+  #     - "PBI-07.feature"
+  #   tags:
+  #     - "@login"
+  #     - "@auth"
+  #
+  # checkout:
+  #   description: "Fluxo de compra e pagamento"
+  #   app_patterns:
+  #     - "**/checkout/**"
+  #     - "**/cart/**"
+  #     - "**/payment/**"
+  #   tests:
+  #     - "checkout.spec.ts"
+  #     - "payment.spec.ts"
+  #   features:
+  #     - "PBI-12.feature"
+  #     - "PBI-15.feature"
+  #   tags:
+  #     - "@checkout"
+  #     - "@payment"
+  #     - "@e2e"
+
+global_triggers:
+  # Alterações nestes globs marcam TODOS os testes @smoke/@critical como impactados
+  - "**/config/**"
+  - "**/middleware/**"
+  - "**/database/**"
+  - "**/migrations/**"
+  - "**/.env*"
+  - "**/docker-compose*"
+  - "**/Dockerfile*"

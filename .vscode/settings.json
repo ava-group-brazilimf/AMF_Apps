@@ -1,0 +1,61 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "ForEach-Object": true,
+        "Test-Path": true,
+        "New-Item": true,
+        "/^python src/modules/ava-fabric-agents/summary/utils/build_summary_complete\\.py --project Meu-ERP$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python src/shared/utils/ntp_time\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python -c \"\nimport yaml, sys\nconfig_path = 'projects/Meu-ERP-006-AST-LLM-AS-IS-Orchestrator/context/project-config\\.yaml'\ndata = yaml\\.safe_load\\(open\\(config_path, encoding='utf-8'\\)\\)\nif not isinstance\\(data, dict\\):\n  sys\\.exit\\('MISSING: project_name, repository_path, legacy_technology'\\)\nmissing = \\[f for f in \\['project_name','repository_path','legacy_technology'\\] if not data\\.get\\(f\\)\\]\nif missing: sys\\.exit\\('MISSING: ' \\+ ', '\\.join\\(missing\\)\\)\nprint\\('VALID'\\)\nprint\\('project_name:', data\\['project_name'\\]\\)\nprint\\('repository_path:', data\\['repository_path'\\]\\)\nprint\\('legacy_technology:', data\\['legacy_technology'\\]\\)\nprint\\('security_enabled_asis:', data\\.get\\('security_enabled_asis', False\\)\\)\nprint\\('timing_benchmark_enabled:', data\\.get\\('timing_benchmark_enabled', True\\)\\)\nprint\\('golden_dataset_enabled_asis:', data\\.get\\('golden_dataset_enabled_asis', True\\)\\)\n\"\n$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python src/shared/tools/headroom/headroom_tool\\.py .*(slice|metrics|stats|doctor|decode|proxy status)/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    },
+    "livePreview.defaultPreviewPath": "/projects/database-comparer-examples/outputs/summary/AVA-FABRIC-SUMMARY-database-comparer-examples-2026-04-09.html",
+    "chat.mcp.autostart": true,
+    "files.associations": {
+        "**/summary/templates/html/summary-template.html": "plaintext"
+    },
+    "github.copilot.advanced": {
+        "debug.overrideProxyUrl": "http://127.0.0.1:8787",
+        "debug.testOverrideProxyUrl": "http://127.0.0.1:8787"
+    },
+    "terminal.integrated.env.windows": {
+        "HEADROOM_HOST": "127.0.0.1",
+        "HEADROOM_PORT": "8787",
+        "HEADROOM_BACKEND": "anthropic",
+        "HEADROOM_TELEMETRY": "off",
+        "ANTHROPIC_TARGET_API_URL": "https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic",
+        "AVA_FOUNDRY_MODEL": "claude-sonnet-4-6",
+        "AVA_FOUNDRY_CONTEXT_LIMIT": "200000"
+    },
+    "files.exclude": {
+        "**/src/shared/tools/headroom/.venv": true,
+        "**/.headroom": true
+    },
+    "search.exclude": {
+        "**/src/shared/tools/headroom/vendor": true,
+        "**/src/shared/tools/headroom/.venv": true
+    },
+    "python-envs.pythonProjects": [
+        {
+            "path": "src/shared/tools/headroom/vendor/plugins/headroom-oauth2",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        },
+        {
+            "path": "src/shared/tools/headroom/vendor",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+
+{
+    "DEV": {
+        "url_ui" : "https://demoqa.com/login",
+        "url_base": "https://reqres.in/",
+        "api": "api"
+    }, 
+    "HML": {
+        "url_ui" : "https://demoqa.com/login",
+        "url_base": "https://reqres.in/",
+        "api": "api"
+    }
+}
+

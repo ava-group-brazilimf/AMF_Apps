@@ -1,0 +1,6 @@
+{
+  "scenario": "runtime-initialization-failure",
+  "rootCause": "RENDERER_CONFIGURATION_FAILURE",
+  "stage": "RUNTIME_VERSION_PROBE",
+  "publicationAllowed": false
+}

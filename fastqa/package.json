@@ -1,0 +1,43 @@
+{
+  "name": "fastqa-scripts",
+  "version": "1.0.0",
+  "description": "Scripts de suporte do FastQA (setup, azure-devops)",
+  "private": true,
+  "scripts": {
+    "setup": "npx tsx scripts/setup/setup-wizard.command.ts",
+    "setup:quick": "npx tsx scripts/setup/setup-quick.command.ts",
+    "setup:bmad": "cd ../code_qa && npx bmad-method@alpha install",
+    "install:dotenv": "npm install -D dotenv",
+    "azdo": "npx tsx scripts/azure-devops/commands/",
+    "azdo:health": "npx tsx scripts/azure-devops/commands/check-health.command.ts",
+    "azdo:get-work-item": "npx tsx scripts/azure-devops/commands/get-work-item.command.ts",
+    "azdo:create-test-case": "npx tsx scripts/azure-devops/commands/create-test-case.command.ts",
+    "azdo:list-test-plans": "npx tsx scripts/azure-devops/commands/list-test-plans.command.ts",
+    "azdo:generate-report": "npx tsx scripts/azure-devops/commands/generate-report.command.ts",
+    "azdo:create-bug": "npx tsx scripts/azure-devops/commands/create-bug.command.ts",
+    "azdo:upload-evidence": "npx tsx scripts/azure-devops/commands/upload-evidence.command.ts",
+    "azdo:upload-test-execution": "npx tsx scripts/azure-devops/commands/upload-test-execution.command.ts",
+    "azdo:push-automation": "npx tsx scripts/azure-devops/commands/push-automation.command.ts",
+    "azdo:create-repo": "npx tsx scripts/azure-devops/commands/create-repo.command.ts",
+    "azdo:generate-pipeline": "npx tsx scripts/azure-devops/commands/generate-pipeline-yaml.command.ts",
+    "azdo:sync-pipeline": "npx tsx scripts/azure-devops/commands/sync-pipeline-results.command.ts",
+    "azdo:batch-execution": "npx tsx scripts/azure-devops/commands/upload-batch-test-execution.command.ts",
+    "install:cypress": "npm install -D cypress --prefix ../automated_test",
+    "install:supertest": "npm install -D supertest @types/supertest jest ts-jest @types/jest typescript --prefix ../automated_test",
+    "install:webdriverio": "cd ../automated_test && npm init wdio@latest . && npm install -D @wdio/appium-service @wdio/cli @wdio/local-runner @wdio/mocha-framework @wdio/spec-reporter appium-uiautomator2-driver",
+    "setup:playwright": "cd ../automated_test/api && npm run setup:playwright",
+    "postinstall": "npx playwright install chromium --with-deps || echo [WARN] Playwright browser install skipped"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

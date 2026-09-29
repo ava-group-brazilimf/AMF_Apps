@@ -1,0 +1,3051 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-trace="{{TRACE_ID}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AVA Fabric Summary — {{PROJECT_NAME}}</title>
+<!--
+  AVA Fabric Summary Template v1.0
+  Gerado por: ava-summary (F8 — Summary Module)
+  Trace ID:   {{TRACE_ID}}
+  Workflow:   src/modules/ava-fabric-agents/summary/workflows/generate-summary/
+  Artifact map: src/modules/ava-fabric-agents/summary/data/artifact-map.yaml
+
+  PLACEHOLDERS (substituídos pelo Step 03 do workflow):
+  {{PROJECT_NAME}}      project_context.name
+  {{GENERATED_AT}}      timestamp ISO
+  {{COVERAGE}}          kpis.coverage
+  {{SCOPE}}             project_context.scope
+  {{EXEC_PCT}}          exec_summary.exec_pct (number 0-100)
+  {{AGENTS_OK}}         exec_summary.agents_ok
+  {{AGENTS_ERR}}        exec_summary.agents_err
+  {{TRACE_ID}}          project_context.trace_id
+  {{EXECUTIVE_SUMMARY}} gerado pelo agente com os dados disponíveis
+  (todos os demais via objeto JS D abaixo)
+-->
+<style>
+/* ═══ AVANADE DESIGN TOKENS ════════════════════════════════════ */
+:root{
+  /* Brand — Avanade Orange */
+  --r:#FF5800; --rd:#CC4400; --rl:#FF7A44;
+  /* Light scale (default) */
+  --k:#ffffff;   --d1:#f5f5f7; --d2:#ffffff; --d3:#f0f0f4; --d4:#e8e8ec;
+  /* Neutral */
+  --g1:#cccccc; --g2:#888891; --g3:#555559;
+  /* Text */
+  --fg:#1a1a1a; --fg-dim:rgba(26,26,26,.70); --fg-muted:rgba(26,26,26,.55); --fg-faint:rgba(26,26,26,.40);
+  /* Semantic */
+  --ok:#00963C; --warn:#CC7A00; --info:#1565C0;
+  /* Borders */
+  --wb:rgba(0,0,0,.08); --wb2:rgba(0,0,0,.14);
+  --rb:rgba(255,88,0,.12); --rb2:rgba(255,88,0,.05);
+  /* Page bg & hover */
+  --bg-page:#f4f4f7; --hover-bg:rgba(0,0,0,.04);
+  /* Layout */
+  --sw:264px; --hh:54px; --rad:7px; --rad2:11px;
+  --tr:.16s ease;
+}
+html[data-theme="dark"]{
+  --k:#0A0A0A; --d1:#141414; --d2:#1C1C1C; --d3:#242424; --d4:#2E2E2E;
+  --g1:#3D3D3D; --g2:#6B6B6B; --g3:#9E9E9E;
+  --fg:#ffffff; --fg-dim:rgba(255,255,255,.72); --fg-muted:rgba(255,255,255,.55); --fg-faint:rgba(255,255,255,.45);
+  --ok:#00C864; --warn:#FFA000; --info:#2196F3;
+  --wb:rgba(255,255,255,.06); --wb2:rgba(255,255,255,.12);
+  --rb:rgba(255,88,0,.18); --rb2:rgba(255,88,0,.08);
+  --bg-page:#0F0F0F; --hover-bg:rgba(255,255,255,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--bg-page); color:var(--fg); font-size:13px;
+  display:flex; flex-direction:column; height:100vh; overflow:hidden;
+}
+
+/* ═══ TOPBAR ═══════════════════════════════════════════════════ */
+#tb{
+  height:var(--hh); background:var(--k);
+  border-bottom:2px solid var(--r);
+  display:flex; align-items:center; padding:0 18px; gap:12px;
+  flex-shrink:0; z-index:200; position:relative;
+}
+.tm{
+  width:34px; height:34px; background:var(--r); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:17px; letter-spacing:-1px; flex-shrink:0;
+}
+.tl{line-height:1}
+.tn{font-size:14px; font-weight:700}
+.ts{font-size:9px; color:var(--r); font-weight:700; text-transform:uppercase; letter-spacing:.12em}
+.tdiv{width:1px; height:26px; background:var(--wb)}
+.tp{font-size:13px; font-weight:600}
+.ttag{
+  font-size:9px; padding:2px 8px; background:var(--d3);
+  border:1px solid var(--wb); border-radius:10px; color:var(--g2);
+}
+.tsp{flex:1}
+.tmeta{display:flex; gap:16px; align-items:center; font-size:11px; color:var(--g2)}
+.tmeta strong{color:var(--fg)}
+.tbadge{padding:3px 10px; border-radius:10px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em}
+.bOk  {background:rgba(0,200,100,.12); color:var(--ok);   border:1px solid rgba(0,200,100,.25)}
+.bWarn{background:rgba(255,160,0,.12); color:var(--warn);  border:1px solid rgba(255,160,0,.25)}
+.bCrit{background:rgba(255,0,0,.12);   color:var(--rl);    border:1px solid rgba(255,0,0,.25)}
+
+/* ═══ LAYOUT ════════════════════════════════════════════════════ */
+#lay{display:flex; flex:1; overflow:hidden}
+
+/* ═══ SIDEBAR ═══════════════════════════════════════════════════ */
+#sb{
+  width:var(--sw); flex-shrink:0; background:var(--d1);
+  border-right:1px solid var(--wb); overflow-y:auto; overflow-x:hidden;
+}
+#sb::-webkit-scrollbar{width:3px}
+#sb::-webkit-scrollbar-thumb{background:var(--g1); border-radius:2px}
+
+/* Language */
+.lb{padding:12px 14px 10px; border-bottom:1px solid var(--wb)}
+.ll{font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--g2); margin-bottom:6px}
+.ls{
+  width:100%; padding:7px 10px; background:var(--d3); color:var(--fg);
+  border:1px solid var(--wb); border-radius:var(--rad);
+  font-size:12px; cursor:pointer; outline:none; transition:border-color var(--tr);
+}
+.ls:focus{border-color:var(--r)}
+.ls option{background:var(--d3);color:var(--fg)}
+
+/* Run box */
+.rb{padding:12px 14px; border-bottom:1px solid var(--wb)}
+.rrow{display:flex; justify-content:space-between; margin-bottom:4px}
+.rlb{font-size:9px; text-transform:uppercase; letter-spacing:.09em; color:var(--g2)}
+.rv{font-size:11px; font-weight:700}
+.rpb{height:3px; background:var(--d4); border-radius:2px; margin-top:7px; overflow:hidden}
+.rpf{height:100%; background:var(--r); border-radius:2px; transition:width 1s ease}
+
+/* Nav groups */
+.ng{padding:4px 0}
+.nt{
+  padding:8px 14px 4px; font-size:9px; text-transform:uppercase;
+  letter-spacing:.12em; color:var(--r); font-weight:700;
+  display:flex; align-items:center; gap:6px;
+}
+.nt::after{content:''; flex:1; height:1px; background:var(--rb)}
+.ni{
+  display:flex; align-items:center; gap:7px;
+  padding:6px 14px 6px 20px; cursor:pointer;
+  color:var(--fg-muted); font-size:12px;
+  border-left:2px solid transparent;
+  transition:all var(--tr); user-select:none; position:relative;
+}
+.ni:hover{background:var(--wb); color:var(--fg)}
+.ni.on{background:var(--rb2); color:var(--fg); border-left-color:var(--r)}
+.nd{width:6px; height:6px; border-radius:50%; flex-shrink:0}
+.nd.ok {background:var(--ok)}
+.nd.run{background:var(--warn); animation:pulse 1.4s infinite}
+.nd.err{background:var(--rl)}
+.nd.idle{background:var(--g1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.nb{
+  margin-left:auto; font-size:9px; padding:1px 6px;
+  border-radius:8px; font-weight:700;
+}
+.nb.ok  {background:rgba(0,200,100,.12); color:var(--ok)}
+.nb.warn{background:rgba(255,160,0,.12); color:var(--warn)}
+.nb.crit{background:rgba(255,0,0,.12);   color:var(--rl)}
+
+/* ═══ MAIN ══════════════════════════════════════════════════════ */
+#mn{
+  flex:1; overflow-y:auto; background:var(--bg-page);
+  padding:26px 30px 56px;
+}
+#mn::-webkit-scrollbar{width:5px}
+#mn::-webkit-scrollbar-thumb{background:var(--g1); border-radius:3px}
+
+/* Sections */
+.sec{display:none; animation:fi .18s ease}
+.sec.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* Page header */
+.ph{margin-bottom:22px}
+.ph h1{font-size:21px; font-weight:700; margin-bottom:4px; line-height:1.2}
+.ph p{font-size:12px; color:var(--g2); line-height:1.65}
+.hl{width:44px; height:3px; background:var(--r); border-radius:2px; margin-top:10px}
+
+/* Executive summary */
+.ex{
+  border-left:3px solid var(--r); background:var(--rb2);
+  padding:13px 16px; border-radius:0 var(--rad) var(--rad) 0;
+  margin-bottom:22px; font-size:12px; color:var(--fg-dim);
+  line-height:1.75;
+}
+
+/* KPI grid */
+.kg{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+  gap:10px; margin-bottom:24px;
+}
+.kc{
+  background:var(--d2); border-radius:var(--rad2);
+  border:1px solid var(--wb); padding:13px 15px;
+  transition:border-color var(--tr), transform var(--tr);
+}
+.kc:hover{border-color:var(--rd); transform:translateY(-1px)}
+.kc.hi{border-color:var(--rb); background:var(--rb2)}
+.kl{font-size:9px; color:var(--g2); font-weight:600; text-transform:uppercase; letter-spacing:.08em; margin-bottom:7px}
+.kv{font-size:25px; font-weight:700; line-height:1}
+.kv.r{color:var(--rl)} .kv.g{color:var(--ok)} .kv.a{color:var(--warn)}
+.ks{font-size:10px; color:var(--g2); margin-top:4px}
+
+/* Cards */
+.cd{
+  background:var(--d2); border-radius:var(--rad2);
+  border:1px solid var(--wb); margin-bottom:18px; overflow:hidden;
+}
+.ch{
+  padding:13px 17px; border-bottom:1px solid var(--wb);
+  display:flex; align-items:center; gap:10px;
+}
+.ch h2{font-size:13px; font-weight:600}
+.ctag{
+  margin-left:auto; font-size:9px; padding:2px 8px;
+  border-radius:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+}
+.cb{padding:16px}
+
+/* Table */
+.at{width:100%; border-collapse:collapse; font-size:12px}
+.at th{
+  text-align:left; padding:8px 12px; color:var(--g2);
+  font-size:9px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; border-bottom:1px solid var(--wb);
+}
+.at td{
+  padding:9px 12px; border-bottom:1px solid var(--wb);
+  color:var(--fg-dim); vertical-align:top; line-height:1.5;
+}
+.at tr:last-child td{border-bottom:none}
+.at tr:hover td{background:var(--hover-bg)}
+.mono{font-family:'Cascadia Code','Consolas',monospace; font-size:10.5px; color:var(--fg-faint)}
+.fw{font-weight:600; color:var(--fg)}
+
+/* Severity badges */
+.sv{display:inline-block; padding:2px 8px; border-radius:10px; font-size:9px; font-weight:700; text-transform:uppercase; white-space:nowrap}
+.sc{background:rgba(255,0,0,.13);   color:var(--rl);   border:1px solid rgba(255,0,0,.28)}
+.sa{background:rgba(255,160,0,.13); color:var(--warn);  border:1px solid rgba(255,160,0,.28)}
+.sm{background:rgba(255,210,0,.1);  color:#FFD700;      border:1px solid rgba(255,210,0,.22)}
+.sb2{background:rgba(0,200,100,.1); color:var(--ok);    border:1px solid rgba(0,200,100,.22)}
+
+/* Status pills */
+.sp2{display:inline-block; padding:2px 8px; border-radius:10px; font-size:9px; font-weight:700; text-transform:uppercase}
+.sd {background:rgba(0,200,100,.12); color:var(--ok)}
+.sr {background:rgba(255,160,0,.12); color:var(--warn)}
+.spe{background:rgba(255,0,0,.12);   color:var(--rl)}
+.si {background:rgba(107,107,107,.18);color:var(--g2)}
+
+/* Agent cards */
+.ag{display:grid; grid-template-columns:repeat(auto-fill,minmax(212px,1fr)); gap:9px}
+.ac{
+  background:var(--d3); border-radius:var(--rad);
+  border:1px solid var(--wb); padding:11px 13px;
+  display:flex; flex-direction:column; gap:5px;
+  transition:border-color var(--tr);
+}
+.ac:hover{border-color:var(--rb)}
+.at2{display:flex; align-items:center; gap:8px}
+.ai{
+  width:28px; height:28px; border-radius:6px;
+  background:var(--d4); border:1px solid var(--wb);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; flex-shrink:0;
+}
+.an{font-size:11px; font-weight:600}
+.ar{font-size:10px; color:var(--g2)}
+
+/* Artifact chips */
+.arl{display:flex; flex-wrap:wrap; gap:7px}
+.arc{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; background:var(--d3);
+  border:1px solid var(--wb); border-radius:20px;
+  font-size:10px; color:var(--fg-muted);
+  cursor:pointer; transition:all var(--tr); user-select:none;
+}
+.arc:hover{border-color:var(--r); color:var(--fg)}
+.arc .ext{font-size:8px; font-weight:700; text-transform:uppercase; color:var(--r); margin-left:2px; letter-spacing:.05em}
+
+/* Phase timeline */
+.ptl{display:flex; flex-direction:column; gap:10px}
+.pr{
+  background:var(--d2); border-radius:var(--rad2);
+  border:1px solid var(--wb); overflow:hidden; transition:border-color var(--tr);
+}
+.pr:hover{border-color:var(--rb)}
+.pr.exp{border-color:var(--r)}
+.pt{display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer}
+.pn{
+  width:30px; height:30px; border-radius:7px; font-weight:700;
+  font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.pn.ok  {background:var(--ok);  color:var(--k)}
+.pn.run {background:var(--warn); color:var(--k)}
+.pn.idle{background:var(--d4);  color:var(--g2)}
+.pname{font-size:13px; font-weight:600}
+.pdesc{font-size:10px; color:var(--g2); margin-top:1px}
+.pmeta{margin-left:auto; display:flex; gap:12px; align-items:center}
+.pstat{font-size:10px; color:var(--g2)}
+.pstat strong{color:var(--fg)}
+.pbar{height:3px; background:var(--d4); margin:0 16px}
+.pbf{height:100%; border-radius:2px; transition:width .8s ease}
+.pags{padding:14px 16px; border-top:1px solid var(--wb); display:none}
+.pr.exp .pags{display:block}
+
+/* Two-column grid */
+.tc{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media(max-width:860px){.tc{grid-template-columns:1fr}}
+
+/* Diagram box */
+.diag-wrap{
+  background:#fff; border:1px solid var(--wb);
+  border-radius:var(--rad); padding:14px;
+  overflow:auto; max-height:480px;
+  cursor:zoom-in; position:relative;
+}
+.diag-wrap:hover::after{
+  content:'🔍 clique para ampliar'; position:absolute;
+  bottom:8px; right:10px; font-size:10px; color:#555;
+  pointer-events:none; opacity:.7;
+}
+.diag-wrap pre.mermaid{margin:0}
+.diag-wrap svg{max-width:100%;height:auto}
+/* Fallback quando Mermaid não renderizou ainda */
+.diag-wrap pre.mermaid:not([data-processed]){
+  font-family:'Cascadia Code','Consolas',monospace;
+  font-size:11px; color:#555;
+  white-space:pre; overflow-x:auto; line-height:1.6;
+}
+/* Zoom modal */
+#diag-modal{
+  display:none; position:fixed; inset:0; z-index:9000;
+  background:rgba(0,0,0,.82); cursor:zoom-out;
+  align-items:center; justify-content:center;
+}
+#diag-modal.open{display:flex}
+#diag-modal-inner{
+  background:#fff; border-radius:10px;
+  max-width:95vw; max-height:92vh;
+  overflow:auto; padding:28px 24px 20px;
+  position:relative; cursor:default;
+  box-shadow:0 8px 48px rgba(0,0,0,.6);
+}
+#diag-modal-inner svg{max-width:100%;height:auto}
+#diag-modal-close{
+  position:absolute; top:8px; right:12px;
+  font-size:20px; color:#444; cursor:pointer;
+  background:none; border:none; line-height:1; padding:4px 8px;
+  border-radius:4px;
+}
+#diag-modal-close:hover{background:#eee}
+#diag-modal-title{
+  font-size:12px; font-weight:600; color:#555;
+  margin-bottom:12px; font-family:'Segoe UI',sans-serif;
+}
+
+/* Checklist */
+.ck{display:flex; flex-direction:column; gap:5px}
+.ci{
+  display:flex; align-items:center; gap:8px; padding:7px 10px;
+  background:var(--d3); border-radius:var(--rad);
+  border-left:3px solid transparent;
+  font-size:11.5px; color:var(--fg-muted);
+}
+.ci.ok2{border-left-color:var(--ok); color:var(--fg-dim)}
+.ci.na {border-left-color:var(--warn)}
+.ci.bl {border-left-color:var(--rl)}
+.cbox{
+  width:14px; height:14px; border-radius:3px; flex-shrink:0;
+  border:1px solid var(--g1); display:flex; align-items:center;
+  justify-content:center; font-size:9px;
+}
+.ci.ok2 .cbox{background:var(--ok); border-color:var(--ok); color:var(--k)}
+
+/* Pending section notice */
+.pending-notice{
+  padding:28px 20px; text-align:center;
+  color:var(--g2); font-size:12px; line-height:1.8;
+}
+.pending-notice .pi{font-size:28px; display:block; margin-bottom:8px}
+
+/* Watermark */
+.wm{
+  position:fixed; bottom:10px; right:14px;
+  font-size:9px; color:var(--g2); opacity:.25; pointer-events:none;
+  font-family:'Consolas',monospace;
+}
+
+/* File Explorer */
+#fe-search:focus{border-color:var(--r)!important}
+.fe-dir-card{background:var(--d2);border-radius:var(--rad2);border:1px solid var(--wb);margin-bottom:12px;overflow:hidden}
+.fe-dir-header{padding:13px 17px;border-bottom:1px solid var(--wb);display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background var(--tr)}
+.fe-dir-header:hover{background:var(--hover-bg)}
+.fe-dir-name{font-size:13px;font-weight:600;flex:1}
+.fe-badge{font-size:9px;padding:2px 8px;border-radius:8px;font-weight:700;background:rgba(0,200,100,.12);color:var(--ok)}
+.fe-toggle{font-size:10px;color:var(--g2);transition:transform var(--tr)}
+.fe-dir-card.collapsed .fe-toggle{transform:rotate(-90deg)}
+.fe-body{padding:14px 16px}
+.fe-dir-card.collapsed .fe-body{display:none}
+.fe-subdir{margin-bottom:14px}
+.fe-subdir-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g2);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.fe-subdir-name::after{content:'';flex:1;height:1px;background:var(--wb)}
+.fe-chip-hidden{display:none!important}
+/* File detail drawer */
+#fe-drawer{position:fixed;top:0;right:-360px;width:340px;height:100vh;background:var(--d2);border-left:1px solid var(--wb);z-index:200;transition:right .25s ease;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,.4)}
+#fe-drawer.open{right:0}
+#fe-drawer-header{padding:16px 18px;border-bottom:1px solid var(--wb);display:flex;align-items:center;gap:10px}
+#fe-drawer-icon{font-size:22px}
+#fe-drawer-name{font-size:13px;font-weight:700;flex:1;word-break:break-all}
+#fe-drawer-close{background:none;border:none;color:var(--g2);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:4px;transition:color var(--tr)}
+#fe-drawer-close:hover{color:var(--fg)}
+#fe-drawer-body{padding:18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:16px}
+.fe-drow{display:flex;flex-direction:column;gap:4px}
+.fe-dlabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g2)}
+.fe-dvalue{font-size:11px;color:var(--fg);background:var(--d3);border:1px solid var(--wb);border-radius:var(--rad);padding:7px 10px;word-break:break-all;font-family:'Consolas',monospace}
+.fe-dvalue.ext-tag{display:inline-block;width:auto;background:rgba(232,0,25,.12);color:var(--r);border-color:rgba(232,0,25,.2);font-weight:700;text-transform:uppercase;padding:3px 10px;font-size:10px}
+#fe-copy-btn{margin-top:auto;background:var(--r);border:none;color:#fff;padding:9px 16px;border-radius:var(--rad);cursor:pointer;font-size:12px;font-weight:600;transition:opacity var(--tr)}
+#fe-copy-btn:hover{opacity:.85}
+#fe-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199;display:none}
+#fe-overlay.open{display:block}
+/* File Content Modal */
+#fc-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6)}
+#fc-modal.open{display:flex}
+#fc-modal-box{background:var(--d2);border:1px solid var(--wb);border-radius:var(--rad2);width:min(900px,96vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.6);overflow:hidden}
+#fc-modal-header{padding:14px 18px;border-bottom:1px solid var(--wb);display:flex;align-items:center;gap:10px;flex-shrink:0}
+#fc-modal-title{font-size:14px;font-weight:700;flex:1;word-break:break-all}
+#fc-modal-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:3px 10px;border-radius:8px;background:rgba(232,0,25,.12);color:var(--r)}
+#fc-modal-close{background:none;border:none;color:var(--g2);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:4px;transition:color var(--tr)}
+#fc-modal-close:hover{color:var(--fg)}
+#fc-modal-body{overflow-y:auto;flex:1;padding:20px}
+/* Markdown renderer */
+.md-view{font-size:13px;line-height:1.7;color:var(--fg)}
+.md-view h1{font-size:20px;font-weight:700;margin:0 0 14px;color:var(--fg);border-bottom:1px solid var(--wb);padding-bottom:8px}
+.md-view h2{font-size:16px;font-weight:700;margin:18px 0 10px;color:var(--fg)}
+.md-view h3{font-size:14px;font-weight:600;margin:14px 0 8px;color:var(--fg)}
+.md-view h4{font-size:13px;font-weight:600;margin:10px 0 6px;color:var(--fg-dim)}
+.md-view p{margin:0 0 10px}
+.md-view code{background:var(--d3);border:1px solid var(--wb);border-radius:3px;padding:1px 5px;font-family:'Consolas',monospace;font-size:11px;color:var(--info)}
+.md-view pre{background:var(--d4);border:1px solid var(--wb);border-radius:var(--rad);padding:14px;overflow-x:auto;margin:0 0 12px}
+.md-view pre code{background:none;border:none;padding:0;color:var(--fg-dim);font-size:11px}
+.md-view ul,.md-view ol{margin:0 0 10px 20px;padding:0}
+.md-view li{margin-bottom:3px}
+.md-view blockquote{border-left:3px solid var(--r);padding:8px 14px;margin:0 0 10px;background:var(--hover-bg);color:var(--g2)}
+.md-view table{border-collapse:collapse;width:100%;margin:0 0 12px;font-size:12px}
+.md-view th{background:var(--d3);padding:7px 12px;border:1px solid var(--wb);font-weight:700;text-align:left}
+.md-view td{padding:7px 12px;border:1px solid var(--wb)}
+.md-view tr:nth-child(even) td{background:var(--hover-bg)}
+.md-view hr{border:none;border-top:1px solid var(--wb);margin:14px 0}
+.md-view strong{font-weight:700;color:var(--fg)}
+.md-view em{font-style:italic;color:#d0d0d0}
+/* Code viewer */
+.code-view{font-family:'Consolas',monospace;font-size:11px;line-height:1.6;color:var(--fg-dim);background:var(--d4);border:1px solid var(--wb);border-radius:var(--rad);padding:16px;overflow-x:auto;white-space:pre;word-break:normal}
+/* Mermaid in modal */
+.mmd-view{background:#fff;border-radius:var(--rad);padding:20px;overflow:auto;text-align:center}
+.mmd-view svg{max-width:100%;height:auto}
+/* Avanade logo in topbar */
+.tm-logo{display:flex;align-items:center;flex-shrink:0;margin-right:2px}
+.tm-logo svg{height:28px;width:auto}
+/* Theme toggle button */
+#theme-btn{
+  background:none;border:1px solid var(--wb);border-radius:var(--rad);
+  padding:5px 11px;cursor:pointer;display:flex;align-items:center;
+  gap:5px;font-size:11px;color:var(--fg);transition:all var(--tr);flex-shrink:0;
+  font-family:inherit;
+}
+#theme-btn:hover{border-color:var(--r);color:var(--r)}
+/* Card shadow in light mode */
+html:not([data-theme="dark"]) .cd,
+html:not([data-theme="dark"]) .kc,
+html:not([data-theme="dark"]) .pr,
+html:not([data-theme="dark"]) .ac,
+html:not([data-theme="dark"]) .fe-dir-card{box-shadow:0 1px 4px rgba(0,0,0,.07)}
+html:not([data-theme="dark"]) #sb{box-shadow:2px 0 8px rgba(0,0,0,.06)}
+html:not([data-theme="dark"]) #tb{box-shadow:0 1px 6px rgba(0,0,0,.08)}
+</style>
+<!-- ═══ Theme init — must run before paint to avoid flash ═══════ -->
+<script>(function(){var t=localStorage.getItem('ava-theme')||'light';document.documentElement.setAttribute('data-theme',t);})()</script>
+<!-- ═══ Mermaid.js (inline — autocontido, zero CDN em runtime) ══ -->
+<script>{{MERMAID_JS}}</script>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ══════════════════════════════════════════════════ -->
+<div id="tb">
+  <div class="tm-logo">
+    <svg width="117" height="44" viewBox="0 0 117 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M45.4224 27.819C45.0131 27.9328 44.5465 27.9891 44.024 27.9891C42.7047 27.9891 42.0455 27.5126 42.0455 26.5595C42.0455 25.5613 42.773 25.0618 44.2285 25.0618C44.8195 25.0618 45.2176 25.096 45.4224 25.1641V27.819ZM43.5803 19.6499C43.0117 19.6499 42.4599 19.7009 41.926 19.803C41.3913 19.9052 40.9649 20.0472 40.6467 20.2285L40.8172 21.8282C41.295 21.6922 41.7212 21.5959 42.0965 21.539C42.4716 21.4827 42.8523 21.4538 43.2392 21.4538C44.6943 21.4538 45.4223 22.0102 45.4223 23.1216V23.4961C45.0812 23.428 44.6035 23.3941 43.9898 23.3941C42.7158 23.3941 41.7096 23.6781 40.971 24.2451C40.2317 24.8125 39.8623 25.5954 39.8623 26.5934C39.8623 28.6357 41.261 29.6569 44.0579 29.6569C45.1947 29.6569 46.3774 29.4867 47.6053 29.1462V23.2918C47.6053 20.8642 46.2633 19.6499 43.5803 19.6499Z" fill="#FF5800"/><path fill-rule="evenodd" clip-rule="evenodd" d="M48.5947 19.8882H51.0165L53.3703 27.2403L55.7579 19.8882H58.0775L54.4617 29.4186H52.2102L48.5947 19.8882Z" fill="#FF5800"/><path fill-rule="evenodd" clip-rule="evenodd" d="M64.1487 27.819C63.7394 27.9328 63.2731 27.9891 62.7503 27.9891C61.4313 27.9891 60.7718 27.5126 60.7718 26.5595C60.7718 25.5613 61.4993 25.0618 62.955 25.0618C63.5459 25.0618 63.944 25.096 64.1487 25.1641V27.819ZM62.3078 19.6499C61.7392 19.6499 61.1875 19.7009 60.6535 19.803C60.1191 19.9052 59.6925 20.0472 59.3742 20.2285L59.545 21.8282C60.0225 21.6922 60.4487 21.5959 60.824 21.539C61.1993 21.4827 61.5799 21.4538 61.9668 21.4538C63.4219 21.4538 64.1498 22.0102 64.1498 23.1216V23.4961C63.8088 23.428 63.3312 23.3941 62.7174 23.3941C61.4434 23.3941 60.4371 23.6781 59.6984 24.2451C58.9592 24.8125 58.5898 25.5954 58.5898 26.5934C58.5898 28.6357 59.9885 29.6569 62.7854 29.6569C63.9222 29.6569 65.1052 29.4867 66.3329 29.1462V23.2918C66.3329 20.8642 64.9908 19.6499 62.3078 19.6499Z" fill="#FF5800"/><path fill-rule="evenodd" clip-rule="evenodd" d="M74.777 23.8028C74.777 22.9408 74.6117 22.3449 74.2823 22.0158C73.9524 21.6873 73.3667 21.5224 72.5257 21.5224C72.3209 21.5224 72.0764 21.5451 71.7922 21.5903C71.5076 21.6362 71.2407 21.6925 70.9905 21.7604V29.4189H68.7734V20.365C69.3414 20.1385 69.9897 19.9625 70.7177 19.8374C71.4452 19.713 72.1504 19.6504 72.8327 19.6504C75.6068 19.6504 76.994 20.8984 76.994 23.3943V29.4189H74.777V23.8028Z" fill="#FF5800"/><path fill-rule="evenodd" clip-rule="evenodd" d="M84.2928 27.819C83.8835 27.9328 83.4171 27.9891 82.8943 27.9891C81.5751 27.9891 80.9161 27.5126 80.9161 26.5595C80.9161 25.5613 81.6434 25.0618 83.0991 25.0618C83.6899 25.0618 84.088 25.096 84.2928 25.1641V27.819ZM82.4524 19.6499C81.8837 19.6499 81.332 19.7009 80.798 19.803C80.2636 19.9052 79.837 20.0472 79.5188 20.2285L79.6895 21.8282C80.1671 21.6922 80.5933 21.5959 80.9686 21.539C81.3438 21.4827 81.7244 21.4538 82.1113 21.4538C83.5664 21.4538 84.2944 22.0102 84.2944 23.1216V23.4961C83.9533 23.428 83.4757 23.3941 82.8619 23.3941C81.5879 23.3941 80.5819 23.6781 79.8431 24.2451C79.1037 24.8125 78.7344 25.5954 78.7344 26.5934C78.7344 28.6357 80.133 29.6569 82.9299 29.6569C84.067 29.6569 85.2497 29.4867 86.4774 29.1462V23.2918C86.4774 20.8642 85.1354 19.6499 82.4524 19.6499Z" fill="#FF5800"/><path fill-rule="evenodd" clip-rule="evenodd" d="M94.7312 27.6828C94.4806 27.7737 94.0261 27.819 93.3668 27.819C91.479 27.819 90.5357 26.7866 90.5357 24.7215C90.5357 23.678 90.7798 22.8723 91.2689 22.3049C91.7577 21.7379 92.4459 21.4539 93.3326 21.4539C93.8786 21.4539 94.3443 21.5336 94.7312 21.6922V27.6828ZM94.7321 16.2124V19.8543C94.3228 19.7183 93.7882 19.6502 93.1289 19.6502C91.6732 19.6502 90.4907 20.1212 89.5812 21.0627C88.6715 22.0044 88.2168 23.2358 88.2168 24.7558C88.2168 26.3442 88.6605 27.5585 89.5472 28.3977C90.4341 29.2373 91.7302 29.6569 93.4357 29.6569C94.5045 29.6569 95.6756 29.4868 96.9492 29.1465V16.2124H94.7321Z" fill="#FF5800"/><path fill-rule="evenodd" clip-rule="evenodd" d="M101.008 23.6663C101.077 22.9403 101.298 22.3729 101.673 21.9645C102.049 21.5561 102.531 21.3517 103.123 21.3517C103.714 21.3517 104.192 21.5561 104.556 21.9645C104.919 22.3729 105.101 22.9403 105.101 23.6663H101.008ZM107.25 24.1428C107.25 22.759 106.886 21.6638 106.159 20.8581C105.431 20.0531 104.441 19.6499 103.191 19.6499C101.827 19.6499 100.74 20.1041 99.9335 21.0114C99.126 21.9191 98.7227 23.1558 98.7227 24.7214C98.7227 26.2872 99.1544 27.5013 100.019 28.3635C100.883 29.2261 102.111 29.6569 103.703 29.6569C104.748 29.6569 105.738 29.4749 106.67 29.1122L106.431 27.4444C105.635 27.7166 104.782 27.8528 103.873 27.8528C102.008 27.8528 101.053 27.0136 101.008 25.3341H107.25V24.1428Z" fill="#FF5800"/><path d="M16.2811 15.8119C15.5272 17.2558 14.9409 18.4277 14.4593 19.2856C13.9987 20.1436 13.559 20.8551 13.182 21.3992C12.7842 21.9433 12.3864 22.3827 11.9466 22.7176C11.5069 23.0524 10.9625 23.4291 10.2924 23.8476L9.91553 23.2826C10.3343 22.9687 10.7112 22.6548 11.0462 22.3618C11.3813 22.0688 11.7372 21.6294 12.1351 21.0853C12.5329 20.5412 12.9727 19.8297 13.4752 18.909C13.9777 18.0091 14.6059 16.7745 15.3597 15.2468C15.9041 14.1377 16.4067 13.217 16.8883 12.5055C17.3699 11.794 17.8306 11.229 18.2912 10.8314C18.7309 10.4129 19.1707 10.1408 19.5894 9.9734C20.0082 9.80599 20.427 9.74321 20.8667 9.76414C21.2855 9.78506 21.6834 9.8897 22.1022 10.078C22.5 10.2664 22.9607 10.643 23.4213 11.1871C23.9029 11.7312 24.4473 12.5264 25.0336 13.5518C25.6199 14.5772 26.3319 15.9374 27.1485 17.6115C27.672 18.6997 28.1745 19.5995 28.6352 20.332C29.0959 21.0644 29.5775 21.6503 30.08 22.1316C30.5825 22.6129 31.106 22.9896 31.6923 23.2826C32.2786 23.5755 32.9277 23.8267 33.6815 24.0568L34.1422 24.852C33.2418 24.7474 32.4252 24.58 31.7133 24.3289C31.0013 24.0778 30.3522 23.6802 29.745 23.157C29.1377 22.6339 28.5514 21.9642 27.9861 21.1481C27.4207 20.332 26.8344 19.2856 26.2272 18.051C25.4734 16.5443 24.8452 15.3306 24.3217 14.3889C23.7982 13.4472 23.3376 12.7148 22.9397 12.1916C22.5419 11.6684 22.165 11.3127 21.8509 11.1244C21.5368 10.936 21.2018 10.8314 20.8877 10.8314C20.5317 10.8105 20.1967 10.8942 19.8617 11.0406C19.5266 11.1871 19.1916 11.4592 18.8147 11.8568C18.4587 12.2544 18.0609 12.7566 17.663 13.4053C17.2024 14.0331 16.7627 14.8492 16.2811 15.8119Z" fill="url(#paint0_linear_1_3501)"/><path d="M27.3581 25.3331C28.4679 25.375 29.5567 25.3122 30.6246 25.1657C31.6925 25.0192 32.6557 24.789 33.4724 24.4961L33.5771 25.082C32.0904 26.0237 29.9965 26.4632 27.3162 26.3585C26.1018 26.3167 25.0548 26.1702 24.1754 25.94C23.2959 25.7098 22.5212 25.4168 21.8302 25.082C21.3276 24.8518 20.8251 24.6007 20.3644 24.3496C19.9038 24.0985 19.4222 23.8683 18.9405 23.6381C18.4589 23.4079 17.9564 23.2405 17.4539 23.094C16.9513 22.9475 16.4069 22.8638 15.8415 22.8429C15.004 22.822 14.1455 22.8847 13.287 23.0312C12.4285 23.1777 11.5699 23.4288 10.7324 23.7427L10.3555 23.3033L11.0465 22.9685C11.7165 22.5709 12.4703 22.2779 13.3498 22.0686C14.2083 21.8594 15.0668 21.7756 15.8834 21.7966C16.5325 21.8175 17.1398 21.9012 17.6842 22.0477C18.2286 22.1942 18.7521 22.3825 19.2337 22.6127C19.7153 22.8429 20.2178 23.0731 20.6994 23.3451C21.181 23.6172 21.7045 23.8683 22.228 24.0985C22.919 24.4124 23.6309 24.6635 24.4057 24.8937C25.2223 25.1657 26.2065 25.2913 27.3581 25.3331Z" fill="url(#paint1_linear_1_3501)"/><path d="M28.9493 17.3601C28.5514 17.3392 28.1955 17.4438 27.8395 17.6322C27.4835 17.8205 27.0857 18.1972 26.6041 18.7204C26.1434 19.2435 25.599 19.9759 24.9708 20.8967C24.3427 21.8175 23.5888 23.0103 22.6675 24.496C21.4321 26.505 20.2804 27.9489 19.2125 28.8278C18.1446 29.7067 17.0349 30.1462 15.8623 30.1043C14.6269 30.0624 13.4543 29.4347 12.3864 28.2628C11.2975 27.07 10.4809 25.4168 9.91553 23.3242L10.9415 23.5334C11.5069 25.2075 12.2398 26.5468 13.1192 27.5304C13.9987 28.5348 14.92 29.0371 15.9041 29.0789C16.8045 29.1208 17.7259 28.7232 18.6681 27.928C19.5894 27.1328 20.6155 25.8353 21.7462 24.0147C22.7513 22.4034 23.6098 21.085 24.3008 20.0806C24.9918 19.0761 25.599 18.2809 26.1015 17.7368C26.625 17.1718 27.1066 16.7951 27.5464 16.6068C27.9861 16.4185 28.4677 16.3348 28.9912 16.3557C30.1638 16.3975 31.2107 17.0881 32.1111 18.4483C33.0115 19.8085 33.8281 21.8802 34.5401 24.6634L33.4093 24.2031C32.7183 21.9012 32.0064 20.1852 31.2735 19.097C30.5407 17.9461 29.7659 17.3811 28.9493 17.3601Z" fill="url(#paint2_linear_1_3501)"/><path d="M24.9714 33.0762C25.5158 33.0971 26.0602 32.9088 26.5837 32.5321C27.1281 32.1554 27.7982 31.423 28.6148 30.3348C29.243 29.5187 29.7665 28.8281 30.1853 28.284C30.6041 27.74 30.981 27.2587 31.3369 26.8611C31.6929 26.4425 32.0698 26.0449 32.4467 25.6683C32.8236 25.2916 33.3052 24.8312 33.8706 24.2871L34.5197 24.6429C33.9962 25.2288 33.5565 25.731 33.2215 26.1496C32.8655 26.5681 32.5305 26.9866 32.1745 27.4261C31.8395 27.8655 31.4626 28.3468 31.0438 28.8909C30.625 29.435 30.1015 30.1256 29.4733 30.9626C28.6148 32.1345 27.8401 32.9506 27.1491 33.4529C26.479 33.9342 25.7252 34.1644 24.9295 34.1434C24.4898 34.1225 24.092 34.0597 23.7569 33.9132C23.401 33.7877 23.0031 33.5366 22.5215 33.1599C22.0609 32.7832 21.5164 32.2601 20.8883 31.5695C20.2601 30.8789 19.4644 30 18.5012 28.8909C17.7683 28.0539 17.1192 27.3633 16.5329 26.7983C15.9466 26.2333 15.3603 25.7729 14.774 25.4381C14.1877 25.0823 13.5805 24.8103 12.9314 24.6219C12.2822 24.4336 11.5284 24.2871 10.6699 24.1825L10.9212 23.4082C11.8006 23.4919 12.5963 23.5965 13.2873 23.743C13.9783 23.8895 14.6274 24.1406 15.2556 24.4964C15.8628 24.8521 16.491 25.3125 17.1192 25.8775C17.7474 26.4635 18.4593 27.1959 19.2341 28.0957C20.1973 29.2048 20.972 30.0628 21.5793 30.7324C22.1865 31.3811 22.689 31.8834 23.0869 32.2391C23.4847 32.5949 23.8198 32.8251 24.1129 32.9297C24.3851 33.0134 24.6783 33.0762 24.9714 33.0762Z" fill="url(#paint3_linear_1_3501)"/><defs><linearGradient id="paint0_linear_1_3501" x1="14.3547" y1="28.9476" x2="32.1664" y2="16.6563" gradientUnits="userSpaceOnUse"><stop offset="0.2" stop-color="#FF5800"/><stop offset="0.2422" stop-color="#FF5800"/><stop offset="0.3192" stop-color="#FFB414"/><stop offset="0.3963" stop-color="#FFB414"/><stop offset="0.4725" stop-color="#FFB414"/><stop offset="0.5476" stop-color="#FFB414"/><stop offset="0.62" stop-color="#FFB414"/><stop offset="0.6597" stop-color="#FFB414"/><stop offset="0.7244" stop-color="#FFB414"/><stop offset="0.8061" stop-color="#FF5800"/><stop offset="0.9" stop-color="#FF5800"/></linearGradient><linearGradient id="paint1_linear_1_3501" x1="10.3746" y1="26.3957" x2="33.5957" y2="26.3957" gradientUnits="userSpaceOnUse"><stop offset="0.09" stop-color="#FF5800"/><stop offset="0.1898" stop-color="#FF5800"/><stop offset="0.3059" stop-color="#FFB414"/><stop offset="0.4034" stop-color="#FFB414"/><stop offset="0.47" stop-color="#FFB414"/><stop offset="0.5314" stop-color="#FFB414"/><stop offset="0.6235" stop-color="#FFB414"/><stop offset="0.7342" stop-color="#FF5800"/><stop offset="0.82" stop-color="#FF5800"/></linearGradient><linearGradient id="paint2_linear_1_3501" x1="5.94847" y1="27.3198" x2="24.573" y2="40.0004" gradientUnits="userSpaceOnUse"><stop offset="0.5" stop-color="#FF5800"/><stop offset="0.64" stop-color="#CE056A" stop-opacity="0.99"/><stop offset="0.7559" stop-color="#CE056A"/><stop offset="0.8091" stop-color="#CE056A" stop-opacity="0.9955"/><stop offset="0.8494" stop-color="#CE056A" stop-opacity="0.9968"/><stop offset="0.8833" stop-color="#CE056A" stop-opacity="0.9978"/><stop offset="0.9131" stop-color="#FF5800" stop-opacity="0.9988"/><stop offset="0.9397" stop-color="#FF5800" stop-opacity="0.9997"/><stop offset="0.95" stop-color="#FF5800"/></linearGradient><linearGradient id="paint3_linear_1_3501" x1="15.0882" y1="34.9422" x2="32.3785" y2="22.9589" gradientUnits="userSpaceOnUse"><stop stop-color="#FF5800"/><stop offset="0.0624571" stop-color="#FF5800"/><stop offset="0.1272" stop-color="#FF5800"/><stop offset="0.1929" stop-color="#DC4600"/><stop offset="0.259" stop-color="#C80000"/><stop offset="0.3" stop-color="#C80000"/><stop offset="0.48" stop-color="#C80000"/><stop offset="0.91" stop-color="#FF5800"/></linearGradient></defs></svg>
+  </div>
+  <div class="tdiv"></div>
+  <div class="tl">
+    <div class="tn">AVA Fabric</div>
+    <div class="ts">Agent Factory · F8 Summary</div>
+  </div>
+  <div class="tdiv"></div>
+  <div>
+    <div class="tp" id="tp-proj">{{PROJECT_NAME}}</div>
+  </div>
+  <span class="ttag" id="tp-tech">Delphi → .NET 8</span>
+  <div class="tsp"></div>
+  <button id="theme-btn" onclick="toggleTheme()" data-i18n-title="hdr-theme-title" title="Alternar tema Claro/Dark">
+    <span id="theme-icon">🌙</span>
+    <span id="theme-lbl" data-i18n="hdr-theme-lbl">Dark</span>
+  </button>
+  <div class="tmeta">
+    <span><strong id="tp-date">{{GENERATED_AT}}</strong></span>
+    <span><span data-i18n="hdr-coverage">Cobertura</span>: <strong style="color:var(--ok)" id="tp-cov">{{COVERAGE}}</strong></span>
+    <span><span data-i18n="hdr-scope">Escopo</span>: <strong id="tp-scope">{{SCOPE}}</strong></span>
+    <span class="tbadge bOk" id="tp-status" data-i18n="hdr-status">Executado</span>
+  </div>
+</div>
+
+<!-- ═══ LAYOUT ═══════════════════════════════════════════════════ -->
+<div id="lay">
+
+<!-- ═══ SIDEBAR ═════════════════════════════════════════════════ -->
+<nav id="sb">
+
+  <!-- Language selector -->
+  <div class="lb">
+    <div class="ll" id="lbl-lang">Idioma / Language</div>
+    <select class="ls" id="lsel" onchange="setLang(this.value)">
+      <option value="pt">🇧🇷 Português (PT-BR)</option>
+      <option value="en">🇺🇸 English (EN-US)</option>
+    </select>
+  </div>
+
+  <!-- Execution run box -->
+  <div class="rb">
+    <div class="rrow">
+      <span class="rlb" data-i18n="run-title">Execução da Esteira</span>
+      <span class="rv" style="color:var(--ok)" id="run-pct">{{EXEC_PCT}}%</span>
+    </div>
+    <div class="rrow">
+      <span class="rlb" data-i18n="run-ok">Agentes com dados</span>
+      <span class="rv" style="color:var(--ok)" id="run-ok">{{AGENTS_OK}}/41</span>
+    </div>
+    <div class="rrow">
+      <span class="rlb" data-i18n="run-pend">Pendentes</span>
+      <span class="rv" style="color:var(--g2)" id="run-err">{{AGENTS_ERR}}</span>
+    </div>
+    <div class="rpb"><div class="rpf" id="rpf" style="width:{{EXEC_PCT}}%"></div></div>
+  </div>
+
+  <!-- Executive -->
+  <div class="ng">
+    <div class="nt" data-i18n="nav-exec">Resumo Executivo</div>
+    <div class="ni on" onclick="nav('s-kpis',this)">
+      <span class="nd ok"></span><span data-i18n="nav-kpis">KPIs &amp; Métricas</span>
+    </div>
+    <div class="ni" onclick="nav('s-risks',this)">
+      <span class="nd ok"></span><span data-i18n="nav-risks">Riscos</span>
+      <span class="nb crit" id="nb-risks">0</span>
+    </div>
+    <div class="ni" onclick="nav('s-phases',this)">
+      <span class="nd ok"></span><span data-i18n="nav-phases">Fases &amp; Agentes</span>
+    </div>
+    <div class="ni" onclick="nav('s-artifacts',this)">
+      <span class="nd ok"></span><span data-i18n="nav-artifacts">Artefatos</span>
+      <span class="nb ok" id="nb-arts">0</span>
+    </div>
+    <div class="ni" onclick="nav('s-file-explorer',this)">
+      <span class="nd ok"></span>
+      <span data-i18n="nav-explorer">Explorer de Arquivos</span>
+      <span class="nb ok" id="nb-explorer">0</span>
+    </div>
+  </div>
+
+  <!-- F1 -->
+  <div class="ng">
+    <div class="nt" data-i18n="grp-f1">F1 — Diagnóstico AS-IS</div>
+    <div class="ni" onclick="nav('s-f1-arch',this)">
+      <span class="nd" id="nd-f1-arch"></span><span data-i18n="nav-arch">Arquitetura AS-IS</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-bc',this)">
+      <span class="nd" id="nd-f1-bc"></span><span data-i18n="nav-bc">Bounded Contexts</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-docs',this)">
+      <span class="nd" id="nd-f1-docs"></span><span data-i18n="nav-docs">Documentação &amp; Requisitos</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-rules',this)">
+      <span class="nd" id="nd-f1-rules"></span><span data-i18n="nav-rules">Regras de Negócio</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-screens',this)">
+      <span class="nd" id="nd-f1-screens"></span><span data-i18n="nav-screens">Fluxo de Telas</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-inv',this)">
+      <span class="nd" id="nd-f1-inv"></span><span data-i18n="nav-inv">Inventário &amp; Métricas</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-sec',this)">
+      <span class="nd" id="nd-f1-sec"></span><span data-i18n="nav-sec">Security Review</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-qa',this)">
+      <span class="nd" id="nd-f1-qa"></span><span data-i18n="nav-qa">Test Baseline</span>
+    </div>
+    <div class="ni" onclick="nav('s-f1-db',this)">
+      <span class="nd" id="nd-f1-db"></span><span data-i18n="nav-db">Banco de Dados</span>
+    </div>
+  </div>
+
+  <!-- F2 -->
+  <div class="ng">
+    <div class="nt" data-i18n="grp-f2">F2 — Arquitetura TO-BE</div>
+    <div class="ni" onclick="nav('s-f2-arch',this)">
+      <span class="nd" id="nd-f2-arch"></span><span data-i18n="nav-tobearch">Blueprint C4 TO-BE</span>
+    </div>
+    <div class="ni" onclick="nav('s-f2-tech',this)">
+      <span class="nd" id="nd-f2-tech"></span><span data-i18n="nav-tech">Tech Framework</span>
+    </div>
+    <div class="ni" onclick="nav('s-f2-api',this)">
+      <span class="nd" id="nd-f2-api"></span><span data-i18n="nav-api">API Surface</span>
+    </div>
+    <div class="ni" onclick="nav('s-f2-size',this)">
+      <span class="nd" id="nd-f2-size"></span><span data-i18n="nav-size">Sizing &amp; Estimativas</span>
+    </div>
+    <div class="ni" onclick="nav('s-f2-waves',this)">
+      <span class="nd" id="nd-f2-waves"></span><span data-i18n="nav-waves">Migration Waves</span>
+    </div>
+    <div class="ni" onclick="nav('s-f2-code',this)">
+      <span class="nd" id="nd-f2-code"></span><span data-i18n="nav-code">Código Gerado</span>
+    </div>
+    <div class="ni" onclick="nav('s-f2-tests',this)">
+      <span class="nd" id="nd-f2-tests"></span><span data-i18n="nav-tests">Plano de Testes</span>
+    </div>
+  </div>
+
+  <!-- F3/F4 -->
+  <div class="ng">
+    <div class="nt" data-i18n="grp-f3f4">F3/F4 — Stack &amp; Protótipo</div>
+    <div class="ni" onclick="nav('s-f3-be',this)">
+      <span class="nd" id="nd-f3-be"></span><span data-i18n="nav-backend">Backend .NET 8</span>
+    </div>
+    <div class="ni" onclick="nav('s-f3-fe',this)">
+      <span class="nd" id="nd-f3-fe"></span><span data-i18n="nav-frontend">Frontend Angular</span>
+    </div>
+    <div class="ni" onclick="nav('s-f4-proto',this)">
+      <span class="nd" id="nd-f4-proto"></span><span data-i18n="nav-proto">Protótipo TO-BE</span>
+    </div>
+  </div>
+
+  <!-- F5 -->
+  <div class="ng">
+    <div class="nt" data-i18n="grp-f5">F5 — QA</div>
+    <div class="ni" onclick="nav('s-f5-strat',this)">
+      <span class="nd" id="nd-f5-strat"></span><span data-i18n="nav-qastrat">Estratégia QA</span>
+    </div>
+    <div class="ni" onclick="nav('s-f5-scen',this)">
+      <span class="nd" id="nd-f5-scen"></span><span data-i18n="nav-scenarios">Cenários &amp; Casos</span>
+    </div>
+    <div class="ni" onclick="nav('s-f5-scripts',this)">
+      <span class="nd" id="nd-f5-scripts"></span><span data-i18n="nav-scripts">Scripts Automação</span>
+    </div>
+    <div class="ni" onclick="nav('s-f5-ev',this)">
+      <span class="nd" id="nd-f5-ev"></span><span data-i18n="nav-evidence">Evidências</span>
+    </div>
+  </div>
+
+  <!-- F6 -->
+  <div class="ng">
+    <div class="nt" data-i18n="grp-f6">F6 — Entregáveis</div>
+    <div class="ni" onclick="nav('s-f6-pkg',this)">
+      <span class="nd" id="nd-f6-pkg"></span><span data-i18n="nav-package">Pacote de Entrega</span>
+    </div>
+    <div class="ni" onclick="nav('s-f6-docs',this)">
+      <span class="nd" id="nd-f6-docs"></span><span data-i18n="nav-deldocs">Documentação Final</span>
+    </div>
+    <div class="ni" onclick="nav('s-f6-demo',this)">
+      <span class="nd" id="nd-f6-demo"></span><span data-i18n="nav-demo">Demo &amp; Aceite</span>
+    </div>
+    <div class="ni" onclick="nav('s-f6-sec',this)">
+      <span class="nd" id="nd-f6-sec"></span><span data-i18n="nav-seccomp">Security Compliance</span>
+    </div>
+  </div>
+
+  <!-- F7 -->
+  <div class="ng">
+    <div class="nt" data-i18n="grp-f7">F7 — DevOps</div>
+    <div class="ni" onclick="nav('s-f7-iac',this)">
+      <span class="nd" id="nd-f7-iac"></span><span data-i18n="nav-iac">IaC (Terraform/Bicep)</span>
+    </div>
+    <div class="ni" onclick="nav('s-f7-ci',this)">
+      <span class="nd" id="nd-f7-ci"></span><span data-i18n="nav-ci">Pipeline CI</span>
+    </div>
+    <div class="ni" onclick="nav('s-f7-cd',this)">
+      <span class="nd" id="nd-f7-cd"></span><span data-i18n="nav-cd">Pipeline CD</span>
+    </div>
+    <div class="ni" onclick="nav('s-f7-parity',this)">
+      <span class="nd" id="nd-f7-parity"></span><span data-i18n="nav-parity">Paridade de Versão</span>
+    </div>
+  </div>
+
+</nav><!-- /sidebar -->
+
+<!-- ═══ MAIN ══════════════════════════════════════════════════════ -->
+<main id="mn">
+
+<!-- KPIs & Métricas ─────────────────────────────────────────── -->
+<div id="s-kpis" class="sec on">
+  <div class="ph">
+    <h1><span data-i18n="pg-main-title">Análise AS-IS &amp; TO-BE</span> — <span id="ph-proj">{{PROJECT_NAME}}</span></h1>
+    <p id="ph-sub"><span data-i18n="pg-main-sub-prefix">Relatório consolidado</span> · AVA Fabric Agent Factory · <strong style="color:var(--ok)">{{COVERAGE}}</strong> <span data-i18n="pg-main-sub-coverage">cobertura</span> · trace <span class="mono" style="font-size:10px">{{TRACE_ID}}</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="ex" id="exec-box"><!-- rendered by renderExecSummary() --></div>
+  <div class="kg" id="kpi-grid"><!-- renderKPIs() --></div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-filetypes">Arquivos por Tipo</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-type">Tipo</th>
+          <th data-i18n="th-qty">Qtd</th>
+          <th data-i18n="th-desc">Descrição</th>
+        </tr></thead><tbody id="tb-filetypes"></tbody></table>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-layers">Estrutura de Camadas</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-layer">Camada</th><th data-i18n="th-loc">LOC</th>
+          <th data-i18n="th-files">Arquivos</th><th data-i18n="th-risk">Risco</th>
+        </tr></thead><tbody id="tb-layers"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Riscos ───────────────────────────────────────────────────── -->
+<div id="s-risks" class="sec">
+  <div class="ph"><h1 data-i18n="pg-risks">Riscos Identificados</h1><div class="hl"></div></div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-riskregister">Risk Register</h2>
+      <span class="ctag bCrit" id="risk-total-tag">0</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th>ID</th><th data-i18n="th-cat">Categoria</th>
+        <th data-i18n="th-risk">Risco</th><th data-i18n="th-evidence">Evidência</th>
+        <th data-i18n="th-sev">Severidade</th><th data-i18n="th-action">Ação</th>
+      </tr></thead><tbody id="tb-risks"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- Fases & Agentes ─────────────────────────────────────────── -->
+<div id="s-phases" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-phases">Fases &amp; Status dos Agentes</h1>
+    <p data-i18n="pg-phases-sub">41 agentes em 7 frentes · clique numa fase para ver seus agentes e artefatos</p>
+    <div class="hl"></div>
+  </div>
+  <div class="ptl" id="phase-timeline"><!-- renderPhases() --></div>
+</div>
+
+<!-- Artefatos ───────────────────────────────────────────────── -->
+<div id="s-artifacts" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-artifacts">Todos os Artefatos Gerados</h1>
+    <p data-i18n="pg-artifacts-sub">Outputs mapeados de cada agente · clique num chip para ver o caminho completo</p>
+    <div class="hl"></div>
+  </div>
+  <div id="artifact-panels"><!-- renderArtifacts() --></div>
+</div>
+
+<!-- Explorer de Arquivos ────────────────────────────────────── -->
+<div id="s-file-explorer" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-explorer">Explorer de Arquivos</h1>
+    <p data-i18n="pg-explorer-sub">Todos os arquivos em <code>outputs/</code> · filtrar por nome ou extensão</p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd" style="margin-bottom:14px">
+    <div class="cb" style="display:flex;align-items:center;gap:10px;padding:10px 16px">
+      <span style="font-size:13px;color:var(--g2)">🔍</span>
+      <input id="fe-search" type="text"
+        data-i18n-placeholder="lbl-filter-placeholder"
+        placeholder="Filtrar por nome ou extensão (ex: .md, schema, .cs)"
+        oninput="filterFileExplorer(this.value)"
+        style="flex:1;background:var(--d3);border:1px solid var(--wb);border-radius:var(--rad);padding:7px 12px;color:var(--fg);font-size:12px;outline:none;transition:border-color var(--tr)"/>
+      <span id="fe-count" style="font-size:11px;color:var(--g2);white-space:nowrap"></span>
+    </div>
+  </div>
+  <div id="fe-panels"></div>
+</div>
+
+<!-- F1: Arquitetura AS-IS ───────────────────────────────────── -->
+<div id="s-f1-arch" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-arch">Arquitetura AS-IS</h1>
+    <p>AG-02 · <span class="mono">architecture-blueprint.md · diagrams/c4-*.mmd · pattern-classifications.json</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-patterns">Padrões Identificados</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-pattern">Padrão</th><th data-i18n="th-occurs">Ocorrências</th>
+          <th>%</th><th data-i18n="th-risk">Risco</th>
+        </tr></thead><tbody id="tb-patterns"></tbody></table>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-arts-ag02">Artefatos — AG-02</h2></div>
+      <div class="cb"><div class="arl" id="chips-ag02"></div></div>
+    </div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-c4ctx">C4 Context Diagram</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-c4ctx">{{C4_CONTEXT_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-c4cnt">C4 Container Diagram</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-c4cnt">{{C4_CONTAINER_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-c4comp">C4 Component Diagram</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-c4comp">{{C4_COMPONENT_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-class">Diagrama de Classes (DTOs)</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-class">{{CLASS_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-comp">Mapa de Componentes</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-comp">{{COMPONENT_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-seq1">Fluxo: Baixa de Título (CP)</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-seq-baixa-cp">{{SEQ_BAIXA_CP}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-seq2">Fluxo: Cadastro Conta a Pagar</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-seq-cad-cp">{{SEQ_CAD_CP}}</pre></div></div>
+  </div>
+</div>
+
+<!-- F1: Bounded Contexts ────────────────────────────────────── -->
+<div id="s-f1-bc" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-bc">Bounded Contexts AS-IS</h1>
+    <p>AG-02 · <span class="mono">bounded-context-map.md · pattern-classifications.json</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-bc">Mapa de Bounded Contexts</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-bc">Bounded Context</th><th data-i18n="th-forms">Forms</th>
+        <th data-i18n="th-units">Units</th><th data-i18n="th-loc">LOC</th><th data-i18n="th-risk">Risco</th>
+      </tr></thead><tbody id="tb-bc"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Documentação & Requisitos ───────────────────────────── -->
+<div id="s-f1-docs" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-docs">Documentação Funcional AS-IS</h1>
+    <p>AG-03 · <span class="mono">functional-requirements.md · value-chain.md · business-rules.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-arts-ag03">Artefatos — AG-03</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag03"></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-reqs">Requisitos Funcionais</h2>
+      <span class="ctag bOk" id="tag-reqs">0 RFs</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th>ID</th><th data-i18n="th-desc">Descrição</th>
+        <th data-i18n="th-module">Módulo</th><th data-i18n="th-priority">Prioridade</th>
+      </tr></thead><tbody id="tb-reqs"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Regras de Negócio ───────────────────────────────────── -->
+<div id="s-f1-rules" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-rules">Regras de Negócio</h1>
+    <p>AG-03 · <span class="mono">docs/business-rules.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-rules">Mapeamento de Regras</h2>
+      <span class="ctag bOk" id="tag-rules">0 RNs</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th>ID</th><th data-i18n="th-rule">Regra</th>
+        <th data-i18n="th-module">Módulo</th>
+        <th data-i18n="th-origin">Origem (arquivo:linha)</th>
+        <th data-i18n="th-priority">Prioridade</th>
+      </tr></thead><tbody id="tb-rules"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Fluxo de Telas ──────────────────────────────────────── -->
+<div id="s-f1-screens" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-screens">Fluxo de Telas</h1>
+    <p>AG-03 · <span class="mono">screen-navigation-map.md · screen-rules.md · prototype-asis/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-navmap">Mapa de Navegação</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-screen">Tela / Form</th>
+        <th data-i18n="th-module">Módulo</th>
+        <th data-i18n="th-from">Vem de</th>
+        <th data-i18n="th-to">Vai para</th>
+        <th data-i18n="th-rules">Regras</th>
+      </tr></thead><tbody id="tb-screens"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Inventário & Métricas ───────────────────────────────── -->
+<div id="s-f1-inv" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-inv">Inventário &amp; Métricas</h1>
+    <p>AG-06 · <span class="mono">inventory-report.md · metrics.json · complexity-map.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="kg" id="kpi-inv"><!-- renderInvKpis() --></div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-complexity"> — Complexidade Ciclomática</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th>#</th><th data-i18n="th-file">Arquivo</th>
+        <th data-i18n="th-method">Método</th><th data-i18n="th-cc">CC</th>
+      </tr></thead><tbody id="tb-complexity"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Security Review ─────────────────────────────────────── -->
+<div id="s-f1-sec" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-secreview">Security Review AS-IS</h1>
+    <p>AG-05 · <span class="mono">security-map.md · vulnerabilities.md · compliance-gaps.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-owasp">OWASP Assessment</h2>
+      <span class="ctag bCrit" id="tag-owasp">0 findings</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th>OWASP</th><th data-i18n="th-finding">Finding</th>
+        <th data-i18n="th-evidence">Evidência</th>
+        <th data-i18n="th-sev">Severidade</th><th data-i18n="th-action">Ação</th>
+      </tr></thead><tbody id="tb-owasp"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Test Baseline ───────────────────────────────────────── -->
+<div id="s-f1-qa" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-testbaseline">Test Baseline AS-IS</h1>
+    <p>AG-04 · <span class="mono">test-map.md · test-baseline.md · test-gaps.md · test-coverage-asis.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-testmap">Testes Existentes</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-module">Módulo</th><th data-i18n="th-tests">Testes</th>
+          <th data-i18n="th-coverage">Coverage</th><th data-i18n="th-type">Tipo</th>
+        </tr></thead><tbody id="tb-testmap"></tbody></table>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-testgaps">Gaps de Cobertura</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-module">Módulo</th>
+          <th data-i18n="th-gap">Gap</th><th data-i18n="th-risk">Risco</th>
+        </tr></thead><tbody id="tb-testgaps"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- F1: Banco de Dados ──────────────────────────────────────── -->
+<div id="s-f1-db" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-db">Banco de Dados AS-IS</h1>
+    <p>AG-08 · <span class="mono">db/schema-inventory.md · er-diagram.mmd · stored-procedures-map.md · business-logic-in-db.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="kg" id="kpi-db"><!-- renderDBKpis() --></div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-er">Diagrama ER</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-er">{{ER_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-schema">Schema Inventory</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-table">Tabela</th><th data-i18n="th-columns">Colunas</th>
+          <th>PK</th><th>FK</th><th data-i18n="th-indexes">Índices</th>
+        </tr></thead><tbody id="tb-schema"></tbody></table>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ch">
+        <h2 data-i18n="card-sps">Stored Procedures</h2>
+        <span class="ctag bCrit" id="tag-sps">0 SPs</span>
+      </div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-name">Nome</th><th data-i18n="th-type">Tipo</th>
+          <th data-i18n="th-risk">Risco</th><th data-i18n="th-loc">LOC</th>
+        </tr></thead><tbody id="tb-sps"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- F2: Blueprint TO-BE ─────────────────────────────────────── -->
+<div id="s-f2-arch" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-tobearch">Arquitetura TO-BE</h1>
+    <p>AG-10 · <span class="mono">tobe/architecture-blueprint.md · tobe/bounded-context-map.md · tobe/diagrams/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-tobe-c4">C4 Blueprint TO-BE</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-tobe-c4">{{TOBE_C4_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-tobebc">Bounded Contexts TO-BE</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-module">Módulo</th><th data-i18n="th-pattern">Padrão</th><th data-i18n="th-adr">ADR</th><th data-i18n="th-risk">Risco</th>
+        </tr></thead><tbody id="tb-tobebc"></tbody></table>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-arts-ag10">Artefatos — AG-10</h2></div>
+      <div class="cb"><div class="arl" id="chips-ag10"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- F2: Tech Framework ──────────────────────────────────────── -->
+<div id="s-f2-tech" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-tech">Tech Framework .NET 8</h1>
+    <p>AG-11 · <span class="mono">tech-framework-document.md · nuget-packages.md · coding-standards.md · solution-structure.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-packages">NuGet Packages Selecionados</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-package">Package</th><th data-i18n="th-version">Versão</th>
+        <th data-i18n="th-layer">Camada</th><th data-i18n="th-purpose">Propósito</th>
+      </tr></thead><tbody id="tb-packages"></tbody></table>
+    </div>
+  </div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-structure">Estrutura da Solution</h2></div>
+      <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-solution">{{SOLUTION_STRUCTURE}}</pre></div></div>
+    </div>
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-qgates">Quality Gates</h2></div>
+      <div class="cb"><div class="ck" id="list-qgates"><!-- renderQGates() --></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- F2: API Surface ─────────────────────────────────────────── -->
+<div id="s-f2-api" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-api">API Surface TO-BE</h1>
+    <p>AG-10 + AG-15 · <span class="mono">tobe/api-map.md · tobe/docs/openapi/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-endpoints">Endpoints Mapeados</h2>
+      <span class="ctag bOk" id="tag-eps">0 endpoints</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-method">Método</th><th data-i18n="th-route">Rota</th>
+        <th data-i18n="th-module">Módulo</th><th data-i18n="th-desc">Descrição</th><th data-i18n="th-auth">Auth</th>
+      </tr></thead><tbody id="tb-endpoints"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F2: Sizing ──────────────────────────────────────────────── -->
+<div id="s-f2-size" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-size">Sizing &amp; Estimativas</h1>
+    <p>AG-12 · <span class="mono">sizing-report.md · effort-calculator.md · infra-sizing.md · cost-estimate.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="kg" id="kpi-size"><!-- renderSizeKpis() --></div>
+  <div class="tc">
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-effort">Esforço por Bounded Context</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-module">Módulo</th><th data-i18n="th-fp">FP</th><th data-i18n="th-sp">SP</th><th data-i18n="th-sprints">Sprints</th><th data-i18n="th-risk">Risco</th>
+        </tr></thead><tbody id="tb-effort"></tbody></table>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ch"><h2 data-i18n="card-infra">Sizing Azure</h2></div>
+      <div class="cb" style="padding:0">
+        <table class="at"><thead><tr>
+          <th data-i18n="th-resource">Recurso</th><th data-i18n="th-sku">SKU</th><th data-i18n="th-env">Ambiente</th><th data-i18n="th-cost">Custo/mês</th>
+        </tr></thead><tbody id="tb-infra"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- F2: Migration Waves ─────────────────────────────────────── -->
+<div id="s-f2-waves" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-waves">Migration Waves Plan</h1>
+    <p>AG-13 · <span class="mono">migration-plan.md · wave-plan.md · migration-gantt.mmd · ado-work-items.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="diag-gantt">Gantt — Migration Waves</h2><span class="ctag bOk">Mermaid</span></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-gantt">{{GANTT_DIAGRAM}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-waves">Detalhamento das Waves</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-wave">Wave</th><th data-i18n="th-modules">Módulos</th><th data-i18n="th-sp">SP</th>
+        <th data-i18n="th-duration">Duração</th><th data-i18n="th-risk">Risco</th>
+        <th data-i18n="th-flag">Feature Flag</th><th data-i18n="th-status">Status</th>
+      </tr></thead><tbody id="tb-waves"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F2: Código Gerado ───────────────────────────────────────── -->
+<div id="s-f2-code" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-code">Código Gerado</h1>
+    <p>AG-14 · <span class="mono">tobe/source-code/ — Clean Architecture por bounded context</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-cleanarch">Estrutura Clean Architecture</h2></div>
+    <div class="cb"><div class="diag-wrap"><pre class="mermaid" id="diag-cleanarch">{{CLEAN_ARCH_STRUCTURE}}</pre></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-codearts">Artefatos de Código</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag14"></div></div>
+  </div>
+</div>
+
+<!-- F2: Plano de Testes ─────────────────────────────────────── -->
+<div id="s-f2-tests" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-testplan">Plano de Testes TO-BE</h1>
+    <p>AG-16 · <span class="mono">test-plan.md · smoke-tests.md · load-test-plan.md · functional-test-matrix.md · ui-test-plan.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-testplan">Estratégia por Tipo</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-type">Tipo</th><th data-i18n="th-tool">Ferramenta</th><th data-i18n="th-target">Alvo</th><th data-i18n="th-criteria">Critério</th><th data-i18n="th-coverage">Coverage</th>
+      </tr></thead><tbody id="tb-testplan"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F3: Backend .NET ────────────────────────────────────────── -->
+<div id="s-f3-be" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-backend">Backend ASP.NET Core</h1>
+    <p>AG-18 · <span class="mono">source-code/{module}/ · {module}.Tests/ · Migrations/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-bearts">Artefatos Backend (AG-18)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag18"></div></div>
+  </div>
+</div>
+
+<!-- F3: Frontend Angular ────────────────────────────────────── -->
+<div id="s-f3-fe" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-frontend">Frontend Angular 17+</h1>
+    <p>AG-19 · <span class="mono">source-code/frontend/ · src/app/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-fearts">Artefatos Frontend (AG-19)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag19"></div></div>
+  </div>
+</div>
+
+<!-- F4: Protótipo ───────────────────────────────────────────── -->
+<div id="s-f4-proto" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-proto">Protótipo TO-BE</h1>
+    <p>AG-20 · <span class="mono">prototype/ · demo-script.md · figma-spec.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-protoarts">Artefatos do Protótipo (AG-20)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag20"></div></div>
+  </div>
+</div>
+
+<!-- F5: Estratégia QA ───────────────────────────────────────── -->
+<div id="s-f5-strat" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-qa-strat">Estratégia de QA</h1>
+    <p>AG-21 · <span class="mono">quality-strategy.md · qa-master-report.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-qaagents">Agentes QA — Status</h2></div>
+    <div class="cb"><div class="ag" id="grid-qa-agents"><!-- renderQAAgents() --></div></div>
+  </div>
+</div>
+
+<!-- F5: Cenários & Casos ────────────────────────────────────── -->
+<div id="s-f5-scen" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-scen">Cenários &amp; Casos de Teste</h1>
+    <p>AG-23/24 · <span class="mono">scenario-generator/ · test-case-generator/ · behavior-mapping/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-scen">Cenários por Bounded Context</h2>
+      <span class="ctag bOk" id="tag-scen">0 cenários</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-id">ID</th><th data-i18n="th-scenario">Cenário</th><th data-i18n="th-bc">BC</th>
+        <th data-i18n="th-given">Given</th><th data-i18n="th-when">When</th><th data-i18n="th-then">Then</th>
+      </tr></thead><tbody id="tb-scen"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F5: Scripts Automação ───────────────────────────────────── -->
+<div id="s-f5-scripts" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-scripts">Scripts de Automação</h1>
+    <p>AG-25 · <span class="mono">qa/script-generator/ — xUnit · Playwright · k6</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-scripts">Scripts Gerados (AG-25)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag25"></div></div>
+  </div>
+</div>
+
+<!-- F5: Evidências ──────────────────────────────────────────── -->
+<div id="s-f5-ev" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-ev">Evidências de Testes</h1>
+    <p>AG-27/28/29 · <span class="mono">defect-identifier/ · exploratory/ · evidence-capture/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch">
+      <h2 data-i18n="card-defects">Defeitos Identificados</h2>
+      <span class="ctag bWarn" id="tag-defects">0</span>
+    </div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-id">ID</th><th data-i18n="th-desc">Descrição</th>
+        <th data-i18n="th-module">Módulo</th><th data-i18n="th-sev">Severidade</th><th data-i18n="th-status">Status</th>
+      </tr></thead><tbody id="tb-defects"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F6: Pacote de Entrega ───────────────────────────────────── -->
+<div id="s-f6-pkg" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-pkg">Pacote de Entrega</h1>
+    <p>AG-30 · <span class="mono">deliverables/wave-{N}-package/ · wave-{N}-index.md · wave-{N}-delivery-report.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-pkgarts">Itens do Pacote (AG-30)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag30"></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-predelivery">Checklist Pre-Delivery</h2></div>
+    <div class="cb"><div class="ck" id="list-predelivery"><!-- renderChecklist() --></div></div>
+  </div>
+</div>
+
+<!-- F6: Documentação Final ──────────────────────────────────── -->
+<div id="s-f6-docs" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-deldocs">Documentação Final</h1>
+    <p>AG-31/32 · <span class="mono">deliverables/tech-docs-agent/ · deliverables/migration-plan-publisher/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-finaldocs">Documentos de Entrega</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag31"></div></div>
+  </div>
+</div>
+
+<!-- F6: Demo & Aceite ───────────────────────────────────────── -->
+<div id="s-f6-demo" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-demo">Demo &amp; Aceite</h1>
+    <p>AG-36 · <span class="mono">deliverables/demo-script.md · acceptance-document.md · handover-package.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-accept">Critérios de Aceite</h2></div>
+    <div class="cb"><div class="ck" id="list-accept"><!-- renderChecklist() --></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-demoarts">Artefatos do Aceite (AG-36)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag36"></div></div>
+  </div>
+</div>
+
+<!-- F6: Security Compliance ─────────────────────────────────── -->
+<div id="s-f6-sec" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-seccomp">Security &amp; Compliance</h1>
+    <p>AG-35 · <span class="mono">deliverables/security-compliance-agent/ — relatório para o CISO</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-secreport">Security Report Consolidado</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th>Controle</th><th>Status</th><th>Evidência</th><th data-i18n="th-sev">Severidade</th>
+      </tr></thead><tbody id="tb-secreport"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F7: IaC ─────────────────────────────────────────────────── -->
+<div id="s-f7-iac" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-iac">IaC — Infraestrutura como Código</h1>
+    <p>AG-37 · <span class="mono">iac/terraform/ · iac/bicep/ · iac/ansible/ · iac/network/</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-iac">Artefatos IaC (AG-37)</h2></div>
+    <div class="cb"><div class="arl" id="chips-ag37"></div></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-iacrec">Recursos Provisionados</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-resource">Recurso</th><th data-i18n="th-provider">Provider</th><th data-i18n="th-env">Ambiente</th><th data-i18n="th-tool">Tool</th>
+      </tr></thead><tbody id="tb-iacrec"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F7: Pipeline CI ─────────────────────────────────────────── -->
+<div id="s-f7-ci" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-ci">Pipeline CI</h1>
+    <p>AG-38 · <span class="mono">iac/ci/.github/workflows/ci.yml · azure-pipelines-ci.yml · sonar-project.properties</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-cistages">Stages do Pipeline CI</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-stage">Stage</th><th data-i18n="th-tool">Tool</th><th data-i18n="th-qgate">Quality Gate</th><th data-i18n="th-status">Status</th>
+      </tr></thead><tbody id="tb-ci"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F7: Pipeline CD ─────────────────────────────────────────── -->
+<div id="s-f7-cd" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-cd">Pipeline CD</h1>
+    <p>AG-39 · <span class="mono">iac/cd/azure-pipelines-cd.yml · scripts/ · smoke-tests-cd.yml</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-cdenvs">Ambientes de Deploy</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-env">Ambiente</th><th data-i18n="th-strategy">Estratégia</th><th data-i18n="th-approval">Aprovação</th><th data-i18n="th-rollback">Rollback</th><th data-i18n="th-status">Status</th>
+      </tr></thead><tbody id="tb-cd"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- F7: Paridade de Versão ──────────────────────────────────── -->
+<div id="s-f7-parity" class="sec">
+  <div class="ph">
+    <h1 data-i18n="pg-parity">Testes de Paridade</h1>
+    <p>AG-41 · <span class="mono">parity-test-report.md · field-differences.json · wave-approval.md</span></p>
+    <div class="hl"></div>
+  </div>
+  <div class="kg" id="kpi-parity"><!-- renderParityKpis() --></div>
+  <div class="cd">
+    <div class="ch"><h2 data-i18n="card-parity">Resultado por Módulo</h2></div>
+    <div class="cb" style="padding:0">
+      <table class="at"><thead><tr>
+        <th data-i18n="th-module">Módulo</th><th data-i18n="th-scenarios">Cenários</th><th data-i18n="th-parity">Paridade</th>
+        <th data-i18n="th-divs">Divergências</th><th data-i18n="th-wave-aprov">Aprovação Wave</th>
+      </tr></thead><tbody id="tb-parity"></tbody></table>
+    </div>
+  </div>
+</div>
+
+</main>
+</div><!-- /lay -->
+
+<div class="wm">AVA Fabric · ava-summary · {{GENERATED_AT}} · trace: {{TRACE_ID}}</div>
+
+<!-- File Detail Drawer ───────────────────────────────────────── -->
+<div id="fe-overlay" onclick="closeFileDrawer()"></div>
+<div id="fe-drawer">
+  <div id="fe-drawer-header">
+    <span id="fe-drawer-icon">📄</span>
+    <span id="fe-drawer-name">—</span>
+    <button id="fe-drawer-close" onclick="closeFileDrawer()">✕</button>
+  </div>
+  <div id="fe-drawer-body">
+    <div class="fe-drow">
+      <div class="fe-dlabel" data-i18n="fe-filename">Nome do arquivo</div>
+      <div class="fe-dvalue" id="fe-dname">—</div>
+    </div>
+    <div class="fe-drow">
+      <div class="fe-dlabel" data-i18n="fe-ext">Extensão</div>
+      <div class="fe-dvalue ext-tag" id="fe-dext">—</div>
+    </div>
+    <div class="fe-drow">
+      <div class="fe-dlabel" data-i18n="fe-relpath">Caminho relativo</div>
+      <div class="fe-dvalue" id="fe-dpath">—</div>
+    </div>
+    <div class="fe-drow">
+      <div class="fe-dlabel" data-i18n="fe-dir">Diretório</div>
+      <div class="fe-dvalue" id="fe-ddir">—</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:auto">
+      <button id="fe-view-btn" onclick="viewFileContent()" data-i18n="fe-view" style="flex:1;background:var(--d3);border:1px solid var(--wb);color:var(--fg);padding:9px 12px;border-radius:var(--rad);cursor:pointer;font-size:12px;font-weight:600;transition:border-color var(--tr)">👁 Visualizar</button>
+      <button id="fe-copy-btn" onclick="copyFilePath()" data-i18n="fe-copy" style="flex:1">📋 Copiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- File Content Modal ──────────────────────────────────────── -->
+<div id="fc-modal" onclick="if(event.target===this)closeFileContent()">
+  <div id="fc-modal-box">
+    <div id="fc-modal-header">
+      <span id="fc-modal-icon">📄</span>
+      <span id="fc-modal-title">—</span>
+      <span id="fc-modal-type">—</span>
+      <button id="fc-modal-close" onclick="closeFileContent()">✕</button>
+    </div>
+    <div id="fc-modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DATA OBJECT — preenchido pelo Step 03 do workflow generate-summary
+     Fonte: summary-data.json (gerado pelo Step 02)
+     Todos os campos {{PLACEHOLDER}} são substituídos pelo agente.
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+const D = {
+  project:    "{{PROJECT_NAME}}",
+  generatedAt:"{{GENERATED_AT}}",
+  coverage:   "{{COVERAGE}}",
+  scope:      "{{SCOPE}}",
+  execPct:     {{EXEC_PCT}},
+  agentsOk:    {{AGENTS_OK}},
+  agentsErr:   {{AGENTS_ERR}},
+  traceId:    "{{TRACE_ID}}",
+
+  /* ── KPIs (AG-06 metrics.json / inventory-report.md) ────────── */
+  kpis:[
+    {l:"Arquivos Totais",   k:"kpi-total-files", v:"{{TOTAL_FILES}}",    c:"",  hi:true},
+    {l:"Cobertura",         k:"kpi-coverage",    v:"{{COVERAGE}}",        c:"g", hi:true},
+    {l:"Arquivos Textuais", k:"kpi-text-files",  v:"{{TEXT_FILES}}",      c:""},
+    {l:"Linhas de Código",  k:"kpi-loc",         v:"{{TOTAL_LOC}}",       c:""},
+    {l:"Classes / Forms",   k:"kpi-classes",     v:"{{CLASS_COUNT}}",     c:""},
+    {l:"Métodos",           k:"kpi-methods",     v:"{{METHOD_COUNT}}",    c:""},
+    {l:"Complexidade ≥10",  k:"kpi-complex",     v:"{{COMPLEX_METHODS}}", c:"a"},
+    {l:"Endpoints",         k:"kpi-endpoints",   v:"{{ENDPOINT_COUNT}}",  c:""},
+    {l:"Camadas",           k:"kpi-layers",      v:"{{LAYER_COUNT}}",     c:""},
+    {l:"Módulos",           k:"kpi-modules",     v:"{{MODULE_COUNT}}",    c:""},
+    {l:"Tabelas BD",        k:"kpi-tables",      v:"{{TABLE_COUNT}}",     c:""},
+    {l:"Volume BD INSERT",  k:"kpi-db-volume",   v:"{{DB_VOLUME}}",       c:""},
+    {l:"Telas / Forms",     k:"kpi-screens",     v:"{{SCREEN_COUNT}}",    c:""},
+    {l:"Componentes (fcid)",k:"kpi-components",  v:"{{COMPONENT_COUNT}}", c:""},
+  ],
+
+  /* ── File types (AG-06 inventory-report.md) ─────────────────── */
+  fileTypes:[
+    {t:".pas", q:"{{DELPHI_PAS_COUNT}}", dk:"ft-pas", d:"Código-fonte Delphi — units e forms"},
+    {t:".dfm", q:"{{DELPHI_DFM_COUNT}}", dk:"ft-dfm", d:"Forms Delphi (layout visual)"},
+    {t:".sql", q:"{{SQL_COUNT}}",         dk:"ft-sql", d:"Scripts SQL, SPs, triggers"},
+    {t:".dll", q:"{{DLL_COUNT}}",         dk:"ft-dll", d:"Bibliotecas compiladas"},
+    {t:".cfg", q:"{{CONFIG_COUNT}}",      dk:"ft-cfg", d:"Arquivos de configuração"},
+  ],
+
+  /* ── Layers (AG-06) ─────────────────────────────────────────── */
+  layers:[
+    {n:"Apresentação",  nk:"lyr-ui",    l:"{{LOC_UI}}",    f:"{{FILES_UI}}",    r:"alto"},
+    {n:"Aplicação",     nk:"lyr-app",   l:"{{LOC_APP}}",   f:"{{FILES_APP}}",   r:"medio"},
+    {n:"Dados",         nk:"lyr-data",  l:"{{LOC_DATA}}",  f:"{{FILES_DATA}}",  r:"alto"},
+    {n:"Banco de Dados",nk:"lyr-db",    l:"{{LOC_DB}}",    f:"{{FILES_DB}}",    r:"critico"},
+    {n:"Infraestrutura",nk:"lyr-infra", l:"{{LOC_INFRA}}", f:"{{FILES_INFRA}}", r:"baixo"},
+  ],
+
+  /* ── Risk register (AG-07 risk-register.json / AG-05 security-map.md) */
+  risks:[
+    {id:"R-01",cat:"Segurança",  ck:"rcat-security",   r:"{{RISK_1}}",  ev:"{{EV_1}}",  sev:"critico", a:"{{ACT_1}}"},
+    {id:"R-02",cat:"Segurança",  ck:"rcat-security",   r:"{{RISK_2}}",  ev:"{{EV_2}}",  sev:"alto",    a:"{{ACT_2}}"},
+    {id:"R-03",cat:"Arquitetura",ck:"rcat-arch",       r:"{{RISK_3}}",  ev:"{{EV_3}}",  sev:"critico", a:"{{ACT_3}}"},
+    {id:"R-04",cat:"Qualidade",  ck:"rcat-quality",    r:"{{RISK_4}}",  ev:"{{EV_4}}",  sev:"alto",    a:"{{ACT_4}}"},
+    {id:"R-05",cat:"Técnico",    ck:"rcat-tech",       r:"{{RISK_5}}",  ev:"{{EV_5}}",  sev:"alto",    a:"{{ACT_5}}"},
+    {id:"R-06",cat:"Compliance", ck:"rcat-compliance", r:"{{RISK_6}}",  ev:"{{EV_6}}",  sev:"alto",    a:"{{ACT_6}}"},
+    {id:"R-07",cat:"Migração",   ck:"rcat-migration",  r:"{{RISK_7}}",  ev:"{{EV_7}}",  sev:"medio",   a:"{{ACT_7}}"},
+  ],
+
+  /* ── Architectural patterns (AG-02 pattern-classifications.json) */
+  patterns:[
+    {n:"Smart UI (Form-Centric)",          o:"{{P1_COUNT}}", p:"{{P1_PCT}}", r:"alto"},
+    {n:"DataModule (Repository implícito)",o:"{{P2_COUNT}}", p:"{{P2_PCT}}", r:"medio"},
+    {n:"Two-Tier (SQL inline)",            o:"{{P3_COUNT}}", p:"{{P3_PCT}}", r:"alto"},
+    {n:"Business Logic in SP",             o:"{{P4_COUNT}}", p:"{{P4_PCT}}", r:"critico"},
+    {n:"Rich Domain (units isoladas)",     o:"{{P5_COUNT}}", p:"{{P5_PCT}}", r:"baixo"},
+  ],
+
+  /* ── Bounded contexts (AG-02 bounded-context-map.md) ─────────── */
+  bc:[
+    {n:"{{BC1_NAME}}", forms:"{{BC1_FORMS}}", units:"{{BC1_UNITS}}", loc:"{{BC1_LOC}}", r:"{{BC1_RISK}}"},
+    {n:"{{BC2_NAME}}", forms:"{{BC2_FORMS}}", units:"{{BC2_UNITS}}", loc:"{{BC2_LOC}}", r:"{{BC2_RISK}}"},
+    {n:"{{BC3_NAME}}", forms:"{{BC3_FORMS}}", units:"{{BC3_UNITS}}", loc:"{{BC3_LOC}}", r:"{{BC3_RISK}}"},
+  ],
+
+  /* ── DB schema (AG-08 schema-inventory.md) ──────────────────── */
+  dbKpis:[
+    {l:"SGBD",                  k:"dbk-vendor",  v:"{{DB_VENDOR}}",    c:"", hi:true},
+    {l:"Tabelas",               k:"dbk-tables",  v:"{{TABLE_COUNT}}",  c:""},
+    {l:"Stored Procedures",     k:"dbk-sps",     v:"{{SP_COUNT}}",     c:"a"},
+    {l:"SPs com Regra Negócio", k:"dbk-biz-sps", v:"{{SP_BIZ_COUNT}}", c:"r"},
+    {l:"Triggers",              k:"dbk-triggers",v:"{{TRIGGER_COUNT}}",c:""},
+    {l:"Índices",               k:"dbk-indexes", v:"{{INDEX_COUNT}}",  c:""},
+  ],
+  dbSchema:[
+    {t:"{{T1}}", c:"{{C1}}", pk:"{{PK1}}", fk:"{{FK1}}", idx:"{{IDX1}}"},
+    {t:"{{T2}}", c:"{{C2}}", pk:"{{PK2}}", fk:"{{FK2}}", idx:"{{IDX2}}"},
+    {t:"{{T3}}", c:"{{C3}}", pk:"{{PK3}}", fk:"{{FK3}}", idx:"{{IDX3}}"},
+  ],
+  sps:[
+    {n:"{{SP1}}", type:"{{SP1_TYPE}}", r:"critico", loc:"{{SP1_LOC}}"},
+    {n:"{{SP2}}", type:"{{SP2_TYPE}}", r:"alto",    loc:"{{SP2_LOC}}"},
+    {n:"{{SP3}}", type:"{{SP3_TYPE}}", r:"medio",   loc:"{{SP3_LOC}}"},
+  ],
+
+  /* ── NuGet packages (AG-11 nuget-packages.md) ───────────────── */
+  packages:[
+    {p:"MediatR",                 v:"12.x", l:"Application",  u:"CQRS — Commands e Queries"},
+    {p:"FluentValidation",        v:"11.x", l:"Application",  u:"Validação de commands"},
+    {p:"EF Core",                 v:"8.x",  l:"Infrastructure",u:"ORM e migrations"},
+    {p:"Serilog",                 v:"3.x",  l:"Cross-cutting", u:"Logging estruturado"},
+    {p:"Microsoft.Identity.Web",  v:"2.x",  l:"API",           u:"MSAL · Azure AD auth"},
+    {p:"Swashbuckle.AspNetCore",  v:"6.x",  l:"API",           u:"OpenAPI / Swagger"},
+    {p:"xUnit + Moq",             v:"2.x",  l:"Tests",         u:"Unit e integration tests"},
+    {p:"Testcontainers",          v:"3.x",  l:"Tests",         u:"Integration tests com BD real"},
+    {p:"OpenTelemetry",           v:"1.x",  l:"Observability", u:"Traces · metrics · logs"},
+    {p:"Polly",                   v:"8.x",  l:"Infrastructure",u:"Resiliência · retry · circuit breaker"},
+  ],
+
+  /* ── Quality gates (AG-11 quality-gates.md) ─────────────────── */
+  qgates:[
+    {k:"qg-cov",    l:"Line coverage ≥ 80%",              ok:"{{QG1}}"},
+    {k:"qg-sonar",  l:"Zero SonarQube Blocker/Critical",  ok:"{{QG2}}"},
+    {k:"qg-owasp",  l:"Zero OWASP Critical CVE",          ok:"{{QG3}}"},
+    {k:"qg-parity", l:"Paridade funcional ≥ 99.5%",       ok:"{{QG4}}"},
+    {k:"qg-perf",   l:"Performance ≤ AS-IS baseline p95", ok:"{{QG5}}"},
+    {k:"qg-client", l:"Cliente validation concluída",         ok:"{{QG6}}"},
+  ],
+
+  /* ── Migration waves (AG-13 wave-plan.md) ───────────────────── */
+  waves:[
+    {w:"1", m:"{{W1_MOD}}", sp:"{{W1_SP}}", dur:"{{W1_DUR}}", r:"baixo",  flag:"{{W1_FLAG}}", s:"Planejado", sk:"wv-planned"},
+    {w:"2", m:"{{W2_MOD}}", sp:"{{W2_SP}}", dur:"{{W2_DUR}}", r:"medio",  flag:"{{W2_FLAG}}", s:"Planejado", sk:"wv-planned"},
+    {w:"3", m:"{{W3_MOD}}", sp:"{{W3_SP}}", dur:"{{W3_DUR}}", r:"critico",flag:"{{W3_FLAG}}", s:"Pré-condição: Sprint Extração SPs", sk:"wv-precond"},
+  ],
+
+  /* ── Sizing (AG-12 sizing-report.md) ────────────────────────── */
+  sizeKpis:[
+    {l:"Total Story Points", k:"szk-sp",         v:"{{TOTAL_SP}}",     c:"",  hi:true},
+    {l:"Total Function Points",k:"szk-fp",       v:"{{TOTAL_FP}}",   c:""},
+    {l:"Waves Planejadas",   k:"szk-waves",      v:"{{WAVE_COUNT}}",   c:""},
+    {l:"Sprints Estimados",  k:"szk-sprints",    v:"{{TOTAL_SPRINTS}}",c:"a"},
+    {l:"Team Size",          k:"szk-team",       v:"{{TEAM_SIZE}}",    c:"",  s:"devs recomendados", sk:"szk-team-sub"},
+    {l:"Custo Azure/mês",    k:"szk-azure-cost", v:"{{AZURE_COST}}",   c:"g", s:"ambiente produção", sk:"szk-cost-sub"},
+  ],
+
+  /* ── Test plan (AG-16 test-plan.md) ─────────────────────────── */
+  testPlan:[
+    {t:"Smoke Tests",   tool:"xUnit + HealthChecks",   alvo:"Deploy validation",       crit:"200 OK · dependências ativas", cov:"—"},
+    {t:"Unit Tests",    tool:"xUnit + Moq",             alvo:"Domain + Application",    crit:"Coverage ≥ 90%",              cov:"{{UT_COV}}%"},
+    {t:"Integration",   tool:"Testcontainers",          alvo:"Infrastructure + API",    crit:"Coverage ≥ 70%",              cov:"{{IT_COV}}%"},
+    {t:"Load Tests",    tool:"k6",                      alvo:"Endpoints críticos",      crit:"p95 ≤ AS-IS baseline",        cov:"—"},
+    {t:"Functional",    tool:"xUnit (data-driven)",     alvo:"Business rules mapeadas", crit:"100% RNs cobertas",           cov:"{{FT_COV}}%"},
+    {t:"UI Tests",      tool:"Playwright",              alvo:"Jornadas críticas Angular",crit:"Happy path + edge cases",    cov:"{{UI_COV}}%"},
+    {t:"Parity Tests",  tool:"ava-devops-compare-version",alvo:"Todos os módulos",      crit:"≥ 99.5% equivalência",       cov:"{{PAR_COV}}%"},
+  ],
+
+  /* ── OWASP findings (AG-05 security-map.md) ─────────────────── */
+  owasp:[
+    {o:"A03:2021", f:"{{OW1_FINDING}}", ev:"{{OW1_EV}}", sev:"critico", a:"{{OW1_ACT}}"},
+    {o:"A02:2021", f:"{{OW2_FINDING}}", ev:"{{OW2_EV}}", sev:"critico", a:"{{OW2_ACT}}"},
+    {o:"A09:2021", f:"{{OW3_FINDING}}", ev:"{{OW3_EV}}", sev:"medio",   a:"{{OW3_ACT}}"},
+  ],
+
+  /* ── CI stages (AG-38) ──────────────────────────────────────── */
+  ciStages:[
+    {s:"Checkout + Restore",   t:".NET 8 / GitHub Actions",    gk:"ci-g-deps",    g:"Dependências validadas",             ok:"done"},
+    {s:"Build",                t:"MSBuild TreatWarningsAsErrors",gk:"ci-g-warn",   g:"Zero warnings",                    ok:"done"},
+    {s:"Unit Tests",           t:"xUnit",                      gk:"ci-g-cov",     g:"Coverage ≥ 80%",                    ok:"done"},
+    {s:"Static Analysis",      t:"SonarCloud",                 gk:"ci-g-sonar",   g:"Zero Blocker/Critical",             ok:"done"},
+    {s:"SAST",                 t:"OWASP Dependency Check",     gk:"ci-g-cve",     g:"Zero Critical CVE",                 ok:"done"},
+    {s:"Docker Build",         t:"Docker multi-stage + Trivy", gk:"ci-g-docker",  g:"Sem Critical vulnerabilities",      ok:"done"},
+  ],
+
+  /* ── CD environments (AG-39) ────────────────────────────────── */
+  cdEnvs:[
+    {env:"Development", strat:"Direct deploy",      ak:"cd-aprov-auto",     aprov:"Automático",      rollback:"Auto (5 min)",     ok:"done"},
+    {env:"Staging",     strat:"Blue-Green",         ak:"cd-aprov-techlead", aprov:"Tech Lead",       rollback:"Manual",           ok:"done"},
+    {env:"Production",  strat:"Canary 10→50→100%",  ak:"cd-aprov-pm",       aprov:"PM + Sponsor",    rollback:"Feature flag off", ok:"idle"},
+  ],
+
+  /* ── IaC resources (AG-37) ──────────────────────────────────── */
+  iacResources:[
+    {r:"AKS Cluster",               prov:"Azure", env:"Staging + Prod", tool:"Bicep"},
+    {r:"Azure SQL Server",          prov:"Azure", env:"All",            tool:"Terraform"},
+    {r:"Azure Service Bus",         prov:"Azure", env:"All",            tool:"Bicep"},
+    {r:"Key Vault",                 prov:"Azure", env:"All",            tool:"Terraform"},
+    {r:"Application Insights",      prov:"Azure", env:"All",            tool:"Bicep"},
+    {r:"Azure Container Registry",  prov:"Azure", env:"All",            tool:"Terraform"},
+  ],
+
+  /* ── Parity (AG-41 parity-test-report.md) ───────────────────── */
+  parityKpis:[
+    {l:"Paridade Global",    k:"prk-global",    v:"{{GLOBAL_PARITY}}%", c:"g", hi:true},
+    {l:"Cenários Testados",  k:"prk-scenarios", v:"{{PARITY_SCEN}}",    c:""},
+    {l:"Divergências",       k:"prk-divs",      v:"{{PARITY_DIV}}",     c:"a"},
+    {l:"Waves Aprovadas",    k:"prk-approved",  v:"{{WAVES_APPROVED}}", c:"g"},
+  ],
+  parity:[
+    {m:"{{PAR1_MOD}}", scen:"{{PAR1_SCEN}}", par:"{{PAR1_PAR}}%", div:"{{PAR1_DIV}}", aprov:"{{PAR1_APROV}}"},
+    {m:"{{PAR2_MOD}}", scen:"{{PAR2_SCEN}}", par:"{{PAR2_PAR}}%", div:"{{PAR2_DIV}}", aprov:"{{PAR2_APROV}}"},
+  ],
+
+  /* ── Acceptance checklist (AG-36) ───────────────────────────── */
+  acceptChecklist:[
+    {k:"ac-parity",  l:"Paridade funcional ≥ 99.5% validada",              ok:"{{AC1}}"},
+    {k:"ac-defects", l:"Zero defeitos Severity P1/P2 abertos",             ok:"{{AC2}}"},
+    {k:"ac-perf",    l:"Performance igual ou melhor que AS-IS",            ok:"{{AC3}}"},
+    {k:"ac-sec",     l:"Security Report: zero Critical/High",              ok:"{{AC4}}"},
+    {k:"ac-criteria",l:"Todos os critérios de aceite da wave atendidos",   ok:"{{AC5}}"},
+    {k:"ac-client",  l:"Cliente validou funcionalmente",            ok:"{{AC6}}"},
+    {k:"ac-docs",    l:"Documentação técnica publicada na wiki",           ok:"{{AC7}}"},
+    {k:"ac-handover",l:"Handover package entregue ao cliente",             ok:"{{AC8}}"},
+  ],
+
+  /* ── Diagrams (conteúdo .mmd injetado diretamente) ──────────── */
+  diag:{
+    c4ctx:      `{{C4_CONTEXT_DIAGRAM}}`,
+    c4cnt:      `{{C4_CONTAINER_DIAGRAM}}`,
+    c4comp:     `{{C4_COMPONENT_DIAGRAM}}`,
+    classDiag:  `{{CLASS_DIAGRAM}}`,
+    compDiag:   `{{COMPONENT_DIAGRAM}}`,
+    seqBaixaCP: `{{SEQ_BAIXA_CP}}`,
+    seqCadCP:   `{{SEQ_CAD_CP}}`,
+    er:         `{{ER_DIAGRAM}}`,
+    tobeC4:     `{{TOBE_C4_DIAGRAM}}`,
+    gantt:      `{{GANTT_DIAGRAM}}`,
+    solution:   `{{SOLUTION_STRUCTURE}}`,
+    cleanArch:  `{{CLEAN_ARCH_STRUCTURE}}`,
+  },
+
+  /* ── Artifact inventory (AG-01..41, preenchido pelo Step 02) ── */
+  /* Formato: { agentId: [{key, path}] }                          */
+  arts: {{ARTIFACT_INVENTORY_JSON}},
+
+  /* ── Agent status (done/pending por arquivo presente) ────────── */
+  /* Formato: { agentId: "done"|"pending" }                        */
+  agentStatus: {{AGENT_STATUS_JSON}},
+
+  /* ── File tree (auto-descoberto via glob recursivo no Step 01) ──
+     CONTRATO (não remover campos sem atualizar o agente):
+       file: { name, path, ext, dir, content?, truncated? }
+       - name      : string  — nome do arquivo
+       - path      : string  — caminho relativo a outputs/
+       - ext       : string  — extensão sem ponto
+       - dir       : string  — diretório pai
+       - content   : string|null — conteúdo embedado (utf-8) para texto na whitelist
+                                    do Content Embedder do summary-agent. Sem este
+                                    campo populado, o botão "Visualizar" do file
+                                    viewer (`viewFileContent()` mais abaixo neste
+                                    arquivo) fica permanentemente desabilitado.
+       - truncated : boolean — true se o arquivo excedeu MAX_FILE_BYTES (256 KB)
+                               ou se o agregado MAX_TOTAL_BYTES (5 MB) já foi atingido
+     Estrutura recursiva: { top_key: {label, files:[file], subdirs:{key: nó}} }
+  */
+  fileTree: {{FILE_TREE_JSON}},
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   i18n — Complete bilingual dictionary (PT-BR / EN-US)
+   Dynamic: all keys used via data-i18n attributes + t() helper.
+   To add a language, add a new key to I18N (e.g. I18N.es = {...}).
+   ═══════════════════════════════════════════════════════════════ */
+var I18N = {
+  pt:{
+    /* ── Header ──────────────────────────────────────────────── */
+    "hdr-theme-title":"Alternar tema Claro/Dark","hdr-theme-lbl":"Dark",
+    "hdr-coverage":"Cobertura","hdr-scope":"Escopo","hdr-status":"Executado",
+    /* ── Sidebar run box ─────────────────────────────────────── */
+    "run-title":"Execução da Esteira","run-ok":"Agentes com dados","run-pend":"Pendentes",
+    /* ── Sidebar nav — executive ─────────────────────────────── */
+    "nav-exec":"Resumo Executivo","nav-kpis":"KPIs & Métricas","nav-risks":"Riscos",
+    "nav-phases":"Fases & Agentes","nav-artifacts":"Artefatos","nav-explorer":"Explorer de Arquivos",
+    /* ── Sidebar nav — F1 ────────────────────────────────────── */
+    "grp-f1":"F1 — Diagnóstico AS-IS",
+    "nav-arch":"Arquitetura AS-IS","nav-bc":"Bounded Contexts",
+    "nav-docs":"Documentação & Requisitos","nav-rules":"Regras de Negócio",
+    "nav-screens":"Fluxo de Telas","nav-inv":"Inventário & Métricas",
+    "nav-sec":"Security Review","nav-qa":"Test Baseline","nav-db":"Banco de Dados",
+    /* ── Sidebar nav — F2 ────────────────────────────────────── */
+    "grp-f2":"F2 — Arquitetura TO-BE",
+    "nav-tobearch":"Blueprint C4 TO-BE","nav-tech":"Tech Framework",
+    "nav-api":"API Surface","nav-size":"Sizing & Estimativas",
+    "nav-waves":"Migration Waves","nav-code":"Código Gerado","nav-tests":"Plano de Testes",
+    /* ── Sidebar nav — F3/F4 ─────────────────────────────────── */
+    "grp-f3f4":"F3/F4 — Stack & Protótipo",
+    "nav-backend":"Backend .NET 8","nav-frontend":"Frontend Angular","nav-proto":"Protótipo TO-BE",
+    /* ── Sidebar nav — F5 ────────────────────────────────────── */
+    "grp-f5":"F5 — QA",
+    "nav-qastrat":"Estratégia QA","nav-scenarios":"Cenários & Casos",
+    "nav-scripts":"Scripts Automação","nav-evidence":"Evidências",
+    /* ── Sidebar nav — F6 ────────────────────────────────────── */
+    "grp-f6":"F6 — Entregáveis",
+    "nav-package":"Pacote de Entrega","nav-deldocs":"Documentação Final",
+    "nav-demo":"Demo & Aceite","nav-seccomp":"Security Compliance",
+    /* ── Sidebar nav — F7 ────────────────────────────────────── */
+    "grp-f7":"F7 — DevOps",
+    "nav-iac":"IaC (Terraform/Bicep)","nav-ci":"Pipeline CI","nav-cd":"Pipeline CD",
+    "nav-parity":"Paridade de Versão",
+    /* ── Page titles (main content h1/h2/sub) ────────────────── */
+    "pg-main-title":"Análise AS-IS & TO-BE","pg-main-sub-prefix":"Relatório consolidado",
+    "pg-main-sub-coverage":"cobertura",
+    "pg-risks":"Riscos Identificados","pg-phases":"Fases & Status dos Agentes",
+    "pg-phases-sub":"41 agentes em 7 frentes · clique numa fase para ver seus agentes e artefatos",
+    "pg-artifacts":"Todos os Artefatos Gerados",
+    "pg-artifacts-sub":"Outputs mapeados de cada agente · clique num chip para ver o caminho completo",
+    "pg-explorer":"Explorer de Arquivos",
+    "pg-explorer-sub":"Todos os arquivos em outputs/ · filtrar por nome ou extensão",
+    "pg-arch":"Arquitetura AS-IS","pg-bc":"Bounded Contexts AS-IS",
+    "pg-docs":"Documentação Funcional AS-IS","pg-rules":"Regras de Negócio",
+    "pg-screens":"Fluxo de Telas","pg-inv":"Inventário & Métricas",
+    "pg-db":"Banco de Dados AS-IS","pg-tobearch":"Arquitetura TO-BE",
+    "pg-tech":"Tech Framework .NET 8","pg-api":"API Surface TO-BE",
+    "pg-size":"Sizing & Estimativas","pg-waves":"Migration Waves Plan",
+    "pg-code":"Código Gerado","pg-testplan":"Plano de Testes TO-BE",
+    "pg-proto":"Protótipo TO-BE","pg-qa-strat":"Estratégia de QA",
+    "pg-scen":"Cenários & Casos de Teste","pg-scripts":"Scripts de Automação",
+    "pg-ev":"Evidências de Testes","pg-pkg":"Pacote de Entrega",
+    "pg-deldocs":"Documentação Final","pg-demo":"Demo & Aceite",
+    "pg-seccomp":"Security & Compliance","pg-parity":"Testes de Paridade",
+    "pg-secreview":"Security Review AS-IS","pg-testbaseline":"Test Baseline AS-IS",
+    "pg-backend":"Backend ASP.NET Core","pg-frontend":"Frontend Angular 17+",
+    "pg-iac":"IaC — Infraestrutura como Código","pg-ci":"Pipeline CI","pg-cd":"Pipeline CD",
+    /* ── Card / section titles ───────────────────────────────── */
+    "card-filetypes":"Arquivos por Tipo","card-layers":"Estrutura de Camadas",
+    "card-riskregister":"Risk Register","card-patterns":"Padrões Identificados",
+    "card-arts-ag02":"Artefatos — AG-02","card-bc":"Mapa de Bounded Contexts",
+    "card-arts-ag03":"Artefatos — AG-03","card-reqs":"Requisitos Funcionais",
+    "card-rules":"Mapeamento de Regras","card-navmap":"Mapa de Navegação",
+    "card-complexity":" — Complexidade Ciclomática",
+    "card-schema":"Schema Inventory","card-tobebc":"Bounded Contexts TO-BE",
+    "card-arts-ag10":"Artefatos — AG-10","card-packages":"NuGet Packages Selecionados",
+    "card-structure":"Estrutura da Solution","card-qgates":"Quality Gates",
+    "card-endpoints":"Endpoints Mapeados","card-effort":"Esforço por Bounded Context",
+    "card-infra":"Sizing Azure","card-waves":"Detalhamento das Waves",
+    "card-testplan":"Estratégia por Tipo","card-cleanarch":"Estrutura Clean Architecture",
+    "card-codearts":"Artefatos de Código","card-bearts":"Artefatos Backend (AG-18)",
+    "card-fearts":"Artefatos Frontend (AG-19)","card-protoarts":"Artefatos do Protótipo (AG-20)",
+    "card-qaagents":"Agentes QA — Status","card-scen":"Cenários por Bounded Context",
+    "card-scripts":"Scripts Gerados (AG-25)","card-defects":"Defeitos Identificados",
+    "card-pkgarts":"Itens do Pacote (AG-30)","card-predelivery":"Checklist Pre-Delivery",
+    "card-finaldocs":"Documentos de Entrega","card-accept":"Critérios de Aceite",
+    "card-demoarts":"Artefatos do Aceite (AG-36)","card-secreport":"Security Report Consolidado",
+    "card-iac":"Artefatos IaC (AG-37)","card-iacrec":"Recursos Provisionados",
+    "card-cistages":"Stages do Pipeline CI","card-cdenvs":"Ambientes de Deploy",
+    "card-parity":"Resultado por Módulo",
+    "card-testmap":"Testes Existentes","card-testgaps":"Gaps de Cobertura",
+    "card-owasp":"OWASP Assessment","card-sps":"Stored Procedures",
+    /* ── Diagram titles ──────────────────────────────────────── */
+    "diag-c4ctx":"Diagrama C4 Context","diag-c4cnt":"Diagrama C4 Container",
+    "diag-c4comp":"Diagrama C4 Component","diag-class":"Diagrama de Classes (DTOs)",
+    "diag-comp":"Mapa de Componentes","diag-seq1":"Fluxo: Baixa de Título (CP)",
+    "diag-seq2":"Fluxo: Cadastro Conta a Pagar","diag-er":"Diagrama ER",
+    "diag-tobe-c4":"C4 Blueprint TO-BE","diag-gantt":"Gantt — Migration Waves",
+    /* ── Table headers ───────────────────────────────────────── */
+    "th-type":"Tipo","th-qty":"Qtd","th-desc":"Descrição","th-layer":"Camada",
+    "th-files":"Arquivos","th-risk":"Risco","th-cat":"Categoria","th-evidence":"Evidência",
+    "th-sev":"Severidade","th-action":"Ação","th-bc":"Bounded Context","th-pattern":"Padrão",
+    "th-occurs":"Ocorrências","th-module":"Módulo","th-priority":"Prioridade","th-origin":"Origem",
+    "th-rule":"Regra","th-screen":"Tela / Form","th-from":"Vem de","th-to":"Vai para",
+    "th-rules":"Regras","th-field":"Campo","th-file":"Arquivo","th-method":"Método",
+    "th-table":"Tabela","th-finding":"Finding","th-gap":"Gap","th-route":"Rota",
+    "th-version":"Versão","th-purpose":"Propósito","th-name":"Nome",
+    "th-tests":"Testes","th-coverage":"Coverage","th-columns":"Colunas","th-indexes":"Índices",
+    "th-package":"Package","th-resource":"Recurso","th-env":"Ambiente","th-cost":"Custo/mês",
+    "th-modules":"Módulos","th-duration":"Duração","th-tool":"Ferramenta","th-target":"Alvo",
+    "th-criteria":"Critério","th-scenario":"Cenário","th-scenarios":"Cenários","th-parity":"Paridade",
+    /* ── Status / Severity ───────────────────────────────────── */
+    "status-done":"Concluído","status-run":"Em andamento","status-pend":"Aguardando","status-err":"Erro",
+    "sev-critico":"Crítico","sev-alto":"Alto","sev-medio":"Médio","sev-baixo":"Baixo",
+    /* ── Dynamic render labels (used by t() in JS render fns) ── */
+    "lbl-artefatos":"artefatos","lbl-expandir":"↓ expandir","lbl-progresso":"Progresso",
+    "lbl-agents":"Agentes",
+    "lbl-no-artifacts":"Nenhum artefato disponível",
+    "lbl-no-diagram":"(diagrama não disponível — execute o agente correspondente)",
+    "lbl-no-data":"Nenhum dado disponível",
+    "lbl-phase-not-run":"⏳ Esta fase ainda não foi executada. Execute o workflow correspondente para ver os dados aqui.",
+    "lbl-filter-placeholder":"Filtrar por nome ou extensão (ex: .md, schema, .cs)",
+    /* ── File explorer labels ────────────────────────────────── */
+    "lbl-file":"arquivo","lbl-files":"arquivos","lbl-files-short":"arq.",
+    "lbl-no-files":"Nenhum arquivo","lbl-found":"encontrado","lbl-found-plural":"encontrados",
+    "lbl-outputs-root":"(raiz de outputs)",
+    "lbl-view-content":"Visualizar conteúdo","lbl-no-content":"Conteúdo não disponível neste HTML",
+    "lbl-copied":"Copiado!",
+    /* ── File drawer labels ──────────────────────────────────── */
+    "fe-filename":"Nome do arquivo","fe-ext":"Extensão","fe-relpath":"Caminho relativo",
+    "fe-dir":"Diretório","fe-view":"👁 Visualizar","fe-copy":"📋 Copiar",
+    /* ── PHASES i18n — phase-level labels, descriptions and agent roles ── */
+    "ph1-label":"F1 — Diagnóstico AS-IS","ph1-desc":"8 agentes · análise completa do legado",
+    "ph2-label":"F2 — Arquitetura TO-BE","ph2-desc":"8 agentes · design da solução .NET 8",
+    "ph3-label":"F3 — Stack Tecnológica","ph3-desc":"3 agentes · código .NET + Angular",
+    "ph4-label":"F4 — Protótipo","ph4-desc":"1 agente · demo navegável TO-BE",
+    "ph5-label":"F5 — QA","ph5-desc":"9 agentes · estratégia e automação",
+    "ph6-label":"F6 — Entregáveis","ph6-desc":"7 agentes · pacote para o cliente",
+    "ph7-label":"F7 — DevOps","ph7-desc":"5 agentes · IaC · CI/CD · paridade",
+    "ag01-role":"Coordenação e roteamento","ag02-role":"C4 blueprints · padrões · BCs",
+    "ag03-role":"Requisitos · regras · telas","ag04-role":"Mapeamento de testes existentes",
+    "ag05-role":"OWASP · PII · compliance LGPD","ag06-role":"LOC · classes · complexidade",
+    "ag07-role":"Risk register consolidado","ag08-role":"Schema · SPs · ER · biz logic",
+    "ag09-role":"Coordenação do design","ag10-role":"Blueprint C4 · BCs · APIs",
+    "ag11-role":"Tech Framework · NuGet · standards","ag12-role":"Story Points · FP · sizing Azure",
+    "ag13-role":"Waves · Strangler Fig · rollback","ag14-role":"Scaffolding Clean Architecture",
+    "ag15-role":"OpenAPI · ADRs · TDD · wiki","ag16-role":"Smoke · carga · funcional · UI",
+    "ag17-role":"Coordenação backend + frontend","ag18-role":"ASP.NET Core · CQRS · EF Core",
+    "ag19-role":"Angular 17+ · NgRx · MSAL","ag20-role":"Wireframes navegáveis · demo · Figma",
+    "ag21-role":"Estratégia de qualidade","ag22-role":"Lacunas e inconsistências",
+    "ag23-role":"BDD Given-When-Then","ag24-role":"Cenários por bounded context",
+    "ag25-role":"Casos com dados entrada/saída","ag26-role":"xUnit · Playwright · k6",
+    "ag27-role":"Detecção e classificação","ag28-role":"Exploração autônoma",
+    "ag29-role":"Capturas para aceite","ag30-role":"Consolida artefatos da wave",
+    "ag31-role":"Documentação técnica final","ag32-role":"Plano executivo",
+    "ag33-role":"Evidências de qualidade","ag34-role":"Código e templates",
+    "ag35-role":"Relatório CISO","ag36-role":"Demo · aceite · handover",
+    "ag37-role":"Terraform · Bicep · Ansible","ag38-role":"GitHub Actions · ADO · quality gates",
+    "ag39-role":"Blue-green · canary · rollback","ag40-role":"Validação pré-requisitos wave",
+    "ag41-role":"Paridade funcional legado vs migrado",
+    /* ── KPI / data-object dynamic labels ────────────────────── */
+    "kpi-total-files":"Arquivos Totais","kpi-coverage":"Cobertura","kpi-text-files":"Arquivos Textuais",
+    "kpi-loc":"Linhas de Código","kpi-classes":"Classes / Forms","kpi-methods":"Métodos",
+    "kpi-complex":"Complexidade ≥10","kpi-endpoints":"Endpoints","kpi-layers":"Camadas",
+    "kpi-modules":"Módulos","kpi-tables":"Tabelas BD","kpi-db-volume":"Volume BD INSERT",
+    "kpi-screens":"Telas / Forms","kpi-components":"Componentes (fcid)",
+    "ft-pas":"Código-fonte Delphi — units e forms","ft-dfm":"Forms Delphi (layout visual)",
+    "ft-sql":"Scripts SQL, SPs, triggers","ft-dll":"Bibliotecas compiladas","ft-cfg":"Arquivos de configuração",
+    "lyr-ui":"Apresentação","lyr-app":"Aplicação","lyr-data":"Dados","lyr-db":"Banco de Dados","lyr-infra":"Infraestrutura",
+    "rcat-security":"Segurança","rcat-arch":"Arquitetura","rcat-quality":"Qualidade",
+    "rcat-tech":"Técnico","rcat-compliance":"Compliance","rcat-migration":"Migração",
+    "dbk-vendor":"SGBD","dbk-tables":"Tabelas","dbk-sps":"Stored Procedures",
+    "dbk-biz-sps":"SPs com Regra Negócio","dbk-triggers":"Triggers","dbk-indexes":"Índices",
+    "szk-sp":"Total Story Points","szk-fp":"Total Function Points","szk-waves":"Waves Planejadas",
+    "szk-sprints":"Sprints Estimados","szk-team":"Team Size","szk-azure-cost":"Custo Azure/mês",
+    "szk-team-sub":"devs recomendados","szk-cost-sub":"ambiente produção",
+    "prk-global":"Paridade Global","prk-scenarios":"Cenários Testados",
+    "prk-divs":"Divergências","prk-approved":"Waves Aprovadas",
+    "wv-planned":"Planejado","wv-precond":"Pré-condição: Sprint Extração SPs",
+    "inv-loc-total":"LOC Total","inv-loc-eff":"LOC Efetivo","inv-classes":"Classes / Forms",
+    "inv-methods":"Métodos","inv-avg-cc":"Complexidade Média","inv-dup-pct":"% Duplicação",
+    /* ── CI/CD gate & approval labels ─────────────────────────── */
+    "ci-g-deps":"Dependências validadas","ci-g-warn":"Zero warnings",
+    "ci-g-cov":"Coverage ≥ 80%","ci-g-sonar":"Zero Blocker/Critical",
+    "ci-g-cve":"Zero Critical CVE","ci-g-docker":"Sem Critical vulnerabilities",
+    "cd-aprov-auto":"Automático","cd-aprov-techlead":"Tech Lead","cd-aprov-pm":"PM + Sponsor",
+    /* ── Quality gates & acceptance checklist labels ──────────── */
+    "qg-cov":"Line coverage ≥ 80%","qg-sonar":"Zero SonarQube Blocker/Critical",
+    "qg-owasp":"Zero OWASP Critical CVE","qg-parity":"Paridade funcional ≥ 99.5%",
+    "qg-perf":"Performance ≤ AS-IS baseline p95","qg-client":"Cliente validation concluída",
+    "ac-parity":"Paridade funcional ≥ 99.5% validada",
+    "ac-defects":"Zero defeitos Severity P1/P2 abertos",
+    "ac-perf":"Performance igual ou melhor que AS-IS",
+    "ac-sec":"Security Report: zero Critical/High",
+    "ac-criteria":"Todos os critérios de aceite da wave atendidos",
+    "ac-client":"Cliente validou funcionalmente",
+    "ac-docs":"Documentação técnica publicada na wiki",
+    "ac-handover":"Handover package entregue ao cliente",
+    /* ── Dynamic count labels ────────────────────────────────── */
+    "lbl-riscos":"riscos","lbl-findings":"findings","lbl-sps":"SPs",
+    /* ── Table headers (IaC, CI/CD, Parity, Waves, Scenarios) ── */
+    "th-wave":"Wave","th-sp":"SP","th-flag":"Feature Flag","th-status":"Status",
+    "th-stage":"Stage","th-qgate":"Quality Gate","th-strategy":"Estratégia",
+    "th-approval":"Aprovação","th-rollback":"Rollback","th-provider":"Provider",
+    "th-divs":"Divergências","th-wave-aprov":"Aprovação Wave",
+    "th-id":"ID","th-given":"Given","th-when":"When","th-then":"Then",
+    "th-loc":"LOC","th-forms":"Forms","th-units":"Units",
+    "th-cc":"CC","th-pct":"PCT %",
+    "th-adr":"ADR","th-auth":"Auth","th-fp":"FP","th-sprints":"Sprints","th-sku":"SKU",
+  },
+  en:{
+    /* ── Header ──────────────────────────────────────────────── */
+    "hdr-theme-title":"Toggle Light/Dark theme","hdr-theme-lbl":"Dark",
+    "hdr-coverage":"Coverage","hdr-scope":"Scope","hdr-status":"Executed",
+    /* ── Sidebar run box ─────────────────────────────────────── */
+    "run-title":"Pipeline Execution","run-ok":"Agents with data","run-pend":"Pending",
+    /* ── Sidebar nav — executive ─────────────────────────────── */
+    "nav-exec":"Executive Summary","nav-kpis":"KPIs & Metrics","nav-risks":"Risks",
+    "nav-phases":"Phases & Agents","nav-artifacts":"Artifacts","nav-explorer":"File Explorer",
+    /* ── Sidebar nav — F1 ────────────────────────────────────── */
+    "grp-f1":"F1 — AS-IS Diagnostic",
+    "nav-arch":"AS-IS Architecture","nav-bc":"Bounded Contexts",
+    "nav-docs":"Documentation & Requirements","nav-rules":"Business Rules",
+    "nav-screens":"Screen Flow","nav-inv":"Inventory & Metrics",
+    "nav-sec":"Security Review","nav-qa":"Test Baseline","nav-db":"Database",
+    /* ── Sidebar nav — F2 ────────────────────────────────────── */
+    "grp-f2":"F2 — TO-BE Architecture",
+    "nav-tobearch":"C4 Blueprint TO-BE","nav-tech":"Tech Framework",
+    "nav-api":"API Surface","nav-size":"Sizing & Estimates",
+    "nav-waves":"Migration Waves","nav-code":"Generated Code","nav-tests":"Test Plan",
+    /* ── Sidebar nav — F3/F4 ─────────────────────────────────── */
+    "grp-f3f4":"F3/F4 — Stack & Prototype",
+    "nav-backend":"Backend .NET 8","nav-frontend":"Frontend Angular","nav-proto":"Prototype TO-BE",
+    /* ── Sidebar nav — F5 ────────────────────────────────────── */
+    "grp-f5":"F5 — QA",
+    "nav-qastrat":"QA Strategy","nav-scenarios":"Scenarios & Cases",
+    "nav-scripts":"Automation Scripts","nav-evidence":"Evidence",
+    /* ── Sidebar nav — F6 ────────────────────────────────────── */
+    "grp-f6":"F6 — Deliverables",
+    "nav-package":"Delivery Package","nav-deldocs":"Final Documentation",
+    "nav-demo":"Demo & Acceptance","nav-seccomp":"Security Compliance",
+    /* ── Sidebar nav — F7 ────────────────────────────────────── */
+    "grp-f7":"F7 — DevOps",
+    "nav-iac":"IaC (Terraform/Bicep)","nav-ci":"CI Pipeline","nav-cd":"CD Pipeline",
+    "nav-parity":"Version Parity",
+    /* ── Page titles ─────────────────────────────────────────── */
+    "pg-main-title":"AS-IS & TO-BE Analysis","pg-main-sub-prefix":"Consolidated report",
+    "pg-main-sub-coverage":"coverage",
+    "pg-risks":"Identified Risks","pg-phases":"Phases & Agent Status",
+    "pg-phases-sub":"41 agents across 7 tracks · click a phase to see agents and artifacts",
+    "pg-artifacts":"All Generated Artifacts",
+    "pg-artifacts-sub":"Mapped outputs per agent · click a chip to see the full path",
+    "pg-explorer":"File Explorer",
+    "pg-explorer-sub":"All files in outputs/ · filter by name or extension",
+    "pg-arch":"AS-IS Architecture","pg-bc":"AS-IS Bounded Contexts",
+    "pg-docs":"AS-IS Functional Documentation","pg-rules":"Business Rules",
+    "pg-screens":"Screen Flow","pg-inv":"Inventory & Metrics",
+    "pg-db":"AS-IS Database","pg-tobearch":"TO-BE Architecture",
+    "pg-tech":"Tech Framework .NET 8","pg-api":"TO-BE API Surface",
+    "pg-size":"Sizing & Estimates","pg-waves":"Migration Waves Plan",
+    "pg-code":"Generated Code","pg-testplan":"TO-BE Test Plan",
+    "pg-proto":"TO-BE Prototype","pg-qa-strat":"QA Strategy",
+    "pg-scen":"Test Scenarios & Cases","pg-scripts":"Automation Scripts",
+    "pg-ev":"Test Evidence","pg-pkg":"Delivery Package",
+    "pg-deldocs":"Final Documentation","pg-demo":"Demo & Acceptance",
+    "pg-seccomp":"Security & Compliance","pg-parity":"Parity Tests",
+    "pg-secreview":"AS-IS Security Review","pg-testbaseline":"AS-IS Test Baseline",
+    "pg-backend":"Backend ASP.NET Core","pg-frontend":"Frontend Angular 17+",
+    "pg-iac":"IaC — Infrastructure as Code","pg-ci":"CI Pipeline","pg-cd":"CD Pipeline",
+    /* ── Card / section titles ───────────────────────────────── */
+    "card-filetypes":"Files by Type","card-layers":"Layer Structure",
+    "card-riskregister":"Risk Register","card-patterns":"Identified Patterns",
+    "card-arts-ag02":"Artifacts — AG-02","card-bc":"Bounded Context Map",
+    "card-arts-ag03":"Artifacts — AG-03","card-reqs":"Functional Requirements",
+    "card-rules":"Rules Mapping","card-navmap":"Navigation Map",
+    "card-complexity":" — Cyclomatic Complexity",
+    "card-schema":"Schema Inventory","card-tobebc":"TO-BE Bounded Contexts",
+    "card-arts-ag10":"Artifacts — AG-10","card-packages":"Selected NuGet Packages",
+    "card-structure":"Solution Structure","card-qgates":"Quality Gates",
+    "card-endpoints":"Mapped Endpoints","card-effort":"Effort per Bounded Context",
+    "card-infra":"Azure Sizing","card-waves":"Wave Details",
+    "card-testplan":"Strategy by Type","card-cleanarch":"Clean Architecture Structure",
+    "card-codearts":"Code Artifacts","card-bearts":"Backend Artifacts (AG-18)",
+    "card-fearts":"Frontend Artifacts (AG-19)","card-protoarts":"Prototype Artifacts (AG-20)",
+    "card-qaagents":"QA Agents — Status","card-scen":"Scenarios per Bounded Context",
+    "card-scripts":"Generated Scripts (AG-25)","card-defects":"Identified Defects",
+    "card-pkgarts":"Package Items (AG-30)","card-predelivery":"Pre-Delivery Checklist",
+    "card-finaldocs":"Delivery Documents","card-accept":"Acceptance Criteria",
+    "card-demoarts":"Acceptance Artifacts (AG-36)","card-secreport":"Consolidated Security Report",
+    "card-iac":"IaC Artifacts (AG-37)","card-iacrec":"Provisioned Resources",
+    "card-cistages":"CI Pipeline Stages","card-cdenvs":"Deploy Environments",
+    "card-parity":"Result per Module",
+    "card-testmap":"Existing Tests","card-testgaps":"Coverage Gaps",
+    "card-owasp":"OWASP Assessment","card-sps":"Stored Procedures",
+    /* ── Diagram titles ──────────────────────────────────────── */
+    "diag-c4ctx":"C4 Context Diagram","diag-c4cnt":"C4 Container Diagram",
+    "diag-c4comp":"C4 Component Diagram","diag-class":"Class Diagram (DTOs)",
+    "diag-comp":"Component Map","diag-seq1":"Flow: Title Settlement (AP)",
+    "diag-seq2":"Flow: Accounts Payable Entry","diag-er":"ER Diagram",
+    "diag-tobe-c4":"C4 Blueprint TO-BE","diag-gantt":"Gantt — Migration Waves",
+    /* ── Table headers ───────────────────────────────────────── */
+    "th-type":"Type","th-qty":"Qty","th-desc":"Description","th-layer":"Layer",
+    "th-files":"Files","th-risk":"Risk","th-cat":"Category","th-evidence":"Evidence",
+    "th-sev":"Severity","th-action":"Action","th-bc":"Bounded Context","th-pattern":"Pattern",
+    "th-occurs":"Occurrences","th-module":"Module","th-priority":"Priority","th-origin":"Origin",
+    "th-rule":"Rule","th-screen":"Screen / Form","th-from":"From","th-to":"To",
+    "th-rules":"Rules","th-field":"Field","th-file":"File","th-method":"Method",
+    "th-table":"Table","th-finding":"Finding","th-gap":"Gap","th-route":"Route",
+    "th-version":"Version","th-purpose":"Purpose","th-name":"Name",
+    "th-tests":"Tests","th-coverage":"Coverage","th-columns":"Columns","th-indexes":"Indexes",
+    "th-package":"Package","th-resource":"Resource","th-env":"Environment","th-cost":"Cost/mo",
+    "th-modules":"Modules","th-duration":"Duration","th-tool":"Tool","th-target":"Target",
+    "th-criteria":"Criteria","th-scenario":"Scenario","th-scenarios":"Scenarios","th-parity":"Parity",
+    /* ── Status / Severity ───────────────────────────────────── */
+    "status-done":"Completed","status-run":"Running","status-pend":"Pending","status-err":"Error",
+    "sev-critico":"Critical","sev-alto":"High","sev-medio":"Medium","sev-baixo":"Low",
+    /* ── Dynamic render labels ───────────────────────────────── */
+    "lbl-artefatos":"artifacts","lbl-expandir":"↓ expand","lbl-progresso":"Progress",
+    "lbl-agents":"Agents",
+    "lbl-no-artifacts":"No artifacts available",
+    "lbl-no-diagram":"(diagram not available — run the corresponding agent)",
+    "lbl-no-data":"No data available",
+    "lbl-phase-not-run":"⏳ This phase has not been executed yet. Run the corresponding workflow to see data here.",
+    "lbl-filter-placeholder":"Filter by name or extension (e.g. .md, schema, .cs)",
+    /* ── File explorer labels ────────────────────────────────── */
+    "lbl-file":"file","lbl-files":"files","lbl-files-short":"files",
+    "lbl-no-files":"No files","lbl-found":"found","lbl-found-plural":"found",
+    "lbl-outputs-root":"(outputs root)",
+    "lbl-view-content":"View content","lbl-no-content":"Content not available in this HTML",
+    "lbl-copied":"Copied!",
+    /* ── File drawer labels ──────────────────────────────────── */
+    "fe-filename":"File name","fe-ext":"Extension","fe-relpath":"Relative path",
+    "fe-dir":"Directory","fe-view":"👁 View","fe-copy":"📋 Copy",
+    /* ── PHASES i18n ─────────────────────────────────────────── */
+    "ph1-label":"F1 — AS-IS Diagnostic","ph1-desc":"8 agents · full legacy analysis",
+    "ph2-label":"F2 — TO-BE Architecture","ph2-desc":"8 agents · .NET 8 solution design",
+    "ph3-label":"F3 — Tech Stack","ph3-desc":"3 agents · .NET + Angular code",
+    "ph4-label":"F4 — Prototype","ph4-desc":"1 agent · navigable TO-BE demo",
+    "ph5-label":"F5 — QA","ph5-desc":"9 agents · strategy and automation",
+    "ph6-label":"F6 — Deliverables","ph6-desc":"7 agents · client package",
+    "ph7-label":"F7 — DevOps","ph7-desc":"5 agents · IaC · CI/CD · parity",
+    "ag01-role":"Coordination & routing","ag02-role":"C4 blueprints · patterns · BCs",
+    "ag03-role":"Requirements · rules · screens","ag04-role":"Existing test mapping",
+    "ag05-role":"OWASP · PII · LGPD compliance","ag06-role":"LOC · classes · complexity",
+    "ag07-role":"Consolidated risk register","ag08-role":"Schema · SPs · ER · biz logic",
+    "ag09-role":"Design coordination","ag10-role":"Blueprint C4 · BCs · APIs",
+    "ag11-role":"Tech Framework · NuGet · standards","ag12-role":"Story Points · FP · Azure sizing",
+    "ag13-role":"Waves · Strangler Fig · rollback","ag14-role":"Clean Architecture scaffolding",
+    "ag15-role":"OpenAPI · ADRs · TDD · wiki","ag16-role":"Smoke · load · functional · UI",
+    "ag17-role":"Backend + frontend coordination","ag18-role":"ASP.NET Core · CQRS · EF Core",
+    "ag19-role":"Angular 17+ · NgRx · MSAL","ag20-role":"Navigable wireframes · demo · Figma",
+    "ag21-role":"Quality strategy","ag22-role":"Gaps & inconsistencies",
+    "ag23-role":"BDD Given-When-Then","ag24-role":"Scenarios per bounded context",
+    "ag25-role":"Cases with input/output data","ag26-role":"xUnit · Playwright · k6",
+    "ag27-role":"Detection & classification","ag28-role":"Autonomous exploration",
+    "ag29-role":"Acceptance captures","ag30-role":"Consolidates wave artifacts",
+    "ag31-role":"Final technical documentation","ag32-role":"Executive plan",
+    "ag33-role":"Quality evidence","ag34-role":"Code & templates",
+    "ag35-role":"CISO report","ag36-role":"Demo · acceptance · handover",
+    "ag37-role":"Terraform · Bicep · Ansible","ag38-role":"GitHub Actions · ADO · quality gates",
+    "ag39-role":"Blue-green · canary · rollback","ag40-role":"Wave prerequisite validation",
+    "ag41-role":"Functional parity legacy vs migrated",
+    /* ── KPI / data-object dynamic labels ────────────────────── */
+    "kpi-total-files":"Total Files","kpi-coverage":"Coverage","kpi-text-files":"Text Files",
+    "kpi-loc":"Lines of Code","kpi-classes":"Classes / Forms","kpi-methods":"Methods",
+    "kpi-complex":"Complexity ≥10","kpi-endpoints":"Endpoints","kpi-layers":"Layers",
+    "kpi-modules":"Modules","kpi-tables":"DB Tables","kpi-db-volume":"DB INSERT Volume",
+    "kpi-screens":"Screens / Forms","kpi-components":"Components (fcid)",
+    "ft-pas":"Delphi source code — units and forms","ft-dfm":"Delphi Forms (visual layout)",
+    "ft-sql":"SQL scripts, SPs, triggers","ft-dll":"Compiled libraries","ft-cfg":"Configuration files",
+    "lyr-ui":"Presentation","lyr-app":"Application","lyr-data":"Data","lyr-db":"Database","lyr-infra":"Infrastructure",
+    "rcat-security":"Security","rcat-arch":"Architecture","rcat-quality":"Quality",
+    "rcat-tech":"Technical","rcat-compliance":"Compliance","rcat-migration":"Migration",
+    "dbk-vendor":"Engine","dbk-tables":"Tables","dbk-sps":"Stored Procedures",
+    "dbk-biz-sps":"SPs with Business Rules","dbk-triggers":"Triggers","dbk-indexes":"Indexes",
+    "szk-sp":"Total Story Points","szk-fp":"Total Function Points","szk-waves":"Planned Waves",
+    "szk-sprints":"Estimated Sprints","szk-team":"Team Size","szk-azure-cost":"Azure Cost/mo",
+    "szk-team-sub":"recommended devs","szk-cost-sub":"production environment",
+    "prk-global":"Global Parity","prk-scenarios":"Tested Scenarios",
+    "prk-divs":"Divergences","prk-approved":"Approved Waves",
+    "wv-planned":"Planned","wv-precond":"Pre-condition: SP Extraction Sprint",
+    "inv-loc-total":"Total LOC","inv-loc-eff":"Effective LOC","inv-classes":"Classes / Forms",
+    "inv-methods":"Methods","inv-avg-cc":"Average Complexity","inv-dup-pct":"% Duplication",
+    /* ── CI/CD gate & approval labels ─────────────────────────── */
+    "ci-g-deps":"Dependencies validated","ci-g-warn":"Zero warnings",
+    "ci-g-cov":"Coverage ≥ 80%","ci-g-sonar":"Zero Blocker/Critical",
+    "ci-g-cve":"Zero Critical CVE","ci-g-docker":"No Critical vulnerabilities",
+    "cd-aprov-auto":"Automatic","cd-aprov-techlead":"Tech Lead","cd-aprov-pm":"PM + Sponsor",
+    /* ── Quality gates & acceptance checklist labels ──────────── */
+    "qg-cov":"Line coverage ≥ 80%","qg-sonar":"Zero SonarQube Blocker/Critical",
+    "qg-owasp":"Zero OWASP Critical CVE","qg-parity":"Functional parity ≥ 99.5%",
+    "qg-perf":"Performance ≤ AS-IS baseline p95","qg-client":"Client validation completed",
+    "ac-parity":"Functional parity ≥ 99.5% validated",
+    "ac-defects":"Zero P1/P2 severity defects open",
+    "ac-perf":"Performance equal or better than AS-IS",
+    "ac-sec":"Security Report: zero Critical/High",
+    "ac-criteria":"All wave acceptance criteria met",
+    "ac-client":"Client functionally validated",
+    "ac-docs":"Technical documentation published on wiki",
+    "ac-handover":"Handover package delivered to client",
+    /* ── Dynamic count labels ────────────────────────────────── */
+    "lbl-riscos":"risks","lbl-findings":"findings","lbl-sps":"SPs",
+    /* ── Table headers (IaC, CI/CD, Parity, Waves, Scenarios) ── */
+    "th-wave":"Wave","th-sp":"SP","th-flag":"Feature Flag","th-status":"Status",
+    "th-stage":"Stage","th-qgate":"Quality Gate","th-strategy":"Strategy",
+    "th-approval":"Approval","th-rollback":"Rollback","th-provider":"Provider",
+    "th-divs":"Divergences","th-wave-aprov":"Wave Approval",
+    "th-id":"ID","th-given":"Given","th-when":"When","th-then":"Then",
+    "th-loc":"LOC","th-forms":"Forms","th-units":"Units",
+    "th-cc":"CC","th-pct":"PCT %",
+    "th-adr":"ADR","th-auth":"Auth","th-fp":"FP","th-sprints":"Sprints","th-sku":"SKU",
+  }
+};
+
+var lang = "pt";
+var t = function(k){ return (I18N[lang]||{})[k] || I18N.pt[k] || k; };
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+function nav(id, el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  const s = document.getElementById(id);
+  if(s) s.classList.add('on');
+  if(el) el.classList.add('on');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+const sevBadge = sev => {
+  const cls = {critico:'sc',alto:'sa',medio:'sm',baixo:'sb2',critical:'sc',high:'sa',medium:'sm',low:'sb2'};
+  const lbl = {
+    pt:{critico:'Crítico',alto:'Alto',medio:'Médio',baixo:'Baixo'},
+    en:{critico:'Critical',alto:'High',medio:'Medium',baixo:'Low'}
+  };
+  const l = (lbl[lang]||lbl.pt)[sev]||sev;
+  return `<span class="sv ${cls[sev]||'sb2'}">${l}</span>`;
+};
+
+const spill = s => {
+  const cls = {done:'sd',running:'sr',error:'spe',pending:'si',idle:'si'};
+  const lbl = () => ({done:t('status-done'),running:t('status-run'),error:t('status-err'),pending:t('status-pend'),idle:t('status-pend')})[s]||s;
+  return `<span class="sp2 ${cls[s]||'si'}">${lbl()}</span>`;
+};
+
+const chip = (key, path) => {
+  const ext = path.includes('.') ? path.split('.').pop().toUpperCase().slice(0,4) : 'DIR';
+  const icons = {MD:'📄',JSON:'{}',MMD:'〰',YML:'⚙',YAML:'⚙',CS:'#',TS:'⬡',HTML:'🌐',SQL:'🗄',DIR:'📁',PROP:'⚙'};
+  const ic = icons[ext]||'📄';
+  const short = key.replace(/_/g,' ');
+  return `<span class="arc" title="${path}">${ic} ${short}<span class="ext">${ext}</span></span>`;
+};
+
+const ndot = (id, status) => {
+  const el = document.getElementById('nd-'+id);
+  if(!el) return;
+  el.className = 'nd ' + (status==='done'?'ok':status==='running'?'run':'idle');
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER FUNCTIONS
+   ═══════════════════════════════════════════════════════════════ */
+function renderExecSummary(){
+  var box = document.getElementById('exec-box');
+  if(!box) return;
+  if(D.execSummary && D.execSummary[lang]){
+    box.innerHTML = D.execSummary[lang];
+  } else if(D.execSummary && typeof D.execSummary === 'string'){
+    box.innerHTML = D.execSummary;
+  }
+}
+
+function renderKPIs(){
+  document.getElementById('kpi-grid').innerHTML = D.kpis.map(k=>
+    `<div class="kc${k.hi?' hi':''}">
+      <div class="kl">${k.k?t(k.k):k.l}</div>
+      <div class="kv ${k.c||''}">${k.v}</div>
+      ${k.s?`<div class="ks">${k.sk?t(k.sk):k.s}</div>`:''}
+    </div>`
+  ).join('');
+}
+
+function renderFileTypes(){
+  document.getElementById('tb-filetypes').innerHTML = D.fileTypes.map(f=>
+    `<tr><td class="mono fw">${f.t}</td><td class="fw">${f.q}</td><td>${f.dk?t(f.dk):f.d}</td></tr>`
+  ).join('');
+}
+
+function renderLayers(){
+  document.getElementById('tb-layers').innerHTML = D.layers.map(l=>
+    `<tr><td class="fw">${l.nk?t(l.nk):l.n}</td><td class="fw">${l.l}</td><td>${l.f}</td><td>${sevBadge(l.r)}</td></tr>`
+  ).join('');
+}
+
+function renderRisks(){
+  const tb = document.getElementById('tb-risks');
+  if(tb) tb.innerHTML = D.risks.map(r=>
+    `<tr>
+      <td class="mono" style="color:var(--g2)">${r.id}</td>
+      <td>${r.ck?t(r.ck):r.cat}</td><td class="fw">${r.r}</td>
+      <td class="mono">${r.ev}</td><td>${sevBadge(r.sev)}</td><td>${r.a}</td>
+    </tr>`
+  ).join('');
+  const tag = document.getElementById('risk-total-tag');
+  if(tag) tag.textContent = D.risks.length + ' ' + t('lbl-riscos');
+  const nb = document.getElementById('nb-risks');
+  if(nb) nb.textContent = D.risks.filter(r=>r.sev==='critico').length;
+}
+
+function renderPatterns(){
+  document.getElementById('tb-patterns').innerHTML = D.patterns.map(p=>
+    `<tr><td class="fw">${p.n}</td><td>${p.o}</td><td>${p.p}%</td><td>${sevBadge(p.r)}</td></tr>`
+  ).join('');
+}
+
+function renderBC(){
+  document.getElementById('tb-bc').innerHTML = D.bc.map(b=>
+    `<tr><td class="fw">${b.n}</td><td>${b.forms}</td><td>${b.units}</td><td>${b.loc}</td><td>${sevBadge(b.r)}</td></tr>`
+  ).join('');
+}
+
+function renderTOBEBC(){
+  document.getElementById('tb-tobebc').innerHTML = D.bc.map((b,i)=>
+    `<tr><td class="fw">${b.n}</td><td>Clean Arch + CQRS</td>
+     <td class="mono">ADR-00${i+1}</td><td>${sevBadge(b.r)}</td></tr>`
+  ).join('');
+}
+
+function renderPackages(){
+  document.getElementById('tb-packages').innerHTML = D.packages.map(p=>
+    `<tr><td class="fw">${p.p}</td><td class="mono">${p.v}</td><td>${p.l}</td><td>${p.u}</td></tr>`
+  ).join('');
+}
+
+function renderQGates(){
+  document.getElementById('list-qgates').innerHTML = D.qgates.map(g=>{
+    const ok = g.ok === 'true' || g.ok === true;
+    return `<div class="ci ${ok?'ok2':'na'}">
+      <div class="cbox">${ok?'✓':''}</div>${g.k?t(g.k):g.l}
+    </div>`;
+  }).join('');
+}
+
+function renderWaves(){
+  document.getElementById('tb-waves').innerHTML = D.waves.map(w=>
+    `<tr>
+      <td style="font-weight:800;color:var(--r);font-size:16px;text-align:center">${w.w}</td>
+      <td class="fw">${w.m}</td><td>${w.sp}</td><td>${w.dur}</td>
+      <td>${sevBadge(w.r)}</td><td class="mono">${w.flag}</td><td>${w.sk?t(w.sk):w.s}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderTestPlan(){
+  document.getElementById('tb-testplan').innerHTML = D.testPlan.map(tp=>
+    `<tr><td class="fw">${tp.t}</td><td class="mono">${tp.tool}</td><td>${tp.alvo}</td><td>${tp.crit}</td><td>${tp.cov}</td></tr>`
+  ).join('');
+}
+
+function renderOWASP(){
+  document.getElementById('tb-owasp').innerHTML = D.owasp.map(o=>
+    `<tr><td class="mono fw">${o.o}</td><td>${o.f}</td><td class="mono">${o.ev}</td><td>${sevBadge(o.sev)}</td><td>${o.a}</td></tr>`
+  ).join('');
+  var tagOw = document.getElementById('tag-owasp');
+  if(tagOw) tagOw.textContent = D.owasp.length + ' ' + t('lbl-findings');
+}
+
+function renderDBSchema(){
+  document.getElementById('tb-schema').innerHTML = D.dbSchema.map(s=>
+    `<tr><td class="mono fw">${s.t}</td><td>${s.c}</td><td class="mono">${s.pk}</td><td>${s.fk}</td><td>${s.idx}</td></tr>`
+  ).join('');
+  document.getElementById('tb-sps').innerHTML = D.sps.map(s=>
+    `<tr><td class="mono fw">${s.n}</td><td>${s.type}</td><td>${sevBadge(s.r)}</td><td>${s.loc}</td></tr>`
+  ).join('');
+  var tagSp = document.getElementById('tag-sps');
+  if(tagSp) tagSp.textContent = D.sps.length + ' SPs';
+}
+
+function renderDBKpis(){
+  const el = document.getElementById('kpi-db');
+  if(el) el.innerHTML = D.dbKpis.map(k=>
+    `<div class="kc${k.hi?' hi':''}"><div class="kl">${k.k?t(k.k):k.l}</div><div class="kv ${k.c||''}">${k.v}</div></div>`
+  ).join('');
+}
+
+function renderSizeKpis(){
+  const el = document.getElementById('kpi-size');
+  if(el) el.innerHTML = D.sizeKpis.map(k=>
+    `<div class="kc${k.hi?' hi':''}">
+      <div class="kl">${k.k?t(k.k):k.l}</div>
+      <div class="kv ${k.c||''}">${k.v}</div>
+      ${k.s?`<div class="ks">${k.sk?t(k.sk):k.s}</div>`:''}
+    </div>`
+  ).join('');
+}
+
+function renderInvKpis(){
+  const el = document.getElementById('kpi-inv');
+  if(el) el.innerHTML = [
+    {l:"LOC Total",            k:"inv-loc-total",  v:"{{TOTAL_LOC}}",    c:"",  hi:true},
+    {l:"LOC Efetivo",          k:"inv-loc-eff",    v:"{{EFF_LOC}}",      c:""},
+    {l:"Classes / Forms",      k:"inv-classes",    v:"{{CLASS_COUNT}}",  c:""},
+    {l:"Métodos",              k:"inv-methods",    v:"{{METHOD_COUNT}}", c:""},
+    {l:"Complexidade Média",   k:"inv-avg-cc",     v:"{{AVG_CC}}",       c:"a"},
+    {l:"% Duplicação",         k:"inv-dup-pct",    v:"{{DUP_PCT}}%",     c:""},
+  ].map(k=>
+    `<div class="kc${k.hi?' hi':''}"><div class="kl">${k.k?t(k.k):k.l}</div><div class="kv ${k.c||''}">${k.v}</div></div>`
+  ).join('');
+}
+
+function renderParityKpis(){
+  const el = document.getElementById('kpi-parity');
+  if(el) el.innerHTML = D.parityKpis.map(k=>
+    `<div class="kc${k.hi?' hi':''}"><div class="kl">${k.k?t(k.k):k.l}</div><div class="kv ${k.c||''}">${k.v}</div></div>`
+  ).join('');
+  document.getElementById('tb-parity').innerHTML = D.parity.map(p=>
+    `<tr>
+      <td class="fw">${p.m}</td><td>${p.scen}</td>
+      <td style="font-weight:700;color:var(--ok)">${p.par}</td>
+      <td>${p.div}</td><td>${sevBadge(p.div==='0'?'baixo':'medio')}</td>
+    </tr>`
+  ).join('');
+}
+
+function renderCICD(){
+  const ci = document.getElementById('tb-ci');
+  if(ci) ci.innerHTML = D.ciStages.map(s=>
+    `<tr><td class="fw">${s.s}</td><td class="mono">${s.t}</td><td>${s.gk?t(s.gk):s.g}</td><td>${spill(s.ok)}</td></tr>`
+  ).join('');
+  const cd = document.getElementById('tb-cd');
+  if(cd) cd.innerHTML = D.cdEnvs.map(e=>
+    `<tr><td class="fw">${e.env}</td><td>${e.strat}</td><td>${e.ak?t(e.ak):e.aprov}</td><td>${e.rollback}</td><td>${spill(e.ok)}</td></tr>`
+  ).join('');
+}
+
+function renderIaCResources(){
+  const tb = document.getElementById('tb-iacrec');
+  if(tb) tb.innerHTML = D.iacResources.map(r=>
+    `<tr><td class="fw">${r.r}</td><td>${r.prov}</td><td>${r.env}</td><td class="mono">${r.tool}</td></tr>`
+  ).join('');
+}
+
+function renderChecklistEl(elId, items){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.innerHTML = items.map(g=>{
+    const ok = g.ok==='true'||g.ok===true;
+    return `<div class="ci ${ok?'ok2':'na'}">
+      <div class="cbox">${ok?'✓':''}</div>${g.k?t(g.k):g.l}
+    </div>`;
+  }).join('');
+}
+
+/* ── Chips from D.arts ─────────────────────────────────────── */
+function renderAgentChips(agentId, elId){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const arts = (D.arts && D.arts[agentId]) || [];
+  if(!arts.length){
+    el.innerHTML = '<span style="font-size:11px;color:var(--g2)">'+t('lbl-no-artifacts')+'</span>';
+    return;
+  }
+  el.innerHTML = arts.map(a=>chip(a.key, a.path)).join('');
+}
+
+/* ── Phase timeline (from D.agentStatus) ──────────────────── */
+const PHASES = [
+  {num:1, label:"F1 — Diagnóstico AS-IS", lk:"ph1-label", dk:"ph1-desc", desc:"8 agentes · análise completa do legado", color:"var(--ok)",
+   agents:[
+    {id:"ava-asis-orchestrator",    icon:"⚙",  name:"AG-01 Orchestrator AS-IS",     role:"Coordenação e roteamento", rk:"ag01-role"},
+    {id:"ava-asis-solution-delphi", icon:"🔍", name:"AG-02 AS-IS Solution (Delphi)", role:"C4 blueprints · padrões · BCs", rk:"ag02-role"},
+    {id:"ava-asis-documentation",   icon:"📄", name:"AG-03 Documentation",           role:"Requisitos · regras · telas", rk:"ag03-role"},
+    {id:"ava-asis-test-qa",         icon:"✅", name:"AG-04 Test QA AS-IS",           role:"Mapeamento de testes existentes", rk:"ag04-role"},
+    {id:"ava-asis-security-review", icon:"🛡", name:"AG-05 Security Review",         role:"OWASP · PII · compliance LGPD", rk:"ag05-role"},
+    {id:"ava-asis-inventory",       icon:"📊", name:"AG-06 Inventory",               role:"LOC · classes · complexidade", rk:"ag06-role"},
+    {id:"ava-asis-gaps-risks",      icon:"⚠",  name:"AG-07 Gaps & Risks",            role:"Risk register consolidado", rk:"ag07-role"},
+    {id:"ava-asis-db-analyzer",     icon:"🗄", name:"AG-08 DB Analyzer",             role:"Schema · SPs · ER · biz logic", rk:"ag08-role"},
+  ]},
+  {num:2, label:"F2 — Arquitetura TO-BE", lk:"ph2-label", dk:"ph2-desc", desc:"8 agentes · design da solução .NET 8", color:"var(--ok)",
+   agents:[
+    {id:"ava-tobe-orchestrator",           icon:"⚙",  name:"AG-09 Orchestrator TO-BE",        role:"Coordenação do design", rk:"ag09-role"},
+    {id:"ava-tobe-architecture-design",    icon:"🏗", name:"AG-10 Architecture Design",        role:"Blueprint C4 · BCs · APIs", rk:"ag10-role"},
+    {id:"ava-tobe-architecture-technical", icon:"⚡", name:"AG-11 Architecture Technical",     role:"Tech Framework · NuGet · standards", rk:"ag11-role"},
+    {id:"ava-tobe-measure-size",           icon:"📐", name:"AG-12 Measure Size",               role:"Story Points · FP · sizing Azure", rk:"ag12-role"},
+    {id:"ava-tobe-migration-plan",         icon:"🗺", name:"AG-13 Migration Plan",             role:"Waves · Strangler Fig · rollback", rk:"ag13-role"},
+    {id:"ava-coder-dotnet",                icon:"💻", name:"AG-14 Coder .NET",                 role:"Scaffolding Clean Architecture", rk:"ag14-role"},
+    {id:"ava-docs-tobe",                   icon:"📝", name:"AG-15 Docs TO-BE",                 role:"OpenAPI · ADRs · TDD · wiki", rk:"ag15-role"},
+    {id:"ava-test-plan-tobe",              icon:"🧪", name:"AG-16 Test Plan TO-BE",            role:"Smoke · carga · funcional · UI", rk:"ag16-role"},
+  ]},
+  {num:3, label:"F3 — Stack Tecnológica", lk:"ph3-label", dk:"ph3-desc", desc:"3 agentes · código .NET + Angular", color:"var(--ok)",
+   agents:[
+    {id:"ava-stack-orchestrator",       icon:"⚙",  name:"AG-17 Stack Orchestrator",    role:"Coordenação backend + frontend", rk:"ag17-role"},
+    {id:"ava-stack-dotnet-backend",     icon:"🔷", name:"AG-18 Coder .NET Backend",    role:"ASP.NET Core · CQRS · EF Core", rk:"ag18-role"},
+    {id:"ava-stack-angular-frontend",   icon:"🔴", name:"AG-19 Angular Frontend",      role:"Angular 17+ · NgRx · MSAL", rk:"ag19-role"},
+  ]},
+  {num:4, label:"F4 — Protótipo", lk:"ph4-label", dk:"ph4-desc", desc:"1 agente · demo navegável TO-BE", color:"var(--ok)",
+   agents:[
+    {id:"ava-prototype", icon:"🎨", name:"AG-20 Prototype", role:"Wireframes navegáveis · demo · Figma", rk:"ag20-role"},
+  ]},
+  {num:5, label:"F5 — QA", lk:"ph5-label", dk:"ph5-desc", desc:"9 agentes · estratégia e automação", color:"var(--warn)",
+   agents:[
+    {id:"ava-qa-orchestrator",       icon:"🎯", name:"AG-21 QA Orchestrator",       role:"Estratégia de qualidade", rk:"ag21-role"},
+    {id:"ava-qa-gaps-requirements",  icon:"🔎", name:"AG-22 Gaps Requirements",      role:"Lacunas e inconsistências", rk:"ag22-role"},
+    {id:"ava-qa-behavior-mapping",   icon:"🗂", name:"AG-23 Behavior Mapping",       role:"BDD Given-When-Then", rk:"ag23-role"},
+    {id:"ava-qa-scenario-generator", icon:"📋", name:"AG-24 Scenario Generator",     role:"Cenários por bounded context", rk:"ag24-role"},
+    {id:"ava-qa-test-case-generator",icon:"📑", name:"AG-25 Test Case Generator",    role:"Casos com dados entrada/saída", rk:"ag25-role"},
+    {id:"ava-qa-script-generator",   icon:"⌨",  name:"AG-26 Script Generator",       role:"xUnit · Playwright · k6", rk:"ag26-role"},
+    {id:"ava-qa-defect-identifier",  icon:"🐛", name:"AG-27 Defect Identifier",      role:"Detecção e classificação", rk:"ag27-role"},
+    {id:"ava-qa-exploratory",        icon:"🔬", name:"AG-28 Exploratory",            role:"Exploração autônoma", rk:"ag28-role"},
+    {id:"ava-qa-evidence-capture",   icon:"📸", name:"AG-29 Evidence Capture",       role:"Capturas para aceite", rk:"ag29-role"},
+  ]},
+  {num:6, label:"F6 — Entregáveis", lk:"ph6-label", dk:"ph6-desc", desc:"7 agentes · pacote para o cliente", color:"var(--warn)",
+   agents:[
+    {id:"ava-deliverable-packager",            icon:"📦", name:"AG-30 Packager",           role:"Consolida artefatos da wave", rk:"ag30-role"},
+    {id:"ava-deliverable-tech-docs",           icon:"📚", name:"AG-31 Tech Docs",          role:"Documentação técnica final", rk:"ag31-role"},
+    {id:"ava-deliverable-migration-plan",      icon:"🗺", name:"AG-32 Migration Plan Pub.", role:"Plano executivo", rk:"ag32-role"},
+    {id:"ava-deliverable-test-evidence",       icon:"✅", name:"AG-33 Test Evidence",      role:"Evidências de qualidade", rk:"ag33-role"},
+    {id:"ava-deliverable-code-templates",      icon:"💾", name:"AG-34 Code Templates",     role:"Código e templates", rk:"ag34-role"},
+    {id:"ava-deliverable-security-compliance", icon:"🔒", name:"AG-35 Security Compliance",role:"Relatório CISO", rk:"ag35-role"},
+    {id:"ava-deliverable-client-demo",         icon:"🎬", name:"AG-36 Client Demo",        role:"Demo · aceite · handover", rk:"ag36-role"},
+  ]},
+  {num:7, label:"F7 — DevOps", lk:"ph7-label", dk:"ph7-desc", desc:"5 agentes · IaC · CI/CD · paridade", color:"var(--warn)",
+   agents:[
+    {id:"ava-devops-iac",             icon:"🏭", name:"AG-37 IaC",             role:"Terraform · Bicep · Ansible", rk:"ag37-role"},
+    {id:"ava-devops-ci",              icon:"🔄", name:"AG-38 CI",              role:"GitHub Actions · ADO · quality gates", rk:"ag38-role"},
+    {id:"ava-devops-cd",              icon:"🚀", name:"AG-39 CD",              role:"Blue-green · canary · rollback", rk:"ag39-role"},
+    {id:"ava-devops-package-approval",icon:"✔",  name:"AG-40 Package Approval",role:"Validação pré-requisitos wave", rk:"ag40-role"},
+    {id:"ava-devops-compare-version", icon:"⚖",  name:"AG-41 Compare Version", role:"Paridade funcional legado vs migrado", rk:"ag41-role"},
+  ]},
+];
+
+function renderPhases(){
+  const tl = document.getElementById('phase-timeline');
+  tl.innerHTML = PHASES.map((ph,i)=>{
+    const agSt = D.agentStatus||{};
+    const done  = ph.agents.filter(a=>(agSt[a.id]||'pending')==='done').length;
+    const total = ph.agents.length;
+    const pct   = Math.round(done/total*100);
+    const phSt  = pct===100?'done':pct>0?'running':'idle';
+
+    const agCards = ph.agents.map(a=>{
+      const st = agSt[a.id]||'pending';
+      const arts = D.arts && D.arts[a.id] ? D.arts[a.id].length : 0;
+      return `<div class="ac">
+        <div class="at2">
+          <div class="ai">${a.icon}</div>
+          <div><div class="an">${a.name}</div><div class="ar">${a.rk?t(a.rk):a.role}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin:4px 0">
+          ${spill(st)}
+          <span style="font-size:10px;color:var(--g2)">📄 ${arts} ${t('lbl-artefatos')}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="pr" id="phr${i}" onclick="tph(${i})">
+      <div class="pt">
+        <div class="pn ${phSt}">${ph.num}</div>
+        <div>
+          <div class="pname">${ph.lk?t(ph.lk):ph.label}</div>
+          <div class="pdesc">${ph.dk?t(ph.dk):ph.desc}</div>
+        </div>
+        <div class="pmeta">
+          ${spill(phSt)}
+          <div class="pstat">${t('lbl-agents')}: <strong>${done}/${total}</strong></div>
+          <div class="pstat">${t('lbl-progresso')}: <strong>${pct}%</strong></div>
+          <span class="nb ${phSt==='done'?'ok':'warn'}">${t('lbl-expandir')}</span>
+        </div>
+      </div>
+      <div class="pbar"><div class="pbf" style="width:${pct}%;background:${ph.color}"></div></div>
+      <div class="pags"><div class="ag">${agCards}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function tph(i){ document.getElementById('phr'+i).classList.toggle('exp') }
+
+function renderArtifacts(){
+  const wrap = document.getElementById('artifact-panels');
+  const agSt = D.agentStatus||{};
+  let total = 0;
+  wrap.innerHTML = PHASES.map(ph=>{
+    const rows = ph.agents.map(a=>{
+      const arts = D.arts && D.arts[a.id] ? D.arts[a.id] : [];
+      total += arts.length;
+      if(!arts.length) return '';
+      return `<div style="margin-bottom:12px">
+        <div style="font-size:10px;color:var(--g2);margin-bottom:5px;font-weight:600">
+          ${a.icon} ${a.name} — ${spill(agSt[a.id]||'pending')}
+        </div>
+        <div class="arl">${arts.map(ar=>chip(ar.key,ar.path)).join('')}</div>
+      </div>`;
+    }).filter(Boolean).join('');
+
+    if(!rows) return '';
+    const phTotal = ph.agents.reduce((s,a)=>s+(D.arts&&D.arts[a.id]?D.arts[a.id].length:0),0);
+    return `<div class="cd">
+      <div class="ch">
+        <h2>${ph.lk?t(ph.lk):ph.label}</h2>
+        <span class="ctag bOk">${phTotal} ${t('lbl-artefatos')}</span>
+      </div>
+      <div class="cb">${rows}</div>
+    </div>`;
+  }).join('');
+  const nb = document.getElementById('nb-arts');
+  if(nb) nb.textContent = total;
+}
+
+// ── File Explorer ─────────────────────────────────────────────
+var FE_LABELS_MAP={pt:{asis:'F1 — AS-IS',tobe:'F2–F4 — TO-BE & Stack',qa:'F5 — QA',deliverables:'F6 — Entregáveis',devops:'F7 — DevOps',summary:'F8 — Summary'},en:{asis:'F1 — AS-IS',tobe:'F2–F4 — TO-BE & Stack',qa:'F5 — QA',deliverables:'F6 — Deliverables',devops:'F7 — DevOps',summary:'F8 — Summary'}};
+var FE_LABELS=(FE_LABELS_MAP[lang]||FE_LABELS_MAP.pt);
+const FE_ICONS={asis:'🔍',tobe:'🏗',qa:'✅',deliverables:'📦',devops:'⚙',summary:'📊'};
+
+function _feIcon(ext){
+  return ({md:'📄',json:'{}',mmd:'〰',yml:'⚙',yaml:'⚙',cs:'#',ts:'⬡',html:'🌐',sql:'🗄',tf:'⚙',py:'🐍',sln:'⚙',csproj:'⚙'})[ext.toLowerCase()]||'📄';
+}
+function _feCount(node){
+  return (node.files||[]).length + Object.values(node.subdirs||{}).reduce((s,n)=>s+_feCount(n),0);
+}
+function _feChip(f){
+  const fj=encodeURIComponent(JSON.stringify(f));
+  return `<span class="arc fe-file-chip" title="${f.path}" onclick="openFileDrawer(decodeURIComponent('${fj}'))" data-name="${f.name.toLowerCase()}" data-ext="${f.ext.toLowerCase()}">${_feIcon(f.ext)} ${f.name}<span class="ext">${f.ext.toUpperCase()||'FILE'}</span></span>`;
+}
+let _feCurrentFile=null;
+function openFileDrawer(fj){
+  const f=typeof fj==='string'?JSON.parse(fj):fj;
+  _feCurrentFile=f;
+  document.getElementById('fe-drawer-icon').textContent=_feIcon(f.ext||'');
+  document.getElementById('fe-drawer-name').textContent=f.name;
+  document.getElementById('fe-dname').textContent=f.name;
+  document.getElementById('fe-dext').textContent=(f.ext||'FILE').toUpperCase();
+  document.getElementById('fe-dpath').textContent=f.path;
+  document.getElementById('fe-ddir').textContent=f.dir||t('lbl-outputs-root');
+  const hasContent=f.content!=null&&f.content!=='';
+  const vb=document.getElementById('fe-view-btn');
+  if(vb){vb.style.opacity=hasContent?'1':'.4';vb.disabled=!hasContent;vb.title=hasContent?t('lbl-view-content'):t('lbl-no-content');}
+  document.getElementById('fe-drawer').classList.add('open');
+  document.getElementById('fe-overlay').classList.add('open');
+}
+function closeFileDrawer(){
+  
+  document.getElementById('fe-drawer').classList.remove('open');
+  document.getElementById('fe-overlay').classList.remove('open');
+}
+function copyFilePath(){
+  const p=document.getElementById('fe-dpath').textContent;
+  const _copy=(text)=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);};
+  const _flash=()=>{const btn=document.getElementById('fe-copy-btn');const prev=btn.textContent;btn.textContent='✅ '+t('lbl-copied');setTimeout(()=>{btn.textContent=prev;},1500);};
+  navigator.clipboard?.writeText(p).then(_flash).catch(()=>{_copy(p);_flash();});
+}
+
+// ── File Content Viewer ──────────────────────────────────────────
+function viewFileContent(){
+  if(!_feCurrentFile||!_feCurrentFile.content) return;
+  const f=_feCurrentFile;
+  document.getElementById('fc-modal-icon').textContent=_feIcon(f.ext||'');
+  document.getElementById('fc-modal-title').textContent=f.name;
+  document.getElementById('fc-modal-type').textContent=(f.ext||'FILE').toUpperCase();
+  const body=document.getElementById('fc-modal-body');
+  const ext=(f.ext||'').toLowerCase();
+  body.innerHTML='';
+  if(ext==='mmd'){
+    _renderMmdInModal(f.content,body);
+  } else if(ext==='md'){
+    const div=document.createElement('div');
+    div.className='md-view';
+    div.innerHTML=_mdToHtml(f.content);
+    body.appendChild(div);
+  } else {
+    const pre=document.createElement('pre');
+    pre.className='code-view';
+    pre.textContent=f.content;
+    body.appendChild(pre);
+  }
+  document.getElementById('fc-modal').classList.add('open');
+}
+function closeFileContent(){
+  document.getElementById('fc-modal').classList.remove('open');
+  document.getElementById('fc-modal-body').innerHTML='';
+}
+function _renderMmdInModal(mmdText,container){
+  container.innerHTML='<div class="mmd-view" id="fc-mmd-target"><div class="language-mermaid">'+_escHtml(mmdText)+'</div></div>';
+  const pre=document.createElement('pre');
+  pre.className='mermaid';
+  pre.textContent=mmdText;
+  container.querySelector('.mmd-view').innerHTML='';
+  container.querySelector('.mmd-view').appendChild(pre);
+  if(typeof mermaid!=='undefined'){
+    mermaid.run({nodes:[pre]}).catch(function(e){ console.warn('[Mermaid] modal render warning:', e.message||e); });
+    setTimeout(()=>{
+      document.querySelectorAll('#fc-modal-body svg rect').forEach(r=>{
+        const w=parseFloat(r.getAttribute('width'));
+        if(!isNaN(w)&&w<0){r.setAttribute('width','0');r.setAttribute('x','0');}
+      });
+    },500);
+  }
+}
+function _escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function _mdToHtml(md){
+  let h=md;
+  // Fenced code blocks
+  h=h.replace(/```(\w*)\n([\s\S]*?)```/g,(_,lang,code)=>`<pre><code class="lang-${lang}">${_escHtml(code.trim())}</code></pre>`);
+  h=h.replace(/`([^`]+)`/g,(_,c)=>`<code>${_escHtml(c)}</code>`);
+  // Headings
+  h=h.replace(/^#### (.+)$/gm,'<h4>$1</h4>');
+  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  // Bold/italic
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/__(.+?)__/g,'<strong>$1</strong>');
+  h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h=h.replace(/_(.+?)_/g,'<em>$1</em>');
+  // Horizontal rule
+  h=h.replace(/^---+$/gm,'<hr>');
+  // Blockquotes
+  h=h.replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>');
+  // Tables (simple)
+  h=h.replace(/((?:^\|.+\|\n)+)/gm,(table)=>{
+    const rows=table.trim().split('\n');
+    const header=rows[0];const sep=rows[1];const body=rows.slice(2);
+    if(!sep||!sep.match(/^\|[\s\-|]+\|$/)) return table;
+    const th=header.split('|').filter((_,i,a)=>i>0&&i<a.length-1).map(c=>`<th>${c.trim()}</th>`).join('');
+    const trs=body.map(r=>`<tr>${r.split('|').filter((_,i,a)=>i>0&&i<a.length-1).map(c=>`<td>${c.trim()}</td>`).join('')}</tr>`).join('');
+    return `<table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
+  });
+  // Unordered lists
+  h=h.replace(/((?:^[-*] .+\n?)+)/gm,(block)=>{
+    const items=block.trim().split('\n').map(l=>`<li>${l.replace(/^[-*] /,'')}</li>`).join('');
+    return `<ul>${items}</ul>`;
+  });
+  // Ordered lists
+  h=h.replace(/((?:^\d+\. .+\n?)+)/gm,(block)=>{
+    const items=block.trim().split('\n').map(l=>`<li>${l.replace(/^\d+\. /,'')}</li>`).join('');
+    return `<ol>${items}</ol>`;
+  });
+  // Paragraphs (lines not already wrapped)
+  h=h.replace(/^(?!<[a-zA-Z])(.+)$/gm,'<p>$1</p>');
+  // Clean up empty paragraphs
+  h=h.replace(/<p>\s*<\/p>/g,'');
+  return h;
+}
+function _feSubdir(name,node,depth){
+  const pad=depth*14;
+  const files=(node.files||[]).map(_feChip).join('');
+  const subs=Object.entries(node.subdirs||{}).map(([n,nd])=>_feSubdir(n,nd,depth+1)).join('');
+  const cnt=_feCount(node);
+  return `<div class="fe-subdir" style="margin-left:${pad}px">
+    <div class="fe-subdir-name">📁 ${name} <span style="font-size:9px;color:var(--g2);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px">${cnt} ${t('lbl-files-short')}</span></div>
+    ${files?`<div class="arl" style="margin-bottom:8px">${files}</div>`:''}
+    ${subs}
+  </div>`;
+}
+function renderFileExplorer(){
+  const tree=D.fileTree||{};
+  const wrap=document.getElementById('fe-panels');
+  if(!wrap) return;
+  const order=['asis','tobe','qa','deliverables','devops','summary'];
+  const keys=[...order.filter(k=>tree[k]),...Object.keys(tree).filter(k=>!order.includes(k))];
+  let total=0;
+  wrap.innerHTML=keys.map(key=>{
+    const node=tree[key];
+    const cnt=_feCount(node);
+    total+=cnt;
+    const label=node.label||FE_LABELS[key]||key;
+    const icon=FE_ICONS[key]||'📁';
+    const rootFiles=(node.files||[]).map(_feChip).join('');
+    const subs=Object.entries(node.subdirs||{}).map(([n,nd])=>_feSubdir(n,nd,0)).join('');
+    return `<div class="fe-dir-card" id="fe-card-${key}">
+      <div class="fe-dir-header" onclick="feToggle('${key}')">
+        <span style="font-size:15px">${icon}</span>
+        <div style="flex:1"><div class="fe-dir-name">${label}</div><div style="font-size:10px;color:var(--g2)">${key}/</div></div>
+        <span class="fe-badge">${cnt} ${t(cnt!==1?'lbl-files':'lbl-file')}</span>
+        <span class="fe-toggle" style="margin-left:8px">▾</span>
+      </div>
+      <div class="fe-body">
+        ${rootFiles?`<div class="arl" style="margin-bottom:10px">${rootFiles}</div>`:''}
+        ${subs}
+        ${!cnt?'<div style="padding:18px;font-size:11px;color:var(--g2)">📭 '+t('lbl-no-files')+'</div>':''}
+      </div>
+    </div>`;
+  }).join('');
+  const nb=document.getElementById('nb-explorer');
+  if(nb) nb.textContent=total;
+  const fc=document.getElementById('fe-count');
+  if(fc) fc.textContent=total+' '+t(total!==1?'lbl-files':'lbl-file');
+}
+function feToggle(key){document.getElementById('fe-card-'+key)?.classList.toggle('collapsed')}
+let _feT=null;
+function filterFileExplorer(q){
+  clearTimeout(_feT);
+  _feT=setTimeout(()=>{
+    q=q.trim().toLowerCase();
+    let vis=0;
+    document.querySelectorAll('.fe-file-chip').forEach(c=>{
+      const ok=!q||c.dataset.name.includes(q)||c.dataset.ext.includes(q)||('.'+c.dataset.ext).includes(q);
+      c.classList.toggle('fe-chip-hidden',!ok);
+      if(ok) vis++;
+    });
+    document.querySelectorAll('.fe-subdir').forEach(sd=>{
+      sd.style.display=(q&&!sd.querySelectorAll('.fe-file-chip:not(.fe-chip-hidden)').length)?'none':'';
+    });
+    if(q) document.querySelectorAll('.fe-dir-card').forEach(card=>{
+      const has=card.querySelectorAll('.fe-file-chip:not(.fe-chip-hidden)').length>0;
+      card.classList.toggle('collapsed',!has);
+    });
+    const fc=document.getElementById('fe-count');
+    if(fc) fc.textContent=vis+' '+t(vis!==1?'lbl-files':'lbl-file')+(q?' '+t(vis!==1?'lbl-found-plural':'lbl-found'):'');
+  },120);
+}
+
+function renderQAAgents(){
+  const el = document.getElementById('grid-qa-agents');
+  if(!el) return;
+  const ph = PHASES.find(p=>p.num===5);
+  if(!ph) return;
+  const agSt = D.agentStatus||{};
+  el.innerHTML = ph.agents.map(a=>`
+    <div class="ac">
+      <div class="at2">
+        <div class="ai">${a.icon}</div>
+        <div><div class="an">${a.name}</div><div class="ar">${a.role}</div></div>
+      </div>
+      <div style="margin-top:4px">${spill(agSt[a.id]||'pending')}</div>
+    </div>`).join('');
+}
+
+function renderNavDots(){
+  const agSt = D.agentStatus||{};
+  const dotMap = {
+    'f1-arch' :['ava-asis-solution-delphi'],
+    'f1-bc'   :['ava-asis-solution-delphi'],
+    'f1-docs' :['ava-asis-documentation'],
+    'f1-rules':['ava-asis-documentation'],
+    'f1-screens':['ava-asis-documentation'],
+    'f1-inv'  :['ava-asis-inventory'],
+    'f1-sec'  :['ava-asis-security-review'],
+    'f1-qa'   :['ava-asis-test-qa'],
+    'f1-db'   :['ava-asis-db-analyzer'],
+    'f2-arch' :['ava-tobe-architecture-design'],
+    'f2-tech' :['ava-tobe-architecture-technical'],
+    'f2-api'  :['ava-tobe-architecture-design','ava-docs-tobe'],
+    'f2-size' :['ava-tobe-measure-size'],
+    'f2-waves':['ava-tobe-migration-plan'],
+    'f2-code' :['ava-coder-dotnet'],
+    'f2-tests':['ava-test-plan-tobe'],
+    'f3-be'   :['ava-stack-dotnet-backend'],
+    'f3-fe'   :['ava-stack-angular-frontend'],
+    'f4-proto':['ava-prototype'],
+    'f5-strat':['ava-qa-orchestrator'],
+    'f5-scen' :['ava-qa-scenario-generator','ava-qa-test-case-generator'],
+    'f5-scripts':['ava-qa-script-generator'],
+    'f5-ev'   :['ava-qa-defect-identifier','ava-qa-evidence-capture'],
+    'f6-pkg'  :['ava-deliverable-packager'],
+    'f6-docs' :['ava-deliverable-tech-docs','ava-deliverable-migration-plan'],
+    'f6-demo' :['ava-deliverable-client-demo'],
+    'f6-sec'  :['ava-deliverable-security-compliance'],
+    'f7-iac'  :['ava-devops-iac'],
+    'f7-ci'   :['ava-devops-ci'],
+    'f7-cd'   :['ava-devops-cd'],
+    'f7-parity':['ava-devops-compare-version'],
+  };
+  Object.entries(dotMap).forEach(([key, agents])=>{
+    const done = agents.some(a=>(agSt[a]||'pending')==='done');
+    ndot(key, done?'done':'idle');
+  });
+}
+
+function setLang(l){
+  lang = l;
+  var dict = I18N[lang] || {};
+  /* ── Static text nodes with data-i18n ──────────────────────── */
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if(dict[k]) el.textContent = dict[k];
+  });
+  /* ── Title attributes with data-i18n-title ─────────────────── */
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+    var k = el.getAttribute('data-i18n-title');
+    if(dict[k]) el.setAttribute('title', dict[k]);
+  });
+  /* ── Placeholder attributes with data-i18n-placeholder ─────── */
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+    var k = el.getAttribute('data-i18n-placeholder');
+    if(dict[k]) el.setAttribute('placeholder', dict[k]);
+  });
+  /* ── Language label ────────────────────────────────────────── */
+  var ll = document.querySelector('.ll');
+  if(ll) ll.textContent = l==='en'?'Language / Idioma':'Idioma / Language';
+  /* ── html lang attribute ───────────────────────────────────── */
+  document.documentElement.lang = l==='en'?'en-US':'pt-BR';
+  /* ── Re-render dynamic sections that use t() ───────────────── */
+  try { FE_LABELS = FE_LABELS_MAP[lang]||FE_LABELS_MAP.pt; } catch(e){}
+  try { renderKPIs(); } catch(e){}
+  try { renderFileTypes(); } catch(e){}
+  try { renderLayers(); } catch(e){}
+  try { renderRisks(); } catch(e){}
+  try { renderDBKpis(); } catch(e){}
+  try { renderExecSummary(); } catch(e){}
+  try { renderSizeKpis(); } catch(e){}
+  try { renderParityKpis(); } catch(e){}
+  try { renderWaves(); } catch(e){}
+  try { renderPhases(); } catch(e){ console.warn('[setLang] renderPhases:', e); }
+  try { renderArtifacts(); } catch(e){}
+  try { renderFileExplorer(); } catch(e){}
+  try { renderQAAgents(); } catch(e){}
+  try { renderNavDots(); } catch(e){}
+  try { renderCICD(); } catch(e){}
+  try { renderChecklistEl('list-qgates', D.qgates); } catch(e){}
+  try { renderChecklistEl('list-predelivery', D.qgates); } catch(e){}
+  try { renderChecklistEl('list-accept', D.acceptChecklist); } catch(e){}
+  try { renderTestPlan(); } catch(e){}
+  try { renderOWASP(); } catch(e){}
+  try { renderDBSchema(); } catch(e){}
+  try { renderInvKpis(); } catch(e){}
+  try { renderIaCResources(); } catch(e){}
+  try { renderPatterns(); } catch(e){}
+  try { renderBC(); } catch(e){}
+  try { renderTOBEBC(); } catch(e){}
+  try { renderPackages(); } catch(e){}
+  try { renderAllChips(); } catch(e){}
+  try { renderAllDiagrams(); } catch(e){}
+}
+
+/* ── Reusable chip + diagram renderers (called in init + setLang) ── */
+const CHIP_MAP = {
+  'chips-ag02':'ava-asis-solution-delphi',
+  'chips-ag03':'ava-asis-documentation',
+  'chips-ag10':'ava-tobe-architecture-design',
+  'chips-ag14':'ava-coder-dotnet',
+  'chips-ag18':'ava-stack-dotnet-backend',
+  'chips-ag19':'ava-stack-angular-frontend',
+  'chips-ag20':'ava-prototype',
+  'chips-ag25':'ava-qa-script-generator',
+  'chips-ag30':'ava-deliverable-packager',
+  'chips-ag31':'ava-deliverable-tech-docs',
+  'chips-ag36':'ava-deliverable-client-demo',
+  'chips-ag37':'ava-devops-iac',
+};
+function renderAllChips(){
+  Object.entries(CHIP_MAP).forEach(([elId, agId])=>renderAgentChips(agId, elId));
+}
+function renderAllDiagrams(){
+  const diagMap = {
+    'diag-c4ctx':D.diag.c4ctx, 'diag-c4cnt':D.diag.c4cnt,
+    'diag-c4comp':D.diag.c4comp, 'diag-class':D.diag.classDiag,
+    'diag-comp':D.diag.compDiag,
+    'diag-seq-baixa-cp':D.diag.seqBaixaCP, 'diag-seq-cad-cp':D.diag.seqCadCP,
+    'diag-er':D.diag.er, 'diag-tobe-c4':D.diag.tobeC4,
+    'diag-gantt':D.diag.gantt, 'diag-solution':D.diag.solution,
+    'diag-cleanarch':D.diag.cleanArch,
+  };
+  Object.entries(diagMap).forEach(([id,v])=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const hasContent = v && v.trim() && !v.includes('{{');
+    el.textContent = hasContent ? v : t('lbl-no-diagram');
+    if(!hasContent) el.classList.add('no-diagram');
+  });
+}
+
+/* ═══ INIT ════════════════════════════════════════════════════ */
+function init(){
+  document.getElementById('rpf').style.width = D.execPct + '%';
+  renderExecSummary();
+  renderKPIs();
+  renderFileTypes();
+  renderLayers();
+  renderRisks();
+  renderPatterns();
+  renderBC();
+  renderTOBEBC();
+  renderPackages();
+  renderQGates();
+  renderWaves();
+  renderTestPlan();
+  renderOWASP();
+  renderDBSchema();
+  renderDBKpis();
+  renderSizeKpis();
+  renderInvKpis();
+  renderParityKpis();
+  renderCICD();
+  renderIaCResources();
+  renderPhases();
+  renderArtifacts();
+  renderFileExplorer();
+  renderQAAgents();
+  renderNavDots();
+  renderChecklistEl('list-qgates', D.qgates);
+  renderChecklistEl('list-predelivery', D.qgates);
+  renderChecklistEl('list-accept', D.acceptChecklist);
+
+  renderAllChips();
+  renderAllDiagrams();
+
+  /* Renderização visual Mermaid.js */
+  if(typeof mermaid !== 'undefined'){
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      wrap: true,
+      theme: 'default',
+      flowchart:{ useMaxWidth: true, htmlLabels: true },
+      classDiagram:{ useMaxWidth: false },
+      sequence:{ useMaxWidth: false },
+      er:{ useMaxWidth: false },
+      c4:{ useMaxWidth: false },
+      themeVariables:{
+        background:'#ffffff',
+        primaryColor:'#FF0000',
+        primaryTextColor:'#1a1a1a',
+        lineColor:'#444444',
+        fontSize:'13px',
+      }
+    });
+    mermaid.run({querySelector:'pre.mermaid:not(.no-diagram)'}).catch(function(e){ console.warn('[Mermaid] render warning:', e.message||e); });
+    /* Patch: fix Mermaid bug — negative rect widths cause SVG errors */
+    function _patchNegRects(){
+      document.querySelectorAll('svg rect').forEach(r=>{
+        const w=parseFloat(r.getAttribute('width'));
+        if(!isNaN(w)&&w<0){r.setAttribute('width','0'); r.setAttribute('x','0');}
+      });
+    }
+    setTimeout(_patchNegRects, 800);
+    setTimeout(_patchNegRects, 2000);
+    /* After render, attach zoom handlers */
+    setTimeout(setupDiagramZoom, 1000);
+  }
+}
+
+/* ═══ Diagram Zoom ══════════════════════════════════════════════ */
+function setupDiagramZoom(){
+  const modal   = document.getElementById('diag-modal');
+  const inner   = document.getElementById('diag-modal-inner');
+  const content = document.getElementById('diag-modal-content');
+  const title   = document.getElementById('diag-modal-title');
+  const closeBtn= document.getElementById('diag-modal-close');
+  if(!modal) return;
+
+  function openModal(wrap){
+    const svg = wrap.querySelector('svg');
+    const h2  = wrap.closest('.cd')?.querySelector('h2');
+    content.innerHTML = '';
+    if(svg){
+      content.appendChild(svg.cloneNode(true));
+    } else {
+      const pre = wrap.querySelector('pre');
+      const p = document.createElement('pre');
+      p.style.cssText='font-size:13px;white-space:pre;overflow:auto;max-height:80vh;color:#333';
+      p.textContent = pre ? pre.textContent : '';
+      content.appendChild(p);
+    }
+    title.textContent = h2 ? h2.textContent : 'Diagrama';
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(){
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    content.innerHTML = '';
+  }
+
+  document.querySelectorAll('.diag-wrap').forEach(wrap=>{
+    wrap.addEventListener('click', e=>{
+      if(e.target.closest('#diag-modal')) return;
+      openModal(wrap);
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e=>{
+    if(!e.target.closest('#diag-modal-inner')) closeModal();
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape') closeModal();
+  });
+}
+
+// ── Theme Toggle ─────────────────────────────────────────────
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')||'light';
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('ava-theme',next);
+  _syncThemeBtn(next);
+}
+function _syncThemeBtn(t){
+  const icon=document.getElementById('theme-icon');
+  const lbl=document.getElementById('theme-lbl');
+  if(icon) icon.textContent=t==='dark'?'☀️':'🌙';
+  if(lbl) lbl.textContent=t==='dark'?'Claro':'Dark';
+}
+document.addEventListener('DOMContentLoaded',function(){
+  _syncThemeBtn(document.documentElement.getAttribute('data-theme')||'light');
+});
+document.addEventListener('DOMContentLoaded', init)
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('fc-modal').classList.contains('open')) closeFileContent();
+    else closeFileDrawer();
+  }
+});
+</script>
+
+<!-- ═══ Diagram Zoom Modal ════════════════════════════════════ -->
+<div id="diag-modal">
+  <div id="diag-modal-inner">
+    <button id="diag-modal-close" title="Fechar (ESC)">✕</button>
+    <div id="diag-modal-title"></div>
+    <div id="diag-modal-content"></div>
+  </div>
+</div>
+</body>
+</html>

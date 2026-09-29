@@ -1,0 +1,367 @@
+# project-config.yaml — Template para novo projeto AVA Fabric
+# Copie este arquivo para projects/{PROJECT_NAME}/context/project-config.yaml
+# e preencha os valores antes de iniciar a esteira.
+
+project_name: "MeuERP-002"                        # Ex: "Meu-ERP", "Projeto-X"
+repository_path: "C:\\Desenv\\repo\\tool\\ava-fabric-delphi-analyzer\\examples\\Meu-ERP"                     # Caminho absoluto do repo legado
+ava_ast_analyzer_path: "C:\\Desenv\\repo\\tool\\ast\\imfai-ava-tools\\ava-fabric-delphi-analyzer"  # Caminho absoluto da tool ava-fabric-delphi-analyzer
+legacy_technology: "delphi"             # delphi | cobol | vb6 | vbnet | powerbuilder
+trace_id: ""  # Gerado pelo orchestrator em 2026-04-21scope_modules: "all"                    # "all" ou lista: ["financeiro", "cadastro"]
+client_name: "Avanade"                         # Nome do cliente
+pm_name: "Rafael Almeida"                             # Nome do PM da fabrica
+tech_lead_name: "LT"                      # Nome do Tech Lead
+language: "en"                          # pt | en — idioma dos artefatos gerados (default: pt)
+pipeline_mode: "build-cycle"                # "build-cycle" | "generic"
+context_budget_inline_threshold: 400000     # default
+context_budget_bc_scoped_threshold: 700000  # default
+
+# ── SQL IR & MER Generation ───────────────────────────────────────────────
+sql_ir_generator:
+  enabled: true                       # false = pula geração do sql-ir.json
+  infer_relationships: true           # inferir FKs por convenção de nome
+  include_external_refs: true         # incluir referências a entidades fora do escopo
+  min_confidence: "medium"            # low | medium | high — filtro de confiança para inferências
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+# --- Arquitetura de Referencia (fonte unica de verdade) -----------------------
+reference_architecture_file: "src/shared/data/reference-architecture.yaml"
+architecture_backlog_file: "src/shared/data/architecture-backlog.yaml"
+overrides:
+  tobe_api:
+    contract_first: true   # OpenAPI spec por BC gerada na Fase 4.61 ANTES do codegen (Fase 4.7)
+  architecture_patterns:
+    cqrs: false          # Decided: no CQRS for Meu-ERP — use Application Services pattern
+    mediator: "none"     # MediatR not used; remove MediatR packages from CPM
+    secondary_patterns:
+      - "repository"
+      - "domain-events"   # Domain events kept; dispatched directly, not via MediatR pipeline
+    
+# ─────────────────────────────────────────────────────────────────────────────
+# Copyright Configuration
+# Lidos pelo agente coder-dotnet para compor o cabeçalho de copyright de TODOS
+# os artefatos gerados: arquivos .cs (linha 1), DLLs, EXEs e pacotes NuGet
+# (via tag <Copyright> em Directory.Build.props — embutida pelo compilador .NET).
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# copyright: Texto exato do copyright presente nos arquivos fonte legados
+#   (Delphi/.PAS). Copiar sem alteração. Deixar vazio se não houver copyright.
+#   Ex: "Copyright (c) 2024 ACME S.A. All rights reserved."
+copyright: ""
+#
+# copyright_suffix: Sufixo de migração — appended ao copyright legado com
+#   espaço separador automático. Se copyright estiver vazio, o suffix é
+#   usado sozinho (sem espaço inicial). Alterar apenas se o projeto usar
+#   outra entidade receptora.
+#
+#   Regra de composição (aplicada pelo agente coder-dotnet):
+#     copyright não-vazio + suffix não-vazio → "{copyright} {suffix}"
+#     copyright vazio    + suffix não-vazio → "{suffix}"  (sem espaço)
+#     copyright não-vazio + suffix vazio    → "{copyright}"
+#     ambos vazios                          → cabeçalho omitido
+copyright_suffix: "Migrated: Avanade brazilian Engineering Hub"
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Paths resolvidos automaticamente a partir de project_name
+# Nao editar manualmente — usados pelos agentes em runtime
+outputs_base_path: "projects/{project_name}/outputs"
+context_base_path: "projects/{project_name}/context"
+inputs_base_path: "projects/{project_name}/inputs"
+
+# -----------------------------------------------------------------------------
+# TO-BE Reference Architecture Configuration
+# Os agentes de F2 (TO-BE) leem estas secoes para guiar o design e geracao.
+# Preencha conforme a arquitetura-alvo do projeto.
+# -----------------------------------------------------------------------------
+
+context_stack_base_path: "/docs/architecture/ConfigStack.yaml"  # DEPRECATED — ignorado pelos agentes (mantido por compatibilidade)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stack de Origem e Destino — PONTO ÚNICO DE ENTRADA
+# ─────────────────────────────────────────────────────────────────────────────
+tobe_stack:
+  backend_framework: "dotnet"
+  backend_version: "10.0"
+  backend_language: "csharp"
+  dotnet_sdk_version: "10.0.100"   # versao exata: global.json nao aceita "10.0.x"
+  frontend_framework: "angular"
+  frontend_version: "17"                # Major version do framework Angular
+  node_version: "20"                    # Versão Node.js para imagem Docker — alinhado com Dockerfile.frontend
+
+build_runner:
+  mode: "auto"              # "container" | "local" | "auto"
+  container_runtime: "auto" # "docker" | "podman" | "auto" (auto: docker → podman → nenhum)
+  cache_volumes: true
+  platform: ""
+  frontend_language: "typescript"
+  runtime: "aspnet-kestrel"
+  background_jobs: "none"
+  package_manager: "npm"
+  api_client_generation: "openapi-nswag"
+  additional_languages: []
+
+cloud_provider: "azure"
+
+architecture_patterns:
+  primary_style: "clean-architecture"
+  secondary_patterns:
+    - "repository"
+    - "domain-events"
+  evolution_roadmap: "modular-monolith-to-microservices"
+  cqrs: false
+  ddd: true
+  event_driven: false
+  mediator: "none"
+  caching_strategy: "distributed"
+  api_style:
+    - rest
+    - grpc
+  api_versioning_strategy: "url-path"
+  bounded_contexts: []
+  context_map_strategy: "acl"
+  async_communication: false
+  async_broker: ""
+
+solution_layers:
+  - Domain
+  - Application
+  - Infrastructure
+  - Presentation
+  - Tests
+
+persistence:
+  engine: "sqlserver"
+  orm: "efcore"
+  read_model: "dapper"
+  migration_strategy: "code-first"
+  read_replica: false
+  connection_source: "azure-keyvault"
+  cache_provider: "redis"
+  connection_resiliency:
+    enabled: true
+    retry_count: 3
+    strategy: "exponential-backoff"
+  multi_tenancy:
+    enabled: false
+    strategy: "schema-per-tenant"
+  audit_fields: true
+  soft_delete: true
+
+auth:
+  provider: "azure-ad"
+  protocol: "oidc"
+  rbac: true
+  policy_based: true
+  mfa: true
+  roles:
+    - Admin
+    - Manager
+    - User
+    - ReadOnly
+  token_expiry_minutes: 60
+  refresh_token: true
+  cors_policy: "strict"
+  data_encryption_at_rest: true
+  https_only: true
+
+observability:
+  apm: "application-insights"
+  logging: "serilog"
+  log_sink: "azure-monitor"
+  tracing: "opentelemetry"
+  metrics: "prometheus"
+  health_checks: true
+  log_level_default: "Information"
+  log_retention_days: 90
+  structured_logging: true
+  correlation_id: true
+  alerting:
+    enabled: true
+    tool: "azure-monitor"
+    channels:
+      - "email"
+      - "teams"
+  dashboards:
+    tool: "azure-workbooks"
+    default_dashboards:
+      - "golden-signals"
+      - "business-kpis"
+
+infrastructure:
+  services:
+    - app-service
+    - azure-sql
+    - azure-cache-redis
+    - azure-key-vault
+    - azure-monitor
+  region: "brazilsouth"
+  iac_tool: "terraform"
+  container_orchestration: "none"
+  deployment_strategy: "blue-green"
+  environment_strategy: "dev-staging-prod"
+  ci_cd:
+    tool: "azure-devops"
+    pipeline_as_code: true
+    artifact_registry: "azure-container-registry"
+    runner_image: "ubuntu-latest"
+  environments:
+    - name: "dev"
+      auto_deploy: true
+      requires_approval: false
+    - name: "staging"
+      auto_deploy: false
+      requires_approval: true
+    - name: "prod"
+      auto_deploy: false
+      requires_approval: true
+  networking:
+    vnet_integration: true
+    private_endpoints: true
+    waf_enabled: true
+  scaling:
+    strategy: "horizontal"
+    min_instances: 1
+    max_instances: 10
+
+quality_gates:
+  coverage_unit_min: 90
+  coverage_integration_min: 70
+  coverage_e2e_min: 80
+  cyclomatic_complexity_max: 10
+  cognitive_complexity_max: 15
+  code_duplication_max_percent: 3
+  critical_vulnerabilities_allowed: 0
+  sonar_quality_gate: "Sonar Way"
+  breaking_change_policy: "blocked"
+  max_tech_debt_hours: 40
+  test_pyramid:
+    unit_framework: "xunit"
+    integration_framework: "xunit"
+    e2e_framework: "playwright"
+    contract_testing: "none"
+    mutation_testing: false
+  performance_tests:
+    enabled: false
+    tool: "k6"
+    baseline_rps: 500
+    p95_latency_ms: 300
+  sast_tool: "sonarqube"
+  dast_tool: "none"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Security Configuration
+# security_enabled_asis: false  → segurança NÃO roda automaticamente na esteira ASIS.
+#                            Para executar separado: invocar @ava-asis-security-orchestrator diretamente.
+# security_enabled_asis: true   → roda no Phase A junto com os demais agentes (comportamento legado).
+# ─────────────────────────────────────────────────────────────────────────────
+security_enabled_asis: false          # default: false — executar standalone sob demanda
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Timing / Benchmark Configuration
+# timing_benchmark_enabled: true  → coleta timestamps NTP por agente; exibe tabelas MACRO + DETALHE
+#                                    com Inicio BRZ, Fim BRZ, Duração e total human-friendly.
+# timing_benchmark_enabled: false → SKIP chamadas NTP; exibe apenas tabela DETALHE com Fase + Status
+#                                    (sem colunas de tempo, sem MACRO). útil para reduzir overhead.
+# ─────────────────────────────────────────────────────────────────────────────
+timing_benchmark_enabled: true           # default: true — coletar e exibir benchmark de tempo
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Readiness Gate — Sign-offs por Wave
+# Preencher antes de executar @ava-readiness-gate para cada wave do Build Cycle.
+# Referência: src/shared/checklists/readiness-gate-checklist.md
+# ─────────────────────────────────────────────────────────────────────────────
+signoffs:
+  architecture_approved_by_client: true   # aprovado formalmente pelo Cliente na arquitetura TO-BE
+  spec_kit_approved: true                 # Spec Kit Wave 1 revisado e aprovado
+  sponsor_signoff: true                   # sign-off do Sponsor do projeto
+  stakeholder_signoff: true               # sign-off dos Stakeholders envolvidos
+  signoff_date: "2026-06-02"              # ISO 8601: data do sign-off
+  signed_by: "Rafael Almeida"             # PM responsável pelo sign-off
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Wave Approval — Configuração de Testes de Paridade Funcional
+# Usados pelo agente @ava-devops-compare-version para executar golden dataset,
+# disparar chamadas simultâneas AS-IS × TO-BE e calcular score de paridade por BC.
+# Referência: src/modules/ava-fabric-agents/devops-agents/agents/compare-version-agent.md
+# ─────────────────────────────────────────────────────────────────────────────
+wave_approval:
+  thresholds:
+    parity_pct: 99.5            # Paridade funcional mínima (%) — global e por BC
+    latency_avg_ms: 500         # Latência média máxima (ms)
+    latency_p95_ms: 1000        # Latência P95 máxima (ms)
+    throughput_min: 100         # Throughput mínimo (req/s)
+    error_rate_max_pct: 1.0     # Error rate máximo (%)
+    line_coverage_pct: 80       # Cobertura de linha mínima (%)
+    branch_coverage_pct: 70     # Cobertura de branch mínima (%)
+    vuln_high_max: 0            # Vulnerabilidades altas máximas
+    fp_coverage_pct: 95         # FPs cobertos por testes (%)
+
+  # Endpoints por operação presente no golden dataset.
+  # Preencher asis_url com URL do sistema legado exposto via API shim ou wrapper.
+  # Preencher tobe_url com URL do sistema migrado em ambiente de staging.
+  parity_endpoints:
+    CriarCliente:
+      asis_url: "http://localhost:8080/api/v1/customers"          # TODO: substituir pela URL do AS-IS
+      tobe_url: "http://localhost:5000/api/v1/customers"          # TODO: substituir pela URL do TO-BE staging
+    BuscarCliente:
+      asis_url: "http://localhost:8080/api/v1/customers/{id}"
+      tobe_url: "http://localhost:5000/api/v1/customers/{id}"
+    CriarFornecedor:
+      asis_url: "http://localhost:8080/api/v1/suppliers"
+      tobe_url: "http://localhost:5000/api/v1/suppliers"
+    CriarContasPagar:
+      asis_url: "http://localhost:8080/api/v1/accounts-payable"
+      tobe_url: "http://localhost:5000/api/v1/accounts-payable"
+    LiquidarContasPagar:
+      asis_url: "http://localhost:8080/api/v1/accounts-payable/{id}/settle"
+      tobe_url: "http://localhost:5000/api/v1/accounts-payable/{id}/settle"
+    CriarContasReceber:
+      asis_url: "http://localhost:8080/api/v1/accounts-receivable"
+      tobe_url: "http://localhost:5000/api/v1/accounts-receivable"
+    LiquidarContasReceber:
+      asis_url: "http://localhost:8080/api/v1/accounts-receivable/{id}/settle"
+      tobe_url: "http://localhost:5000/api/v1/accounts-receivable/{id}/settle"
+
+  timeout_ms: 30000             # Timeout por chamada individual (ms) — default: 30 s
+  numeric_tolerance: 0.01       # Delta máximo para campos numéricos (0.01 = centavos)
+  ignore_tz: true               # Ignorar timezone em comparação de campos de data/hora
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Quality Gates — Thresholds para o pipeline de CI gerado por @ava-devops-ci
+# ─────────────────────────────────────────────────────────────────────────────
+quality_gates:
+  coverage:
+    line_min: 90              # requisito Meu-ERP: cobertura mínima elevada (default: 80)
+    branch_min: 75            # requisito Meu-ERP: cobertura de branch (default: 70)
+  sonar:
+    quality_gate: "pass"      # default
+    max_blocker_issues: 0
+    max_critical_issues: 0
+  owasp:
+    max_critical_cve: 0
+  docker:
+    trivy_max_critical: 0
+  cve_policy:
+    # Exceções à política zero-tolerance de CVE para pacotes com vulnerabilidades
+    # irresolvíveis na versão travada do projeto.
+    # Lido pelo ava-stack-build-validator (Step F3.5) antes do CVE scan.
+    # Status resultante: PASS_WITH_EXCEPTIONS (em vez de FAIL) quando todas as CVEs
+    # bloqueantes estiverem cobertas por exceções ativas e não expiradas.
+    accepted_exceptions:
+      - package: "@angular/common"
+        max_version: "17.3.12"
+        reason: "Angular 17.x CVEs irresolvíveis — fix disponível apenas a partir do Angular 19.2.26. Upgrade planejado na Wave 2."
+        expiry: "2026-12-31"
+      - package: "@angular/core"
+        max_version: "17.3.12"
+        reason: "Angular 17.x CVEs irresolvíveis — fix disponível apenas a partir do Angular 19.2.26. Upgrade planejado na Wave 2."
+        expiry: "2026-12-31"
+      - package: "@angular/compiler"
+        max_version: "17.3.12"
+        reason: "Angular 17.x CVEs irresolvíveis — mesma raiz que @angular/core. Upgrade planejado na Wave 2."
+        expiry: "2026-12-31"
+      - package: "@angular/platform-browser"
+        max_version: "17.3.12"
+        reason: "Angular 17.x CVEs irresolvíveis — mesma raiz que @angular/core. Upgrade planejado na Wave 2."
+        expiry: "2026-12-31"
+# ─────────────────────────────────────────────────────────────────────────────

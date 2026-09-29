@@ -1,0 +1,72 @@
+# AVA Fabric — DAG de execução da Fase F1 (AS-IS Diagnostic)
+# =============================================================================
+# FONTE DE VERDADE do despacho de F1. Consumido por src/shared/tools/agent_runner.py.
+#
+# Extraído de:
+#   - asis-diagnostic/agents/orchestrator-asis.md  § Agent Team / § dispatch_schedule
+#   - asis-diagnostic/utils/context_budget.py      § AGENT_ARTIFACT_SLICE  (campo `slice`)
+#   - asis-diagnostic/utils/artifact_gate.py       § ARTIFACT_CONTRACTS    (campo `id`)
+#
+# ⚠️ RISCO R1 — quarta fonte de verdade.
+#    Este arquivo NÃO pode virar mais um espelho manual. O repo já tem três que divergem
+#    (ARTIFACT_CONTRACTS, AGENT_ARTIFACT_SLICE, AGENT_CATALOG — este último existe justamente
+#    porque dois catálogos manuais divergiram em 52 agentes).
+#    O runner valida a coerência a cada execução: todo `id` daqui precisa existir em
+#    artifact_gate.ARTIFACT_CONTRACTS e em agent_registry.catalog(). Divergência = erro, não warning.
+#    O teste tests/test_pipeline_dag.py (M2) torna isso bloqueante no CI.
+#
+# ESCOPO M1: apenas wave2. wave1 (solution agent) e wave3+ entram no M2.
+# =============================================================================
+
+version: 1
+phase: F1
+module: asis-diagnostic
+orchestrator: ava-asis-orchestrator
+
+# Alinhado ao compression_max_workers do proxy Headroom. M1 roda sequencial (=1).
+max_parallel: 1
+
+defaults:
+  timeout_s: 900
+  max_attempts: 1          # M2 sobe para 4 e implementa a escada de reparo
+  model: claude-sonnet-4   # nunca 'auto' — ver R4: subagentes caíam em gpt-5.4 e davam 404
+
+waves:
+  # ---------------------------------------------------------------------------
+  # wave1 — Solution Agent. Bloqueia a wave2 até completed + artifacts_confirmed.
+  # NÃO IMPLEMENTADO NO M1. Declarado aqui só para o runner poder recusar
+  # explicitamente em vez de pular em silêncio.
+  # ---------------------------------------------------------------------------
+  - id: wave1
+    blocking: true
+    implemented: false
+    agents:
+      # id resolvido em runtime a partir de legacy_technology (artifact_gate.resolve_solution_agent)
+      - id: "ava-asis-solution-{legacy_technology}"
+        slice: all
+        timeout_s: 3600
+        max_ai_credits: 80
+        # context: long_context — REMOVIDO. M0 não conseguiu verificar o tokenLimit desse tier.
+        large_artifact_protocol: true
+
+  # ---------------------------------------------------------------------------
+  # wave2 — consumidores da fatia AST. Independentes entre si.
+  # ---------------------------------------------------------------------------
+  - id: wave2
+    depends_on: [wave1]
+    implemented: true
+    agents:
+      - id: ava-asis-inventory
+        slice: [08_code_overview, 02_form_business_rules]
+        timeout_s: 900
+        max_ai_credits: 30
+
+      - id: ava-asis-db-analyzer
+        slice: [03_database_rules, 04_database_schemas, 05_procedures]
+        timeout_s: 1800
+        max_ai_credits: 40
+
+      - id: ava-asis-events-pubsub
+        slice: [06_integrations]
+        timeout_s: 600
+        max_ai_credits: 30

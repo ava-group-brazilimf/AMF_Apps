@@ -1,0 +1,43 @@
+Work Item Type,Title,Description,Tags
+Task,Revisao do agente ava-asis-orchestrator,"Revisar se o orchestrator valida entradas, aciona corretamente os 7 subagentes e consolida o master-report com quality gate.",ava-fabric;review;f1
+Task,Revisao do agente ava-asis-solution-delphi,"Revisar se a analise Delphi identifica padroes arquiteturais, bounded contexts e gera diagramas C4/API map consistentes.",ava-fabric;review;f1
+Task,Revisao do agente ava-asis-db-analyzer,"Revisar se o agente detecta o SGBD, reconstrui schema, documenta SPs/triggers e gera ER diagram com qualidade.",ava-fabric;review;f1
+Task,Revisao do agente ava-asis-security-review,"Revisar cobertura OWASP/LGPD, classificacao de vulnerabilidades e clareza das recomendacoes de mitigacao.",ava-fabric;review;f1
+Task,Revisao do agente ava-asis-documentation,"Revisar se regras de negocio, requisitos funcionais e fluxo de telas foram extraidos com rastreabilidade ao codigo.",ava-fabric;review;f1
+Task,Revisao do agente ava-asis-inventory,"Revisar acuracia das metricas (LOC, classes, metodos, complexidade) e consistencia do inventario por modulo.",ava-fabric;review;f1
+Task,Revisao do agente ava-asis-test-qa,Revisar se o baseline AS-IS cobre casos criticos e se os gaps de teste estao priorizados de forma util para o TO-BE.,ava-fabric;review;f1
+Task,Revisao do agente ava-asis-gaps-risks,"Revisar consolidacao de achados, calculo de risk score e priorizacao P0-P3 com justificativa.",ava-fabric;review;f1
+Task,Revisao do agente ava-tobe-orchestrator,"Revisar sequenciamento da fase TO-BE, dependencia do master-report e aplicacao correta do quality gate.",ava-fabric;review;f2
+Task,Revisao do agente ava-tobe-architecture-design,"Revisar coerencia dos bounded contexts, diagramas C4 e mapeamento de APIs com requisitos do AS-IS.",ava-fabric;review;f2
+Task,Revisao do agente ava-tobe-architecture-technical,"Revisar escolhas tecnicas, versionamento de pacotes, estrutura da solution e configuracoes de observabilidade/segredos.",ava-fabric;review;f2
+Task,Revisao do agente ava-tobe-measure-size,"Revisar premissas de sizing, calculo de esforco e estimativas de infraestrutura por wave.",ava-fabric;review;f2
+Task,Revisao do agente ava-tobe-migration-plan,"Revisar plano em waves, dependencias, criterios de aceite/rollback e consistencia do Gantt.",ava-fabric;review;f2
+Task,Revisao do agente ava-coder-dotnet,"Revisar qualidade do codigo .NET 10 gerado (DDD/CQRS/Clean), padroes de teste e aderencia a boas praticas.",ava-fabric;review;f2
+Task,Revisao do agente ava-docs-tobe,"Revisar completude da documentacao TO-BE (OpenAPI, ADRs, TDD) e alinhamento com implementacao.",ava-fabric;review;f2
+Task,Revisao do agente ava-test-plan-tobe,"Revisar piramide de testes, smoke suite e plano de carga quanto a cobertura e viabilidade de execucao.",ava-fabric;review;f2
+Task,Revisao do agente ava-stack-orchestrator,Revisar coordenacao backend/frontend e consistencia entre contratos de API e artefatos gerados.,ava-fabric;review;f3
+Task,Revisao do agente ava-stack-dotnet-backend,"Revisar controllers, validacoes, EF Core/migrations e seguranca de autenticacao no backend.",ava-fabric;review;f3
+Task,Revisao do agente ava-stack-angular-frontend,"Revisar arquitetura Angular, roteamento/guards/interceptors, autenticacao e qualidade de componentes/services.",ava-fabric;review;f3
+Task,Revisao do agente ava-qa-orchestrator,"Revisar estrategia de QA, ordem de execucao dos subagentes e consolidacao do relatorio mestre.",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-gaps-requirements,"Revisar identificacao de lacunas de requisitos e rastreabilidade entre requisito, risco e cobertura de teste.",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-behavior-mapping,"Revisar se comportamentos esperados estao claros, testaveis e alinhados com regras de negocio.",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-scenario-generator,"Revisar qualidade dos cenarios BDD/Gherkin (clareza, completude e foco em fluxos criticos).",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-test-case-generator,"Revisar casos de teste gerados quanto a dados de entrada, saida esperada e criterios de aceitacao.",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-script-generator,"Revisar scripts de automacao (xUnit, Playwright, k6) quanto a manutencao, confiabilidade e cobertura.",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-exploratory,Revisar roteiros exploratorios por jornada critica e qualidade dos heuristics/checklists utilizados.,ava-fabric;review;f4
+Task,Revisao do agente ava-qa-evidence-capture,"Revisar organizacao das evidencias, padrao de nomenclatura e rastreabilidade para aceite do cliente.",ava-fabric;review;f4
+Task,Revisao do agente ava-qa-defect-identifier,"Revisar classificacao e priorizacao de defeitos, incluindo severidade, impacto e recomendacoes de correcao.",ava-fabric;review;f4
+Task,Revisao do agente ava-prototype,"Revisar prototipo navegavel, fidelidade da especificacao e aderencia da jornada demonstrada ao TO-BE.",ava-fabric;review;f5
+Task,Revisao do agente ava-devops-iac,"Revisar IaC (Terraform/Bicep), seguranca de configuracao e idempotencia de provisionamento Azure.",ava-fabric;review;f6
+Task,Revisao do agente ava-devops-ci,"Revisar pipeline CI, gates de qualidade, integracao de SAST/Sonar e confiabilidade de build/teste.",ava-fabric;review;f6
+Task,Revisao do agente ava-devops-cd,"Revisar pipeline CD, estrategia de deploy, smoke tests e capacidade de rollback seguro.",ava-fabric;review;f6
+Task,Revisao do agente ava-devops-compare-version,"Revisar metodo de comparacao AS-IS x TO-BE, criterios de paridade e analise de divergencias.",ava-fabric;review;f6
+Task,Revisao do agente ava-devops-package-approval,Revisar validacoes de seguranca/licenca dos pacotes e conformidade com pre-requisitos de arquitetura.,ava-fabric;review;f6
+Task,Revisao do agente ava-deliverable-packager,"Revisar estrutura do pacote de entrega, integridade de artefatos e completude do indice por wave.",ava-fabric;review;f7
+Task,Revisao do agente ava-deliverable-tech-docs,"Revisar documentacao tecnica consolidada quanto a clareza, atualizacao e utilidade para handover.",ava-fabric;review;f7
+Task,Revisao do agente ava-deliverable-migration-plan,"Revisar publicacao executiva do plano de migracao quanto a consistencia, riscos e cronograma.",ava-fabric;review;f7
+Task,Revisao do agente ava-deliverable-security-compliance,"Revisar consolidacao de seguranca/LGPD, evidencias de tratamento de risco e declaracoes de conformidade.",ava-fabric;review;f7
+Task,Revisao do agente ava-deliverable-test-evidence,"Revisar empacotamento das evidencias de teste, cobertura reportada e prontidao para aceite formal.",ava-fabric;review;f7
+Task,Revisao do agente ava-deliverable-code-templates,Revisar qualidade e reusabilidade dos templates de codigo para adoção pelo time do cliente.,ava-fabric;review;f7
+Task,Revisao do agente ava-deliverable-client-demo,"Revisar roteiro de demo, narrativa executiva e completude do documento de aceite do cliente.",ava-fabric;review;f7
+Task,Revisao do agente ava-summary,"Revisar consolidacao do HTML final, integridade dos dados por fase, renderizacao de diagramas e navegacao.",ava-fabric;review;f8

@@ -1,0 +1,420 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# AVA Fabric — Architecture Reference Backlog
+# ═══════════════════════════════════════════════════════════════════════════════
+# Rastreamento de itens de arquitetura de referência necessários para
+# desenvolvimento no asset. Cada item é vinculado ao reference-architecture.yaml.
+#
+# Caminho canônico: src/shared/data/architecture-backlog.yaml
+# ═══════════════════════════════════════════════════════════════════════════════
+
+version: "1.0.0"
+last_updated: "2026-05-06"
+source_of_truth: "src/shared/data/reference-architecture.yaml"
+
+# Status: pending | in-progress | done | blocked
+# Priority: critical | high | medium | low
+# Category: pattern | principle | cross-cutting | quality-gate | stack-config
+
+backlog:
+
+  # ─── PATTERNS ────────────────────────────────────────────────────────────────
+
+  - id: ARQ-001
+    category: pattern
+    reference_id: PAT-001
+    title: "Clean Architecture — Solution template scaffolding"
+    description: "Criar template de solução .sln com projetos separados por camada (Domain, Application, Infrastructure, API, Tests)"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "Template .sln com projeto por camada"
+      - "Directory.Build.props com configurações compartilhadas"
+      - "Global usings configurados por projeto"
+    dependencies: []
+
+  - id: ARQ-002
+    category: pattern
+    reference_id: PAT-002
+    title: "Modular Monolith — Module boundary enforcement"
+    description: "Implementar regras de isolamento entre módulos (sem referência cruzada de entidades, comunicação via events)"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-design"
+    acceptance_criteria:
+      - "Cada módulo = 1 bounded context isolado"
+      - "Comunicação inter-módulo exclusivamente via MediatR notifications"
+      - "ArchUnit/NetArchTest rules para validar boundaries"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-003
+    category: pattern
+    reference_id: PAT-003
+    title: "CQRS — Command/Query separation com MediatR"
+    description: "Implementar pipeline CQRS com MediatR behaviors (validation, logging, transaction)"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "ICommand<T> / IQuery<T> interfaces"
+      - "ValidationBehavior pipeline"
+      - "LoggingBehavior pipeline"
+      - "TransactionBehavior para commands"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-004
+    category: pattern
+    reference_id: PAT-004
+    title: "DDD — Base classes e building blocks"
+    description: "Criar classes base: Entity, AggregateRoot, ValueObject, DomainEvent"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "Entity<TId> com igualdade por ID"
+      - "AggregateRoot com DomainEvents collection"
+      - "ValueObject com igualdade estrutural"
+      - "IDomainEvent interface"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-005
+    category: pattern
+    reference_id: PAT-005
+    title: "API-First — OpenAPI spec generation e contract tests"
+    description: "Configurar geração automática de OpenAPI spec e contract testing"
+    status: pending
+    priority: high
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "Swashbuckle configurado com XML docs"
+      - "API versioning configurado"
+      - "Spec exportada em CI pipeline"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-006
+    category: pattern
+    reference_id: PAT-006
+    title: "Micro Frontend — Angular modular structure"
+    description: "Configurar projeto Angular com lazy-loaded modules alinhados aos BCs do backend"
+    status: pending
+    priority: high
+    agent_responsible: "ava-coder-angular-frontend"
+    acceptance_criteria:
+      - "Nx workspace configurado"
+      - "Módulos lazy-loaded por domínio"
+      - "Design system library compartilhada"
+      - "Performance budgets configurados"
+    dependencies: []
+
+  - id: ARQ-007
+    category: pattern
+    reference_id: PAT-007
+    title: "Cloud-Native — Containerização e 12-Factor"
+    description: "Dockerfile multi-stage, docker-compose dev/staging/prod, nginx.conf, containerization-report.md"
+    status: in-progress
+    priority: high
+    agent_responsible: "ava-devops-containerize"
+    acceptance_criteria:
+      - "Dockerfile multi-stage (build + runtime) para backend .NET"
+      - "Dockerfile multi-stage (node → nginx) para frontend Angular"
+      - "docker-compose.yml para desenvolvimento local"
+      - "docker-compose.staging.yml (réplicas: 2, imagens pré-construídas)"
+      - "docker-compose.prod.yml (réplicas: 3, rollback configurado)"
+      - ".dockerignore para cada serviço (excluir *.env, appsettings.Development.json, secrets/)"
+      - "nginx.conf para Angular SPA routing + security headers + health endpoint"
+      - "Usuário non-root na stage de runtime de todos os containers"
+      - "Secrets injetados apenas via variáveis de ambiente — jamais hardcoded em Dockerfiles"
+      - "Versões de imagem base fixadas (sem tags 'latest')"
+      - "containerization-report.md gerado em outputs/tobe/iac/containers/"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-008
+    category: pattern
+    reference_id: PAT-008
+    title: "Resilience Patterns — Polly v8 policies"
+    description: "Configurar HttpClient resilience com Polly (retry, circuit breaker, timeout, bulkhead)"
+    status: pending
+    priority: high
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "IHttpClientFactory com Polly policies"
+      - "Retry com exponential backoff"
+      - "Circuit breaker configurável"
+      - "Timeout policies por endpoint"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-009
+    category: pattern
+    reference_id: PAT-009
+    title: "Security First — Authentication e Authorization pipeline"
+    description: "Configurar Azure AD B2C, RBAC, policy-based authorization"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-design"
+    acceptance_criteria:
+      - "Microsoft.Identity.Web configurado"
+      - "RBAC com policies por bounded context"
+      - "JWT validation middleware"
+      - "Secure headers middleware"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-010
+    category: pattern
+    reference_id: PAT-010
+    title: "IaC / GitOps — Terraform modules + Bicep templates para Azure resources"
+    description: "Infraestrutura como código com Terraform e Bicep para todos os recursos Azure (AKS/App Service, SQL, Redis, Key Vault, AppInsights, ACR)"
+    status: in-progress
+    priority: medium
+    agent_responsible: "ava-devops-iac-azure"
+    acceptance_criteria:
+      - "terraform/versions.tf com providers pinados (azurerm ~> 4.0, azuread ~> 3.0)"
+      - "terraform/variables.tf com tipos, descrições e validações"
+      - "terraform/locals.tf com mandatory_tags e naming convention"
+      - "terraform/outputs.tf com todos os endpoints exportados"
+      - "terraform/main.tf com module calls em ordem de dependência"
+      - "Módulo Terraform: networking (VNet 10.0.0.0/16, subnets app/data/aks)"
+      - "Módulo Terraform: keyvault (soft-delete por env, purge-protection em prod, network ACLs)"
+      - "Módulo Terraform: sql (TLS 1.2, TDE on, sem acesso público em staging/prod)"
+      - "Módulo Terraform: redis (SSL apenas, TLS 1.2, SKU por env)"
+      - "Módulo Terraform: acr (admin disabled, SKU por env)"
+      - "Módulo Terraform: aks ou app-service (condicional por architecture_mode)"
+      - "Módulo Terraform: appinsights (retention_in_days: 30/90/365 por env)"
+      - "terraform/environments/{dev,staging,prod}/terraform.tfvars com SKU tiers — sem secrets"
+      - "bicep/main.bicep com targetScope subscription e module calls com dependsOn"
+      - "bicep/modules/*.bicep equivalentes aos módulos Terraform — mesma segurança"
+      - "bicep/environments/{dev,staging,prod}.bicepparam sem secrets"
+      - "Nenhum secret, senha ou connection string em .tf, .tfvars ou .bicepparam"
+      - "Todos os recursos tagueados com mandatory_tags"
+      - "Secrets gerados por random_password e armazenados imediatamente no Key Vault"
+    dependencies: ["ARQ-007"]
+
+  # ─── PRINCIPLES ──────────────────────────────────────────────────────────────
+
+  - id: ARQ-011
+    category: principle
+    reference_id: PRINC-001
+    title: "Observabilidade — OpenTelemetry + Serilog + Application Insights"
+    description: "Configurar stack de observabilidade completa (logs, metrics, traces)"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "Serilog com enrichers (correlation ID, machine name, environment)"
+      - "OpenTelemetry SDK configurado"
+      - "Trace propagation W3C"
+      - "Custom metrics por módulo"
+      - "Application Insights exporter"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-012
+    category: principle
+    reference_id: PRINC-002
+    title: "Código Defensivo — Validation + Error handling pipeline"
+    description: "FluentValidation em todo Command/Query, global exception handler, ProblemDetails"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "FluentValidation com AbstractValidator por Command/Query"
+      - "ValidationBehavior no MediatR pipeline"
+      - "GlobalExceptionHandler middleware"
+      - "ProblemDetails (RFC 9457) para error responses"
+    dependencies: ["ARQ-003"]
+
+  - id: ARQ-013
+    category: principle
+    reference_id: PRINC-003
+    title: "Automação — CI/CD pipelines Azure DevOps"
+    description: "Pipelines de build, test, deploy com quality gates"
+    status: pending
+    priority: high
+    agent_responsible: "ava-devops-pipeline"
+    acceptance_criteria:
+      - "Pipeline de CI: build + test + SAST + coverage"
+      - "Pipeline de CD: deploy por environment"
+      - "Quality gates bloqueantes"
+      - "Artifact publishing"
+    dependencies: ["ARQ-007"]
+
+  - id: ARQ-014
+    category: principle
+    reference_id: PRINC-004
+    title: "Evolução Incremental — Feature flags + API versioning"
+    description: "Feature flags com Azure App Configuration, API versioning strategy"
+    status: pending
+    priority: medium
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "Azure App Configuration com feature management"
+      - "IFeatureManager injetável"
+      - "API versioning com deprecation headers"
+    dependencies: ["ARQ-005"]
+
+  - id: ARQ-015
+    category: principle
+    reference_id: PRINC-005
+    title: "Privacidade e Compliance by Design (LGPD/GDPR/CCPA/HIPAA conforme country)"
+    description: "Data classification, audit trail para PII, anonymization hooks — regulação derivada de project-config.yaml → country"
+    status: pending
+    priority: high
+    agent_responsible: "ava-tobe-architecture-design"
+    acceptance_criteria:
+      - "Data classification annotations ([PersonalData], [Sensitive])"
+      - "Audit trail interceptor para entidades auditáveis"
+      - "Soft delete para direito ao esquecimento"
+      - "Encryption at rest (TDE) + in transit (TLS 1.3)"
+    dependencies: ["ARQ-004"]
+
+  # ─── CROSS-CUTTING ──────────────────────────────────────────────────────────
+
+  - id: ARQ-016
+    category: cross-cutting
+    reference_id: CC-001
+    title: "Authentication & Authorization — Azure AD B2C integration"
+    description: "Integração completa com Azure AD B2C, RBAC, policies"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-tobe-architecture-design"
+    acceptance_criteria:
+      - "Azure AD B2C tenant configurado"
+      - "Login/logout flows"
+      - "Role-based access control"
+      - "Policy-based fine-grained authorization"
+    dependencies: ["ARQ-009"]
+
+  - id: ARQ-017
+    category: cross-cutting
+    reference_id: CC-002
+    title: "Structured Logging — Serilog sinks + enrichers"
+    description: "Configuração completa de logging estruturado"
+    status: pending
+    priority: high
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "Serilog sinks: Console, ApplicationInsights, File (dev)"
+      - "Enrichers: CorrelationId, MachineName, Environment, UserId"
+      - "Log levels configuráveis por namespace"
+    dependencies: ["ARQ-011"]
+
+  - id: ARQ-018
+    category: cross-cutting
+    reference_id: CC-003
+    title: "Exception Handling — Global middleware + ProblemDetails"
+    description: "Exception handling centralizado com respostas padronizadas"
+    status: pending
+    priority: high
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "GlobalExceptionMiddleware"
+      - "Mapeamento exception → HTTP status code"
+      - "ProblemDetails com trace ID"
+      - "Sem leak de stack trace em produção"
+    dependencies: ["ARQ-012"]
+
+  - id: ARQ-019
+    category: cross-cutting
+    reference_id: CC-004
+    title: "Caching — Redis distributed + IMemoryCache local"
+    description: "Estratégia de cache em dois níveis"
+    status: pending
+    priority: medium
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "IDistributedCache com Redis"
+      - "IMemoryCache para hot data"
+      - "Cache invalidation via domain events"
+      - "Cache-aside pattern implementado"
+    dependencies: ["ARQ-001"]
+
+  - id: ARQ-020
+    category: cross-cutting
+    reference_id: CC-005
+    title: "Health Checks — Liveness, Readiness, Startup probes"
+    description: "Health check endpoints para orquestração de containers"
+    status: pending
+    priority: high
+    agent_responsible: "ava-tobe-architecture-technical"
+    acceptance_criteria:
+      - "/health/live — processo vivo"
+      - "/health/ready — dependências OK (DB, Redis, external APIs)"
+      - "/health/startup — inicialização completa"
+      - "Integração com Azure Container Apps probes"
+    dependencies: ["ARQ-007"]
+
+  - id: ARQ-021
+    category: cross-cutting
+    reference_id: CC-010
+    title: "Database Migrations — EF Core migrations pipeline"
+    description: "Migrations automatizadas, idempotentes, versionadas"
+    status: pending
+    priority: high
+    agent_responsible: "ava-coder-dotnet-backend"
+    acceptance_criteria:
+      - "Migration por bounded context (schema isolation)"
+      - "Idempotent SQL scripts para rollback"
+      - "Migration no pipeline de CD (antes do deploy)"
+    dependencies: ["ARQ-001", "ARQ-002"]
+
+  # ─── QUALITY GATES ──────────────────────────────────────────────────────────
+
+  - id: ARQ-022
+    category: quality-gate
+    title: "Code Coverage Gate — 80% line / 70% branch"
+    description: "Configurar Coverlet + ReportGenerator no pipeline"
+    status: pending
+    priority: high
+    agent_responsible: "ava-devops-pipeline"
+    acceptance_criteria:
+      - "Coverlet integrado ao test run"
+      - "ReportGenerator para relatório HTML"
+      - "Pipeline falha se < 80% line coverage"
+      - "Pipeline falha se < 70% branch coverage"
+    dependencies: ["ARQ-013"]
+
+  - id: ARQ-023
+    category: quality-gate
+    title: "Static Analysis Gate — SonarQube quality gate"
+    description: "SonarQube/SonarCloud integrado ao pipeline"
+    status: pending
+    priority: high
+    agent_responsible: "ava-devops-pipeline"
+    acceptance_criteria:
+      - "SonarQube quality gate = pass"
+      - "Zero critical/blocker issues"
+      - "Duplication < 3%"
+      - "Code smells < 10 por módulo"
+    dependencies: ["ARQ-013"]
+
+  - id: ARQ-024
+    category: quality-gate
+    title: "Security Gate — SAST + Dependency scan"
+    description: "SAST e dependency scanning no pipeline de CI"
+    status: pending
+    priority: critical
+    agent_responsible: "ava-devops-pipeline"
+    acceptance_criteria:
+      - "SAST limpo (zero critical/high)"
+      - "Dependency scan sem vulnerabilidades critical/high"
+      - "OWASP Top 10 compliance verificada"
+    dependencies: ["ARQ-013"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SUMMARY
+# ─────────────────────────────────────────────────────────────────────────────
+summary:
+  total_items: 24
+  by_status:
+    pending: 24
+    in_progress: 0
+    done: 0
+    blocked: 0
+  by_priority:
+    critical: 8
+    high: 12
+    medium: 4
+    low: 0
+  by_category:
+    pattern: 10
+    principle: 5
+    cross_cutting: 6
+    quality_gate: 3

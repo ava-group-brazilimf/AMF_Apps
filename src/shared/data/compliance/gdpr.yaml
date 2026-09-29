@@ -1,0 +1,147 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GDPR — General Data Protection Regulation (EU/EEA)
+# Regulation (EU) 2016/679 — Effective since May 25, 2018
+# Authority: National DPAs + EDPB (European Data Protection Board)
+# Jurisdiction: EU/EEA member states
+# ─────────────────────────────────────────────────────────────────────────────
+
+id: gdpr
+name: "General Data Protection Regulation"
+jurisdiction:
+  countries: ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO"]
+  authority: "National DPA + EDPB"
+  authority_full_name: "European Data Protection Board"
+
+# Timelines and retention
+retention:
+  default_days: null                      # No fixed default — must be proportional to purpose (Art. 5.1.e)
+  breach_notification_hours: 72           # Art. 33 — notify supervisory authority within 72 hours
+  data_subject_response_days: 30          # Art. 12.3 — respond within one month (extendable +2 months)
+
+# Data subject rights (Arts. 15–22)
+data_subject_rights:
+  - id: DSR-01
+    right: "access"
+    description: "Right of access by the data subject"
+    article: "Art. 15"
+  - id: DSR-02
+    right: "rectification"
+    description: "Right to rectification of inaccurate data"
+    article: "Art. 16"
+  - id: DSR-03
+    right: "erasure"
+    description: "Right to erasure (right to be forgotten)"
+    article: "Art. 17"
+  - id: DSR-04
+    right: "restriction"
+    description: "Right to restriction of processing"
+    article: "Art. 18"
+  - id: DSR-05
+    right: "portability"
+    description: "Right to data portability in machine-readable format"
+    article: "Art. 20"
+  - id: DSR-06
+    right: "object"
+    description: "Right to object to processing (including profiling)"
+    article: "Art. 21"
+  - id: DSR-07
+    right: "automated_decision"
+    description: "Right not to be subject to automated decision-making"
+    article: "Art. 22"
+  - id: DSR-08
+    right: "notification"
+    description: "Right to be informed of rectification/erasure/restriction"
+    article: "Art. 19"
+
+# Legal bases for processing (Art. 6)
+legal_bases:
+  - "consent"                             # Art. 6.1.a
+  - "contract_performance"                # Art. 6.1.b
+  - "legal_obligation"                    # Art. 6.1.c
+  - "vital_interests"                     # Art. 6.1.d
+  - "public_interest"                     # Art. 6.1.e
+  - "legitimate_interest"                 # Art. 6.1.f
+
+# Security requirements (Art. 32)
+security_requirements:
+  - id: SEC-01
+    article: "Art. 32"
+    requirement: "Appropriate technical and organisational measures"
+    controls:
+      - "Pseudonymisation and encryption of personal data"
+      - "Ensure ongoing confidentiality, integrity, availability"
+      - "Restore availability and access in a timely manner"
+      - "Regular testing and evaluation of measures"
+  - id: SEC-02
+    article: "Art. 25"
+    requirement: "Data protection by design and by default"
+    controls:
+      - "Data minimisation"
+      - "Purpose limitation"
+      - "Storage limitation"
+      - "Default privacy settings (most protective)"
+  - id: SEC-03
+    article: "Art. 35"
+    requirement: "Data Protection Impact Assessment (DPIA)"
+    controls:
+      - "Systematic description of processing"
+      - "Assessment of necessity and proportionality"
+      - "Risk assessment to rights and freedoms"
+      - "Measures to address risks"
+  - id: SEC-04
+    article: "Art. 37–39"
+    requirement: "Data Protection Officer (DPO)"
+    controls:
+      - "DPO appointment (mandatory for public bodies, large-scale processing)"
+      - "DPO independence and reporting to highest management"
+      - "DPO contact published and communicated to supervisory authority"
+
+# Cross-border transfer mechanisms (Chapter V, Arts. 44–49)
+cross_border_transfers:
+  - mechanism: "adequacy_decision"
+    description: "Transfer to countries with adequate protection level"
+    article: "Art. 45"
+  - mechanism: "standard_contractual_clauses"
+    description: "SCCs approved by the Commission"
+    article: "Art. 46.2.c"
+  - mechanism: "binding_corporate_rules"
+    description: "BCRs for intra-group transfers"
+    article: "Art. 47"
+  - mechanism: "derogations"
+    description: "Explicit consent, contract necessity, public interest"
+    article: "Art. 49"
+
+# PII identifiers in GDPR context
+pii_identifiers:
+  - "Name"
+  - "Email address"
+  - "Phone number"
+  - "Physical address"
+  - "IP address"
+  - "Cookie identifiers"
+  - "Location data"
+  - "National ID numbers"
+  - "Financial data (IBAN, credit card)"
+  - "Biometric data"
+  - "Health data"
+  - "Genetic data"
+
+# Special categories of data (Art. 9) — stricter processing rules
+sensitive_data:
+  - "Racial or ethnic origin"
+  - "Political opinions"
+  - "Religious or philosophical beliefs"
+  - "Trade union membership"
+  - "Genetic data"
+  - "Biometric data (for identification)"
+  - "Health data"
+  - "Sex life or sexual orientation"
+
+# Sanctions (Art. 83)
+sanctions:
+  - type: "tier_1"
+    description: "Up to €10M or 2% of global annual turnover"
+    applies_to: "Arts. 8, 11, 25–39, 42, 43 violations"
+  - type: "tier_2"
+    description: "Up to €20M or 4% of global annual turnover"
+    applies_to: "Arts. 5–9, 12–22, 44–49 violations, non-compliance with DPA order"

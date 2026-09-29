@@ -1,0 +1,29 @@
+<Project>
+
+  <!--
+    Propriedades comuns a TODOS os projetos da solution. Centralizar aqui evita
+    que cada .csproj gerado depois pelo codegen redeclare TargetFramework e a
+    solution acabe multi-target por acidente.
+  -->
+  <PropertyGroup>
+    <TargetFramework>%%TFM%%</TargetFramework>
+    <LangVersion>%%LANG_VERSION%%</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <WarningsAsErrors></WarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- Quando %%REDIRECT_OUTPUT%% for true, o scaffold injeta abaixo:
+         BaseOutputPath/BaseIntermediateOutputPath + target CreateBaseOutputDirs.
+         Configuravel via project-config.yaml → build_output. -->
+    %%OUTPUT_REDIRECT%%
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Company>%%COMPANY%%</Company>
+    <Product>%%SOLUTION_PREFIX%%</Product>
+    <Copyright>%%COPYRIGHT%%</Copyright>
+  </PropertyGroup>
+
+  %%CREATE_BASE_OUTPUT_DIRS%%
+
+</Project>

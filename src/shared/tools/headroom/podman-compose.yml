@@ -1,0 +1,47 @@
+# AVA Fabric — Headroom proxy via Podman Compose
+#
+#   podman-compose -f src/shared/tools/headroom/podman-compose.yml up -d
+#   podman-compose -f src/shared/tools/headroom/podman-compose.yml logs -f
+#   podman-compose -f src/shared/tools/headroom/podman-compose.yml down
+#
+# Este é um caminho ALTERNATIVO. O fluxo suportado no dia a dia é o venv:
+#   .\src\shared\tools\headroom\run_standalone.ps1
+#
+# Pré-requisito: um .env na raiz do repo com ANTHROPIC_TARGET_API_URL (copie de
+# .env.example). O container roda como usuário não-root e publica a porta APENAS
+# em 127.0.0.1 — a chave do Foundry trafega por aqui (Artigo VII).
+
+services:
+  headroom-proxy:
+    container_name: ava-headroom-proxy
+    image: ava-headroom:latest
+    build:
+      # Contexto = raiz do repo, para o build enxergar ./vendor
+      context: ../../../..
+      dockerfile: src/shared/tools/headroom/Containerfile
+      args:
+        HEADROOM_EXTRAS: "proxy,mcp,code,memory,otel"
+    ports:
+      - "127.0.0.1:8787:8787"
+    environment:
+      HEADROOM_HOST: "0.0.0.0"
+      HEADROOM_PORT: "8787"
+      HEADROOM_BACKEND: "anthropic"
+      HEADROOM_MODE: "token"
+      HEADROOM_TELEMETRY: "off"
+      HEADROOM_LOG_FILE: "/data/proxy-requests.jsonl"
+      HEADROOM_REQUEST_TIMEOUT: "600"
+      # Upstream real do Foundry (NÃO existe flag --upstream no headroom).
+      ANTHROPIC_TARGET_API_URL: "${ANTHROPIC_TARGET_API_URL:-https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic}"
+    volumes:
+      - headroom-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8787), 3).close()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  headroom-data:

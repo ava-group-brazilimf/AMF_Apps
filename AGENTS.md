@@ -1,0 +1,169 @@
+# AGENTS.md — Regras gerais da esteira AVA Fabric
+
+Guardrails que **todo** agente da esteira herda, em qualquer fase e para **qualquer linguagem
+legada**. Este arquivo é a fonte única dessas regras.
+
+- No fluxo interativo, o GitHub Copilot CLI carrega este arquivo automaticamente.
+- No fluxo do runner (`--no-custom-instructions`), o bloco `AGENTS-CORE` abaixo é **injetado** em
+  cada `.github/agents/*.agent.md` por `src/shared/tools/generate_agent_wrappers.py`.
+
+> ⚠️ Editar aqui e rodar o gerador. Nunca editar o bloco dentro de um wrapper — ele é sobrescrito, e
+> `tests/tools/test_agent_wrappers.py` reprova o drift.
+>
+> Reformatar este arquivo (inclusive por formatador automático de markdown) **também** é drift:
+> o bloco é comparado byte a byte. Depois de qualquer edição, rode
+> `python src/shared/tools/generate_agent_wrappers.py`.
+
+<!-- AGENTS-CORE:START -->
+
+## 1. Escopo
+
+A esteira executa 8 fases sequenciais sobre um sistema legado, produzindo artefatos em disco:
+
+```
+F1 asis-diagnostic    → outputs/asis/            F5 qa-agents     → outputs/qa/
+F2 tobe-architecture  → outputs/tobe/docs/       F6 devops-agents → outputs/tobe/devops/
+F3 prototype          → outputs/tobe/prototype   F7 deliverables  → outputs/deliverables/
+F4 tech-stack         → outputs/tobe/source-code F8 summary       → outputs/summary/
+```
+
+Dois papéis, nunca misturados:
+
+- **Orquestrador de fase** — resolve configuração, aplica gates, invoca os agentes da fase e
+  consolida. Não produz análise.
+- **Agente** — produz os artefatos do seu Output Contract e nada além disso.
+
+## 2. Regras de integridade de saída (obrigatórias)
+
+**R1 — Só agente escreve em `outputs/`.** Todo artefato nasce da execução completa dos Execution
+Steps da spec — não de um assistente conversacional editando o arquivo.
+
+**R2 — Leia a spec inteira antes de produzir qualquer coisa** — todas as seções, e depois todo
+arquivo do `## Input Contract`. Não infira comportamento pelo nome do agente nem improvise seções.
+
+**R3 — Pré-requisito ausente é parada dura.** Se algo do Input Contract falta, pare e reporte qual
+agente precisa rodar antes; não preencha com valor plausível. Pelo runner, o que falta já chega
+listado no context pack.
+
+**R4 — `project-config.yaml → overrides` vence.** Ordem de resolução, da maior para a menor
+prioridade: `overrides` do projeto → arquivo de configuração de stack → defaults internos do agente.
+Chave presente em `overrides` sobrepõe qualquer outra fonte.
+
+**R5 — Número vem de artefato, nunca de estimativa.** Se a fonte está ausente ou incompleta, reporte
+a lacuna explicitamente. `artifacts_confirmed` É MEDIDO, NUNCA DECLARADO.
+
+## 3. Protocolo de contexto (retrieval-first)
+
+A janela é finita e o legado não cabe nela. Ingestão exaustiva é a causa-raiz documentada de falha
+da esteira.
+
+**C1 — Context pack primeiro.** Se existe
+`projects/{project_name}/outputs/.context/{agent_id}/context-pack.md`, ele é a **autoridade** do seu
+contexto: leia-o antes de qualquer outra coisa. Sem pack, vale o `## Input Contract` clássico.
+
+**C2 — Ingestão exaustiva é proibida.** Nada de "varrer todos os arquivos e classificar cada um".
+Comece pelo índice/manifesto, priorize, e recupere só as fatias relevantes.
+
+**C3 — Consulta dirigida em vez de leitura aberta.** Procure por símbolo, assinatura ou padrão
+(`grep`/`glob`, faixa de linhas). Nunca leia um arquivo grande inteiro para achar uma linha.
+
+**C4 — Artefato ≥ 200 KB não se lê inteiro.** Extraia a fatia. Artefatos de AST bruto são **negados
+pelo hook de permissão** — use a ferramenta de consulta indicada na seção 3 do seu context pack.
+
+**C5 — Orçamento.** Cada processo tem cerca de **106.000 tokens úteis** para pack, spec e trabalho.
+Se sua fatia não cabe, **degrade e registre a decisão** no artefato de saída. Truncar em silêncio
+faz o relatório afirmar uma cobertura que não houve.
+
+**C6 — Handoff por extração.** Ao consumir artefato de outro agente, puxe só as linhas ou os valores
+que precisa. Não releia o arquivo inteiro para usar três campos.
+
+**C7 — Não releia o código legado se o artefato já responde.** A fatia decodificada e os artefatos
+upstream são a evidência; `repository_path` não é fonte de consulta ad hoc.
+
+**C8 — Verificar arquivo é `glob`/`grep`, não shell.** Medido: `glob` falha em 4 de 545 e `grep` em
+3 de 745 (0%), e as poucas falhas são path inexistente. `powershell` falha em 22 de 1.191 (1%) e tem
+um modo de falha exclusivo — colisão de `shellId`. Não troque `glob` por `Get-ChildItem`.
+
+## 4. Protocolo do `shared-context.md`
+
+É um **índice**, não um depósito: status da fase, lista de artefatos produzidos e decisões tomadas.
+
+- **Passar paths, nunca conteúdo.** Nenhum artefato é copiado para dentro dele.
+- Mantido pelos orquestradores. Um agente lê; não reescreve o arquivo inteiro.
+- Se você precisa acrescentar algo, acrescente uma linha de índice — não um bloco de relatório.
+
+## 5. Escrita em lote e delegação
+
+Todo o Output Contract vai em **uma única** chamada de shell, conforme
+`src/modules/ava-fabric-agents/asis-diagnostic/shared/batch-write-protocol.md`. Uma chamada por
+arquivo multiplica o overhead de startup por N e é a maior fonte isolada de lentidão medida na
+esteira.
+
+**D1 — Nunca delegue a `general-purpose` nem a `explore`.** Medido em 56 sessões: trazem modelo
+próprio e, sob provider BYOK, a troca dispara validação que falha — **53 de 53 e 19 de 24 voltaram
+com zero tool calls e zero artefatos**, e o orquestrador seguiu como se tivessem produzido algo.
+
+**D2 — Delegue de forma síncrona ou execute inline.** Exceção: processo determinístico que grava o
+próprio output (script de análise) pode rodar em background — não é um agente LLM.
+
+**D3 — Nunca aninhe delegação.** O CLI corta em profundidade 4, e esta é a maior fonte de falha
+medida: **289 das 345 falhas de `task` (84%) são `Maximum sub-agent depth of 4 reached`**. Quem
+delega é o orquestrador da fase; um agente delegado **não** delega de novo. Se precisa de
+paralelismo, o orquestrador dispara todos na mesma resposta.
+
+**D4 — Escrita simples não se delega.** Criar ou editar arquivo é `create`/`edit` direto. Delegar
+uma escrita gasta um agente inteiro e consome um nível de profundidade sem ganho.
+
+**D5 — Ferramenta que não existe no CLI não vai no `tools:`.** As reais são `view`, `create`,
+`edit`, `glob`, `grep`, `powershell`, `task`, `web_fetch`, `web_search`. `memory`,
+`sequential-thinking`, `browser`, `read_file` e `write_file` **não existem** — declará-las faz o
+agente tentar usá-las, falhar em silêncio e improvisar a saída.
+
+## 6. Guardrails comuns
+
+- **O legado é read-only.** Nunca escreva, mova ou apague nada sob `repository_path`.
+- **Credenciais são mascaradas** em qualquer saída: token, chave, senha, string de conexão.
+- **`trace_id` propaga sem mutação**, da configuração do projeto até o artefato.
+- **Observabilidade**: invocado por processo isolado, **não** emita blocos de registro — quem
+  executou já registra início, fim, status, tokens e duração. Pular é o correto, não uma omissão.
+- **Diagramas** seguem `src/modules/ava-fabric-agents/shared/mermaid-guardrails.md`.
+- **Idioma dos artefatos**: pt-BR, salvo instrução em contrário na spec do agente.
+
+## 7. Caminhos
+
+```
+projects/{project_name}/
+  context/   project-config.yaml (fonte da verdade) · shared-context.md (índice de estado)
+  outputs/   .context/{agent_id}/ (context pack) · asis tobe qa deliverables summary · observability/
+```
+
+`{project_name}` é minúsculo nos contratos de saída. Comandos e paths de spec são **relativos à raiz
+do repositório** — não presuma que o diretório corrente é o do projeto.
+
+## 8. Resolução de linguagem — nenhuma regra assume uma tecnologia
+
+Este arquivo é **agnóstico de linguagem legada**. Toda decisão que dependa da tecnologia de origem
+resolve em tempo de execução:
+
+- Tecnologia do legado → `project-config.yaml → legacy_technology`
+- Extensões, padrões e idiomas dessa tecnologia → spec do agente de solução daquela tecnologia
+- Diretório do AST → `outputs/asis/ast-raw/{legacy_technology}/`
+- Stack alvo, versões e frameworks → arquitetura de referência + `overrides` do projeto
+
+Nunca escreva um nome de tecnologia legada como constante numa regra geral. Se uma instrução só faz
+sentido para uma linguagem, ela pertence à spec daquele agente, não a este arquivo.
+
+<!-- AGENTS-CORE:END -->
+
+---
+
+## Referências
+
+| Assunto                             | Onde                                                   |
+| ----------------------------------- | ------------------------------------------------------ |
+| Specs canônicas dos agentes        | `src/modules/ava-fabric-agents/{module}/agents/*.md` |
+| Wrappers do Copilot CLI (gerados)   | `.github/agents/*.agent.md`                          |
+| Entrada humana por skill            | `.github/skills/*/SKILL.md`                          |
+| Governança e artigos               | `.specify/memory/constitution.md`                    |
+| Fatos de runtime do CLI (medidos)   | `docs/copilot-cli-runtime-facts.md`                  |
+| Isolamento de janela e context pack | `specs/033-agent-isolation-context-engineering/`     |

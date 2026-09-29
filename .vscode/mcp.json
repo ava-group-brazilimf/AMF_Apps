@@ -1,0 +1,31 @@
+{
+  "servers": {
+    "ava-headroom": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/src/shared/tools/headroom/.venv/Scripts/python.exe",
+      "args": ["${workspaceFolder}/src/shared/tools/headroom/mcp_server.py"],
+      "env": {
+        "HEADROOM_ENABLED": "true",
+        "HEADROOM_TELEMETRY": "off",
+        "AVA_FOUNDRY_MODEL": "claude-sonnet-4-6",
+        "AVA_FOUNDRY_CONTEXT_LIMIT": "200000",
+        "ANTHROPIC_TARGET_API_URL": "https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic",
+        "HEADROOM_HOST": "127.0.0.1",
+        "HEADROOM_PORT": "8787"
+      }
+    },
+    "ava-headroom-cli": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/src/shared/tools/headroom/.venv/Scripts/headroom.exe",
+      "args": ["mcp", "serve"],
+      "env": {
+        "HEADROOM_TELEMETRY": "off",
+        "HEADROOM_HOST": "127.0.0.1",
+        "HEADROOM_PORT": "8787",
+        "HEADROOM_BACKEND": "anthropic",
+        "ANTHROPIC_TARGET_API_URL": "https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic",
+        "HEADROOM_LOG_FILE": "${workspaceFolder}/.headroom/proxy-requests.jsonl"
+      }
+    }
+  }
+}

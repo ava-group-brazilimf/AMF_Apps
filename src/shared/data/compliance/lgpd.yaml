@@ -1,0 +1,141 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# LGPD — Lei Geral de Proteção de Dados (Brazil)
+# Lei nº 13.709/2018 — Vigente desde setembro 2020
+# Autoridade: ANPD (Autoridade Nacional de Proteção de Dados)
+# Jurisdição: BR (Brazil)
+# ─────────────────────────────────────────────────────────────────────────────
+
+id: lgpd
+name: "Lei Geral de Proteção de Dados"
+jurisdiction:
+  countries: ["BR"]
+  authority: "ANPD"
+  authority_full_name: "Autoridade Nacional de Proteção de Dados"
+
+# Prazos e retenção
+retention:
+  default_days: 1825                      # 5 anos (prazo geral para dados pessoais)
+  breach_notification_hours: 72           # Art. 48 — comunicar à ANPD em prazo razoável (referência GDPR 72h)
+  data_subject_response_days: 15          # Art. 18 §5 — resposta ao titular em até 15 dias
+
+# Direitos do titular (Art. 18)
+data_subject_rights:
+  - id: DSR-01
+    right: "access"
+    description: "Confirmação da existência e acesso aos dados pessoais"
+    article: "Art. 18, I e II"
+  - id: DSR-02
+    right: "rectification"
+    description: "Correção de dados incompletos, inexatos ou desatualizados"
+    article: "Art. 18, III"
+  - id: DSR-03
+    right: "anonymization_blocking_deletion"
+    description: "Anonimização, bloqueio ou eliminação de dados desnecessários"
+    article: "Art. 18, IV"
+  - id: DSR-04
+    right: "portability"
+    description: "Portabilidade dos dados a outro fornecedor de serviço"
+    article: "Art. 18, V"
+  - id: DSR-05
+    right: "deletion"
+    description: "Eliminação dos dados tratados com consentimento"
+    article: "Art. 18, VI"
+  - id: DSR-06
+    right: "consent_info"
+    description: "Informação sobre compartilhamento de dados"
+    article: "Art. 18, VII"
+  - id: DSR-07
+    right: "consent_revocation"
+    description: "Revogação do consentimento"
+    article: "Art. 18, IX"
+
+# Bases legais para tratamento (Art. 7)
+legal_bases:
+  - "consent"                             # Art. 7, I
+  - "legal_obligation"                    # Art. 7, II
+  - "public_policy"                       # Art. 7, III
+  - "research"                            # Art. 7, IV
+  - "contract_execution"                  # Art. 7, V
+  - "legitimate_interest"                 # Art. 7, IX
+  - "credit_protection"                   # Art. 7, X
+
+# Requisitos de segurança (Arts. 46–50)
+security_requirements:
+  - id: SEC-01
+    article: "Art. 46"
+    requirement: "Medidas técnicas e administrativas para proteção de dados pessoais"
+    controls:
+      - "Encryption at rest and in transit"
+      - "Access control (RBAC/ABAC)"
+      - "Network segmentation"
+      - "Vulnerability management"
+  - id: SEC-02
+    article: "Art. 47"
+    requirement: "Garantia de confidencialidade por agentes de tratamento"
+    controls:
+      - "NDA com terceiros"
+      - "Treinamento de conscientização"
+      - "Logging de acesso a dados pessoais"
+  - id: SEC-03
+    article: "Art. 48"
+    requirement: "Comunicação de incidentes de segurança à ANPD e titulares"
+    controls:
+      - "Incident response plan"
+      - "Breach notification workflow"
+      - "Communication templates"
+  - id: SEC-04
+    article: "Art. 49"
+    requirement: "Privacy by Design — sistemas projetados desde a concepção"
+    controls:
+      - "Data minimization"
+      - "Purpose limitation"
+      - "PII masking in non-production"
+      - "Anonymization/pseudonymization"
+  - id: SEC-05
+    article: "Art. 50"
+    requirement: "Boas práticas e governança"
+    controls:
+      - "Data Protection Impact Assessment (DPIA)"
+      - "Records of processing activities"
+      - "DPO appointment (Encarregado)"
+      - "Privacy policy publication"
+
+# Dados considerados PII no contexto brasileiro
+pii_identifiers:
+  - "CPF"
+  - "CNPJ"
+  - "RG"
+  - "Nome completo"
+  - "Endereço"
+  - "Telefone"
+  - "E-mail"
+  - "IP address"
+  - "Geolocalização"
+  - "Dados biométricos"
+  - "Dados de saúde"
+  - "Dados financeiros (conta, cartão)"
+
+# Dados sensíveis (Art. 5, II) — tratamento com restrições adicionais
+sensitive_data:
+  - "Origem racial ou étnica"
+  - "Convicção religiosa"
+  - "Opinião política"
+  - "Filiação sindical"
+  - "Dados de saúde"
+  - "Dados genéticos"
+  - "Dados biométricos"
+  - "Vida sexual"
+
+# Sanções (Art. 52)
+sanctions:
+  - type: "warning"
+    description: "Advertência com prazo para correção"
+  - type: "fine_simple"
+    description: "Multa simples de até 2% do faturamento"
+    max_value: "R$ 50.000.000,00 por infração"
+  - type: "fine_daily"
+    description: "Multa diária"
+  - type: "data_blocking"
+    description: "Bloqueio dos dados pessoais"
+  - type: "data_deletion"
+    description: "Eliminação dos dados pessoais"

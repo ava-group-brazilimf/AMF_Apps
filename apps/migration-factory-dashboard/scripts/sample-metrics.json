@@ -1,0 +1,22 @@
+{
+  "execution_id": "runner19-1700000000",
+  "project_name": "sample",
+  "execution_mode": "full",
+  "execution_status": "completed",
+  "start_time_utc": "2026-08-26T14:42:43Z",
+  "end_time_utc": "2026-08-26T15:42:43Z",
+  "total_duration_seconds": 3600.0,
+  "total_hours": "01:00:00",
+  "token_metrics": { "total_tokens": 100, "token_in": 50, "token_out": 50 },
+  "phase_metrics": [
+    {
+      "phase_name": "F0",
+      "status": "executed",
+      "start_time_utc": "2026-08-26T14:42:43Z",
+      "end_time_utc": "2026-08-26T14:52:43Z",
+      "duration_seconds": 600.0,
+      "total_hours": "00:10:00",
+      "token_usage": { "total_tokens": 100, "token_in": 50, "token_out": 50 }
+    }
+  ]
+}

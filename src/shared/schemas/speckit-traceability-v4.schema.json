@@ -1,0 +1,552 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric/schemas/speckit-traceability-v4.schema.json",
+  "title": "SpecKit Traceability v4",
+  "description": "Rastreabilidade compilada por migration wave com múltiplas fontes verificáveis.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "trace_id",
+    "generated_at",
+    "constitution",
+    "total_tasks",
+    "graph_checksum",
+    "dependency_edges",
+    "execution_order",
+    "execution_waves",
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "4.0.0"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "constitution": {
+      "type": "string",
+      "minLength": 1
+    },
+    "total_tasks": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "graph_checksum": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "dependency_edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "execution_order": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "execution_waves": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      },
+      "description": "Tasks consolidadas. Pode ser vazio quando nao ha task declarada — nesse caso `reason` explica, e `recovery_placeholder` continua false."
+    },
+    "reconciled_from_plan": {
+      "description": "Campos que o fragment recopiou divergindo do plano; o plano venceu.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "multi_producer_tokens": {
+      "description": "Tokens com mais de um produtor — legítimo em arquitetura em camadas.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "orphan_consumes": {
+      "description": "Consumos sem produtor declarado: aresta não criada, task mantida no grafo.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "description": "Degradações determinísticas aplicadas na compilação. Espelhado em compile-warnings.json.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "owner",
+          "message",
+          "fix"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^C[0-9]{3}$"
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fix": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "COMPLETE",
+        "COMPLETE_WITH_WARNINGS",
+        "INCOMPLETE"
+      ],
+      "description": "Veredito da consolidacao. INCOMPLETE e reservado a falha TECNICA que impeca ler ou gravar; warning de planejamento produz COMPLETE_WITH_WARNINGS, nunca INCOMPLETE."
+    },
+    "recovery_placeholder": {
+      "type": "boolean",
+      "description": "false em artefato produzido pelo consolidador. true so em placeholder do speckit_output_reconciler, que significa 'o produtor nao rodou' — nao 'rodou e nao achou nada'."
+    },
+    "artifacts_written": {
+      "type": "boolean",
+      "description": "Se esta execucao gravou os artefatos em disco."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Motivo explicito quando entries esta legitimamente vazio."
+    },
+    "validation_summary": {
+      "type": "object",
+      "description": "Contadores de inconsistencia recuperavel desta consolidacao.",
+      "properties": {
+        "warnings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownership_conflicts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "broken_edges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "degraded_order": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "ownership_conflicts": {
+      "type": "array",
+      "description": "Conflitos de ownership de target_file, enumerados TODOS. Um conflito nunca descarta tasks — ele e registrado aqui e nas entries afetadas.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "broken_edges": {
+      "type": "array",
+      "description": "Arestas removidas para desfazer ciclo no grafo de dependencias.",
+      "items": {
+        "type": "object"
+      }
+    },
+    "prototype_checksum": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null,
+      "description": "sha256 do prototipo no momento da compilacao. Base de PROTOTYPE-CHECKSUM-CONSISTENCY."
+    },
+    "integration_findings": {
+      "type": "array",
+      "default": [],
+      "description": "Achados determinsticos do elo frontend<->backend (§12)."
+    },
+    "incompatible_verify_commands": {
+      "type": "array",
+      "default": [],
+      "description": "verify_command trocados pelo perfil canonico, com o original."
+    }
+  },
+  "$defs": {
+    "edge": {
+      "type": "object",
+      "required": [
+        "from",
+        "to",
+        "reason",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "explicit_task",
+            "producer_consumer",
+            "same_file",
+            "group_dependency",
+            "migration_wave_dependency",
+            "scaffold_dependency"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source_ref": {
+      "type": "object",
+      "required": [
+        "artifact",
+        "anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "anchor": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "title",
+        "spec_id",
+        "plan_id",
+        "feature",
+        "group",
+        "migration_wave_id",
+        "migration_wave_order",
+        "task_type",
+        "target_stack",
+        "source_refs",
+        "target_files",
+        "action",
+        "depends_on",
+        "backend_dependencies",
+        "acceptance",
+        "verify_command",
+        "priority",
+        "story_points",
+        "topological_rank",
+        "execution_wave"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spec_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plan_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "feature": {
+          "type": "string",
+          "minLength": 1
+        },
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "migration_wave_id": {
+          "type": "string",
+          "pattern": "^W[0-9]+$"
+        },
+        "migration_wave_order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "task_type": {
+          "enum": [
+            "backend",
+            "frontend"
+          ]
+        },
+        "target_stack": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/source_ref"
+          }
+        },
+        "rule_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "api_ops": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "screen_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "test_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "target_files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "action": {
+          "enum": [
+            "create",
+            "update",
+            "delete"
+          ]
+        },
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "backend_dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "acceptance": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "verify_command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "enum": [
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "story_points": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "topological_rank": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "execution_wave": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_file": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Alvo unico da task; espelha target_files[0]."
+        },
+        "ownership_status": {
+          "enum": [
+            "OWNER",
+            "CONFLICT",
+            null
+          ],
+          "description": "CONFLICT quando mais de uma feature reivindicou create do mesmo arquivo e a resolucao foi desempate, nao decisao do plano."
+        },
+        "ownership_claims": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Todas as reivindicacoes do target_file."
+        },
+        "ownership_conflict": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Codigo do conflito (ver compile-warnings.json)."
+        },
+        "action_original": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Action declarada no plano, quando a consolidacao a converteu para update."
+        },
+        "source_feature": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_wave": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_fragment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "screen_ids": {
+          "type": "array",
+          "default": [],
+          "description": "Telas do prototipo cobertas pela task.",
+          "items": {
+            "type": "string",
+            "pattern": "^SCR-[A-Z0-9-]+$"
+          }
+        },
+        "component_ids": {
+          "type": "array",
+          "default": [],
+          "description": "Componentes implementados pela task.",
+          "items": {
+            "type": "string",
+            "pattern": "^CMP-[A-Z0-9-]+$"
+          }
+        },
+        "route_ids": {
+          "type": "array",
+          "default": [],
+          "description": "Rotas configuradas pela task.",
+          "items": {
+            "type": "string",
+            "pattern": "^RTE-[A-Z0-9-]+$"
+          }
+        },
+        "design_tokens": {
+          "type": "array",
+          "default": [],
+          "description": "Tokens materializados pela task.",
+          "items": {
+            "type": "string",
+            "pattern": "^TOK-[A-Z0-9-]+$"
+          }
+        },
+        "flow_ids": {
+          "type": "array",
+          "default": [],
+          "description": "Fluxos cobertos por tasks e2e.",
+          "items": {
+            "type": "string",
+            "pattern": "^FLW-[A-Z0-9-]+$"
+          }
+        },
+        "work_kind": {
+          "type": "string",
+          "default": "",
+          "description": "Taxonomia fina; task_type continua frontend/backend."
+        },
+        "prototype_refs": {
+          "type": "array",
+          "default": [],
+          "description": "Ancoras no prototipo que a task reproduz."
+        },
+        "verify_profile": {
+          "type": "string",
+          "default": "",
+          "description": "Perfil canonico resolvido por verify_profiles."
+        },
+        "verify_resolved_from": {
+          "type": "string",
+          "default": "",
+          "description": "Origem do comando: stack-verifier, package-json-script, stack-default..."
+        }
+      }
+    }
+  }
+}

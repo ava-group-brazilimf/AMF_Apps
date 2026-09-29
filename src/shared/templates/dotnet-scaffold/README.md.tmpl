@@ -1,0 +1,34 @@
+# %%SOLUTION_PREFIX%% — Backend
+
+Scaffold determinístico gerado por `src/shared/tools/f4s_dotnet_scaffold.py`
+a partir de `src/shared/templates/dotnet-scaffold/`.
+
+- **Stack**: .NET (`%%TFM%%`), C# `%%LANG_VERSION%%`
+- **Diretório canônico**: `source-code/backend/` — definido pela responsabilidade
+  arquitetural, nunca pela tecnologia.
+- **Bounded contexts**: %%BC_LIST%%
+
+## Estrutura
+
+```
+%%SOLUTION_PREFIX%%.sln
+Directory.Build.props      propriedades comuns
+Directory.Packages.props   Central Package Management
+src/Shared/                SharedKernel (Domain + Infrastructure)
+src/<BoundedContext>/      Domain / Application / Infrastructure por BC
+src/Api/                   host ASP.NET Core
+tests/                     xUnit
+```
+
+## Verificação
+
+```bash
+python src/shared/utils/verify_dotnet_solution.py --root <caminho>/source-code/backend --json
+```
+
+O verificador valida estrutura, CPM e PackageReferences antes de rodar `dotnet
+restore`, `dotnet build` e `dotnet test`. O commit de baseline só acontece
+depois que todos passam.
+
+> Este esqueleto não contém regra de negócio. As features são geradas depois,
+> pelos agentes coder, e só após a aprovação humana do baseline.

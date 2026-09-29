@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.idea/
+*.iml
+
+# Environment
+.env
+.env.local
+
+# Test results (por plataforma)
+automated_test/web/results/*
+!automated_test/web/results/.gitkeep
+automated_test/api/results/*
+!automated_test/api/results/.gitkeep
+automated_test/mobile/results/*
+!automated_test/mobile/results/.gitkeep
+
+# Mobile apps (binários são pesados)
+automated_test/mobile/apps/*.apk
+automated_test/mobile/apps/*.ipa
+!automated_test/mobile/apps/.gitkeep
+
+# Evidence (binary files)
+manual_test/**
+!manual_test/**/
+!manual_test/**/.gitkeep
+
+# Logs
+scripts/logs/*
+!scripts/logs/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+target/
+*.class
+*.jar
+
+# Package managers
+package-lock.json
+yarn.lock

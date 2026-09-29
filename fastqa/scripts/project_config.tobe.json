@@ -1,0 +1,29 @@
+{
+    "_comment": "Override de configuração FastQA para a fase TO-BE. Gerado pelo bridge-fastqa-tobe. Os campos aqui definidos sobrescrevem o project_config.json durante a execução TO-BE.",
+    "_managed_by": "ava-qa-bridge-fastqa-tobe",
+    "_version": "1.0.0",
+    "analysis": {
+        "purpose": "TO-BE Migration QA",
+        "application_description": "Testes de API black-box e exploratórios contra o sistema TO-BE migrado",
+        "domain": "financial"
+    },
+    "platform": {
+        "type": "API",
+        "details": {
+            "api_base_url": "${API_BASE_URL}",
+            "swagger_url": "${SWAGGER_URL}",
+            "browsers": [],
+            "devices": []
+        }
+    },
+    "testing_approach": {
+        "use_gherkin_bdd": true,
+        "test_case_format": "gherkin",
+        "test_levels": [
+            "Integration",
+            "API",
+            "Security",
+            "Exploratory"
+        ]
+    }
+}

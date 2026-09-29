@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric/schemas/speckit-task-fragment.schema.json",
+  "title": "SpecKit Task Fragment",
+  "description": "Tasks locais de uma feature. O compilador resolve referencias globais depois que todos os fragments existem. v3.1.0 adiciona os campos de rastreabilidade do prototipo e o verify_profile; todos OPCIONAIS e retrocompativeis.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "trace_id",
+    "feature",
+    "spec_id",
+    "plan_id",
+    "migration_wave_id",
+    "migration_wave_order",
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "3.0.0",
+        "3.1.0"
+      ]
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "feature": {
+      "type": "string",
+      "pattern": "^[0-9]{3}-[a-z0-9-]+$"
+    },
+    "spec_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "migration_wave_id": {
+      "type": "string",
+      "pattern": "^W[0-9]+$"
+    },
+    "migration_wave_order": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "title",
+        "group",
+        "task_type",
+        "target_stack",
+        "source_refs",
+        "target_file",
+        "action",
+        "depends_on",
+        "depends_on_groups",
+        "produces",
+        "consumes",
+        "acceptance",
+        "priority",
+        "story_points"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "group": {
+          "type": "string",
+          "pattern": "^G-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "task_type": {
+          "enum": [
+            "backend",
+            "frontend"
+          ]
+        },
+        "target_stack": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/source_ref"
+          }
+        },
+        "rule_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "api_ops": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "screen_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "test_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "target_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "enum": [
+            "create",
+            "update",
+            "delete"
+          ]
+        },
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^T-[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3}$"
+          }
+        },
+        "depends_on_groups": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^G-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+          }
+        },
+        "produces": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "consumes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "acceptance": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "verify_command": {
+          "type": "string",
+          "description": "Legado. Normalizado contra verify_profile na compilacao."
+        },
+        "priority": {
+          "enum": [
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "story_points": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "work_kind": {
+          "enum": [
+            "design_system",
+            "frontend_layout",
+            "frontend_component",
+            "frontend_page",
+            "frontend_route",
+            "frontend_form",
+            "frontend_validation",
+            "frontend_api_client",
+            "frontend_state",
+            "frontend_integration",
+            "backend_api_contract",
+            "backend_api_implementation",
+            "backend_domain",
+            "backend_persistence",
+            "integration_test",
+            "visual_regression_test",
+            "accessibility_test",
+            "end_to_end_test",
+            "scaffold"
+          ],
+          "description": "Taxonomia fina do trabalho. NAO substitui task_type, que continua sendo a chave de roteamento da F4 (f4_routing.component_type_for_task aceita apenas frontend/backend); work_kind e o eixo de cobertura dos checks de frontend, API e integracao."
+        },
+        "verify_profile": {
+          "enum": [
+            "frontend-build",
+            "frontend-unit-test",
+            "frontend-lint",
+            "backend-build",
+            "backend-unit-test",
+            "backend-lint",
+            "integration-test",
+            "e2e-test",
+            "accessibility-test",
+            "visual-regression-test",
+            "lint",
+            "none"
+          ],
+          "description": "Perfil canonico de verificacao. Resolvido para comando real por verify_profiles.resolve() a partir da target_stack. Preferir isto a verify_command: um comando escrito em prosa nao sobrevive ao PATH (ver f4s_build_runner)."
+        },
+        "screen_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "description": "Telas do prototipo cobertas por este arquivo.",
+          "items": {
+            "type": "string",
+            "pattern": "^SCR-[A-Z0-9-]+$"
+          }
+        },
+        "component_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "description": "Componentes do prototipo implementados por este arquivo.",
+          "items": {
+            "type": "string",
+            "pattern": "^CMP-[A-Z0-9-]+$"
+          }
+        },
+        "route_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "description": "Rotas configuradas por este arquivo.",
+          "items": {
+            "type": "string",
+            "pattern": "^RTE-[A-Z0-9-]+$"
+          }
+        },
+        "design_tokens": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "description": "Tokens de Design System materializados por este arquivo.",
+          "items": {
+            "type": "string",
+            "pattern": "^TOK-[A-Z0-9-]+$"
+          }
+        },
+        "flow_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "description": "Fluxos de navegacao cobertos (tasks de e2e).",
+          "items": {
+            "type": "string",
+            "pattern": "^FLW-[A-Z0-9-]+$"
+          }
+        },
+        "prototype_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/source_ref"
+          },
+          "description": "Ancoras no prototipo/manifesto que este arquivo reproduz."
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "verify_profile"
+          ]
+        },
+        {
+          "required": [
+            "verify_command"
+          ]
+        }
+      ]
+    },
+    "source_ref": {
+      "type": "object",
+      "required": [
+        "artifact",
+        "anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "anchor": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

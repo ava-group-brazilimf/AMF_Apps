@@ -1,0 +1,129 @@
+name: tech-stack
+display_name: "Stack Tecnológica"
+version: "1.5.0"
+description: "Agentes de geração de código. Stack resolvida em runtime de tobe_stack.backend_framework e tobe_stack.frontend_framework em ConfigStack.yaml. timing_benchmark_enabled flag controla timestamps NTP. Ver src/shared/data/stub-registry.yaml para stacks não implementados."
+# ⚠️ AUTORIDADE DE ROTEAMENTO NA F4
+# `routing_key` abaixo documenta a intenção; quem ROTEIA em runtime é
+# `src/shared/tools/f4_routing.py` (tabela `STACK_AGENTS`, conferida contra o
+# `agent_registry` e contra o disco por `--validate`). Os aliases de linguagem
+# (`java`, `python`, `go`, `node`) só existem lá, porque o `target_stack` do
+# SpecKit usa ora o framework, ora a linguagem.
+# `component_type` é o que decide o diretório de saída — nunca a stack.
+agents:
+  - id: ava-stack-orchestrator
+    file: agents/orchestrator-stack.md
+    role: router          # na F4 ele roteia; quem gera código é o coder da stack
+  # Backend coders — dispatched by orchestrator based on tobe_stack.backend_framework
+  - id: ava-stack-dotnet-backend
+    file: agents/coder-dotnet-backend.md
+    routing_key: "dotnet"
+    component_type: "backend"
+  - id: ava-stack-java-backend
+    file: agents/coder-java-backend.md
+    routing_key: "spring-boot"
+    component_type: "backend"
+  - id: ava-stack-python-backend
+    file: agents/coder-python-backend.md
+    routing_key: "fastapi"
+    component_type: "backend"
+  - id: ava-stack-go-backend
+    file: agents/coder-go-backend.md
+    routing_key: "gin"
+    component_type: "backend"
+  - id: ava-stack-node-backend
+    file: agents/coder-node-backend.md
+    routing_key: "nestjs"
+    component_type: "backend"
+    status: stub
+  # Frontend coders — dispatched by orchestrator based on tobe_stack.frontend_framework
+  - id: ava-stack-angular-frontend
+    file: agents/coder-angular-frontend.md
+    routing_key: "angular"
+    component_type: "frontend"
+  - id: ava-stack-react-frontend
+    file: agents/coder-react-frontend.md
+    routing_key: "react"
+    component_type: "frontend"
+  - id: ava-stack-blazor-frontend
+    file: agents/coder-blazor-frontend.md
+    routing_key: "blazor"
+    component_type: "frontend"
+    status: stub
+  - id: ava-stack-vue-frontend
+    file: agents/coder-vue-frontend.md
+    routing_key: "vue"
+    component_type: "frontend"
+  # Cross-cutting reliability pipeline — dispatched by orchestrator, always invoked
+  - id: ava-stack-docs-researcher
+    file: agents/docs-researcher-agent.md
+  - id: ava-stack-build-validator
+    file: agents/build-validator-agent.md
+  - id: ava-stack-build-fixer
+    file: agents/build-fixer-agent.md
+    # internal-only — dispatched exclusively by ava-stack-build-validator, never by the orchestrator directly
+
+# Build-cycle templates — dispatched by orchestrator-stack when pipeline_mode == "build-cycle"
+# Routing key: pipeline_mode AND backend_framework/frontend_framework
+build_cycle_templates:
+  # .NET backend chain (completo)
+  - id: ava-build-cycle-dotnet-scaffold
+    file: templates/build-cycle-dotnet-scaffold-agent.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'dotnet'"
+    sequence: 1
+  - id: ava-build-cycle-efcore
+    file: templates/build-cycle-efcore-agent.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'dotnet'"
+    sequence: 2
+  - id: ava-build-cycle-cqrs
+    file: templates/build-cycle-cqrs-agent.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'dotnet' AND cqrs == true"
+    sequence: 3
+    notes: "no-op if cqrs == false"
+  - id: ava-build-cycle-minimal-apis
+    file: templates/build-cycle-minimal-apis-agent.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'dotnet'"
+    sequence: 4
+  # Java backend chain (parcial — falta java-api)
+  - id: ava-build-cycle-java-scaffold
+    file: templates/build-cycle-java-scaffold.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'spring-boot'"
+    sequence: 1
+  - id: ava-build-cycle-java-persistence
+    file: templates/build-cycle-java-persistence.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'spring-boot'"
+    sequence: 2
+  - id: ava-build-cycle-java-api
+    file: templates/build-cycle-java-api.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'spring-boot'"
+    sequence: 3
+    status: stub
+  # Python backend chain (parcial — falta persistence e api)
+  - id: ava-build-cycle-python-scaffold
+    file: templates/build-cycle-python-scaffold.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'fastapi'"
+    sequence: 1
+  - id: ava-build-cycle-python-persistence
+    file: templates/build-cycle-python-persistence.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'fastapi'"
+    sequence: 2
+    status: stub
+  - id: ava-build-cycle-python-api
+    file: templates/build-cycle-python-api.md
+    routing_key: "pipeline_mode == 'build-cycle' AND backend_framework == 'fastapi'"
+    sequence: 3
+    status: stub
+  # Angular frontend chain (completo)
+  - id: ava-build-cycle-angular
+    file: templates/build-cycle-angular-agent.md
+    routing_key: "pipeline_mode == 'build-cycle' AND frontend_framework == 'angular'"
+    sequence: 1
+  - id: ava-build-cycle-ngrx
+    file: templates/build-cycle-ngrx-agent.md
+    routing_key: "pipeline_mode == 'build-cycle' AND frontend_framework == 'angular'"
+    sequence: 2
+  # React frontend (stub — fallback para generic)
+  - id: ava-build-cycle-react
+    file: templates/build-cycle-react.md
+    routing_key: "pipeline_mode == 'build-cycle' AND frontend_framework == 'react'"
+    sequence: 1
+    status: stub

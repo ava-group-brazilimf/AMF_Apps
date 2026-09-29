@@ -1,0 +1,6 @@
+{
+  "scenario": "plugin-required-unavailable",
+  "rootCause": "RENDERER_CONFIGURATION_FAILURE",
+  "stage": "C4_CAPABILITY_PROBE",
+  "publicationAllowed": false
+}

@@ -1,0 +1,15 @@
+C4Component
+  title C4 component layout compatibility matrix
+  Container_Boundary(app, "Application") {
+    Component(component_a, "Component A", "Runtime", "Source component")
+    Component(component_b, "Component B", "Runtime", "Target component")
+  }
+  System_Ext(system_ext, "External System", "External target")
+  Container_Ext(container_ext, "External Container", "Runtime", "External target")
+  Person_Ext(person_ext, "External Person", "External actor")
+  System(system, "Internal System", "Internal target")
+  Rel(component_a, component_b, "Component to Component", "HTTPS")
+  Rel(component_a, system_ext, "Component to System Ext", "HTTPS")
+  Rel(component_a, container_ext, "Component to Container Ext", "HTTPS")
+  Rel(component_a, person_ext, "Component to Person Ext", "HTTPS")
+  Rel(component_a, system, "Component to System", "HTTPS")

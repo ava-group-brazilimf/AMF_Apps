@@ -1,0 +1,20 @@
+# Segredos
+.env
+.auth/
+
+# Robot Framework outputs
+log.html
+report.html
+output.xml
+*.png
+playwright-log.txt
+browser/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+
+fastqa/scripts/project_config.json
+.vscode/mcp.json

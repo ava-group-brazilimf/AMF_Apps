@@ -1,0 +1,617 @@
+# AVA Fabric — DAG de execução da Fase F3S (SpecKit Planning)
+# =============================================================================
+# FONTE DE VERDADE do despacho da F3S e das fatias de contexto por agente.
+# Consumido por:
+#   - src/modules/ava-fabric-agents/speckit/utils/artifact_gate_speckit.py
+#     (DERIVA os itens dos gates daqui — não espelha)
+#   - src/shared/tools/agent_runner.py (motor copilot)
+#
+# ⚠️ Lição do F1.yaml, aplicada: aquele arquivo abre com um aviso sobre virar
+#    "a quarta fonte de verdade", porque o repo já tem espelhos manuais que
+#    divergiram (ARTIFACT_CONTRACTS, AGENT_ARTIFACT_SLICE, AGENT_CATALOG).
+#    Aqui o gate LÊ este arquivo em runtime; não há segunda cópia a manter.
+#    tests/ava-fabric-agents/speckit/test_artifact_gate_speckit.py trava isso.
+#
+# Spec: specs/039-speckit-planning-layer/
+# Camada de protótipo/API/integração: docs/f3s-prototype-planning.md
+#   (explica o PORQUÊ; este arquivo continua declarando o QUÊ)
+#
+# ⚠️ POLÍTICA DE ERRO (vale para todas as waves): erro NÃO trava fase.
+#    Um passo que falha é degradado, marcado como executado-com-aviso, e o
+#    motivo + o caminho de correção vão para
+#    outputs/pipeline_runner/remediation-report.json. `on_fail` deixou de
+#    decidir SE a esteira continua — continua sempre — e passou a decidir só o
+#    texto da orientação de correção. Ver pipeline_runner._degrade_phase.
+#
+#    O corolário é que toda tool precisa reportar de forma persistente. Uma
+#    tool que só imprime no console e sai com código != 0 vira ruído: o runner
+#    segue em frente e o achado se perde. Por isso `--warn` (exit 0) anda junto
+#    com `--json-out` / arquivo de relatório em cada tool que pode reprovar.
+#
+#    ⚖️ EXCEÇÃO ÚNICA — wave6c, gate de aprovação humana. Uma recusa explícita
+#    do operador em modo MANUAL para a esteira. Não é violação da regra acima:
+#    a regra fala de ERRO, e um "Não" humano é decisão, não falha. Em modo
+#    AUTOMÁTICO nada trava — o gate pergunta Nome/Papel com prazo e, se ninguém
+#    responder, registra `auto_acknowledged` e segue. A consequência a ter em
+#    conta: rodando sempre em automático, o gate é aviso e registro de
+#    auditoria, não barreira.
+# =============================================================================
+
+version: 1
+phase: F3S
+module: speckit
+orchestrator: ava-speckit-orchestrator
+output_base: "outputs/tobe/speckit"
+
+# Sequencial. A cadeia constitution → spec → plan → task é causal: cada elo
+# consome o anterior. O paralelismo real está DENTRO de cada wave, entre as
+# migration waves independentes declaradas no wave-spec-manifest.json.
+max_parallel: 1
+
+defaults:
+  timeout_s: 900
+  max_attempts: 1
+  model: claude-sonnet-4
+
+# ── Gate de entrada ──────────────────────────────────────────────────────────
+# Ausente ⇒ a F3S não começa. Não há degradação silenciosa: gerar uma
+# especificação sem a fonte é exatamente o que produz alucinação.
+entry_gate:
+  on_fail: abort_f3s
+  items:
+    - path: "outputs/tobe/docs/architecture-blueprint.md"
+      produced_by: "ava-tobe-architecture-design (F2, trigger CB)"
+    - path: "outputs/tobe/docs/tech-framework-document.md"
+      produced_by: "ava-tobe-architecture-technical (F2, trigger TF)"
+    - path: "outputs/tobe/docs/architecture-decision-matrix.md"
+      produced_by: "ava-tobe-architecture-decision-matrix (F2, fase 0-Pre)"
+    - path: "outputs/tobe/docs/decisions"
+      kind: dir
+      min_count: 1
+      produced_by: "ava-tobe-adr (F2, fase 0)"
+    - path: "outputs/asis/docs/business-rules.md"
+      produced_by: "ava-asis-documentation (F1)"
+    - path: "outputs/tobe/prototype/index.html"
+      produced_by: "ava-prototype (F3)"
+    - path: "outputs/tobe/prototype/screen-list.md"
+      produced_by: "ava-prototype (F3)"
+    - path: "wave definition"
+      kind: any_file
+      paths:
+        - "outputs/tobe/migration/wave-model.json"
+        - "outputs/tobe/docs/wave-plan.md"
+      produced_by: "ava-tobe-migration-plan (F2)"
+
+# ── Waves ────────────────────────────────────────────────────────────────────
+waves:
+  # ---------------------------------------------------------------------------
+  # wave0 — Gate de entrada materializado. O fan-out não pode remover esta
+  # responsabilidade do orquestrador.
+  # ---------------------------------------------------------------------------
+  - id: wave0
+    blocking: true
+    implemented: true
+    tools:
+      # `on_fail: warn` + `--warn`: enquanto a camada SpecKit esta em evolucao,
+      # NENHUM gate dela interrompe a esteira nem altera o exit code. O gate
+      # continua rodando e reportando; o que mudou e a consequencia.
+      - id: speckit-entry-gate
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/modules/ava-fabric-agents/speckit/utils/artifact_gate_speckit.py"
+          - "--project"
+          - "{project}"
+          - "--gate"
+          - "entry"
+          - "--json"
+          - "--report"
+          - "--warn"
+
+  # ---------------------------------------------------------------------------
+  # wave1 — Constituição. Bloqueia tudo: é o documento governante, e entra no
+  # contexto de todo agente a jusante, inclusive das N chamadas de codegen da F4.
+  # ---------------------------------------------------------------------------
+  - id: wave1
+    depends_on: [wave0]
+    blocking: true
+    implemented: true
+    agents:
+      - id: ava-speckit-constitution
+        trigger: GC
+        timeout_s: 900
+        inputs:
+          mandatory:
+            - "context/project-config.yaml"
+            - "outputs/tobe/docs/architecture-blueprint.md"
+            - "outputs/tobe/docs/tech-framework-document.md"
+            - "outputs/tobe/docs/architecture-decision-matrix.md"
+            - "outputs/tobe/docs/decisions"
+            - "outputs/tobe/docs/security-architecture.md"
+            - path: "src/shared/data/reference-architecture.yaml"
+              base: workspace
+          advisory:
+            - "outputs/tobe/patterns-applied.json"
+            - "outputs/tobe/docs/bounded-context-map.md"
+            # Advisory e não mandatory: a wave1 roda ANTES da wave2, então o
+            # manifesto só existe a partir da segunda execução da fase. A
+            # constituição precisa declarar o protótipo como autoridade visual
+            # mesmo sem tê-lo em mãos — o que ela cita é a REGRA, não o conteúdo.
+            - "outputs/tobe/speckit/prototype-implementation-manifest.json"
+            - "outputs/tobe/prototype/screen-list.md"
+        outputs:
+          - "constitution.md"
+
+  # ---------------------------------------------------------------------------
+  # wave2 — Materializar o recorte vertical por migration wave. A mesma
+  # implementação pura também é usada pelo planejador para descobrir o fan-out.
+  # ---------------------------------------------------------------------------
+  - id: wave2
+    depends_on: [wave1]
+    blocking: true
+    implemented: true
+    tools:
+      # Extração ESTÁTICA do protótipo navegável da F3. Roda ANTES do manifesto
+      # de waves porque é ele quem fornece telas, componentes, rotas, tokens e
+      # endpoints para o recorte por wave — sem isto o `sources[]` de cada
+      # feature volta a não ter nenhuma âncora de frontend, que é a causa-raiz
+      # medida em nopcommerce-02 (7 de 15 telas nunca chegaram ao código).
+      #
+      # `--warn`: protótipo ausente é ERRO DE FONTE, mas quem barra a feature é
+      # o gate; a tool registra e segue, como todo o resto desta camada.
+      # Nenhum JavaScript do protótipo é executado.
+      - id: speckit-prototype-manifest
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/prototype_manifest.py"
+          - "--project"
+          - "{project}"
+          - "--json"
+          - "--warn"
+      - id: speckit-wave-manifest
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_wave_manifest.py"
+          - "--project"
+          - "{project}"
+          - "--json"
+          - "--warn"
+
+  # ---------------------------------------------------------------------------
+  # wave3 — Uma especificação vertical por migration wave. O manifesto lista
+  # exatamente as fontes e âncoras pertinentes a cada despacho.
+  #
+  # W0 (foundation) é codegen=true: além do Shared Kernel, contém as receitas
+  # determinísticas de scaffold das stacks. W4 (cutover) continua documental.
+  # ---------------------------------------------------------------------------
+  - id: wave3
+    depends_on: [wave2]
+    implemented: true
+    foreach:
+      source: wave_manifest
+    agents:
+      - id: ava-speckit-specification
+        trigger: GS
+        output: "specs/{feature}/spec.md"
+        inputs:
+          mandatory:
+            - "outputs/tobe/speckit/constitution.md"
+            - "outputs/tobe/speckit/wave-spec-manifest.json"
+            # Autoridade VISUAL da spec. O agente lê o manifesto, nunca o
+            # index.html inteiro: o recorte por wave já está em
+            # `features[].prototype` e é o que impede a fatia vertical de virar
+            # ingestão da base toda.
+            - "outputs/tobe/speckit/prototype-implementation-manifest.json"
+          advisory:
+            - "outputs/tobe/docs/wave-plan.md"
+            - "outputs/tobe/docs/api-map.md"
+            - "outputs/tobe/prototype/screen-list.md"
+
+  # ---------------------------------------------------------------------------
+  # wave4 — Um plano por especificação executável. Foundation/cutover mantêm
+  # spec, mas o trabalho pertence às fases DevOps/Deliverables, não aos coders F4.
+  # ---------------------------------------------------------------------------
+  - id: wave4
+    depends_on: [wave3]
+    implemented: true
+    foreach:
+      source: wave_manifest
+      codegen_only: true
+    agents:
+      - id: ava-speckit-planning
+        trigger: GL
+        outputs:
+          - "specs/{feature}/plan.md"
+          - "specs/{feature}/plan-graph.json"
+        inputs:
+          mandatory:
+            - "outputs/tobe/speckit/constitution.md"
+            - "outputs/tobe/speckit/specs/{feature}/spec.md"
+            - "outputs/tobe/speckit/wave-spec-manifest.json"
+            - "outputs/tobe/speckit/prototype-implementation-manifest.json"
+            # A stack decide os CAMINHOS dos arquivos. Sem ela o plano inventa
+            # uma árvore Angular num projeto React — e o ownership de arquivo,
+            # que é a autoridade deste artefato, nasce errado.
+            - path: "context/project-config.yaml"
+          advisory:
+            - "outputs/tobe/docs/architecture-blueprint.md"
+            - "outputs/tobe/docs/tech-framework-document.md"
+            - "outputs/tobe/docs/api-map.md"
+            # Ownership ja reivindicado pelas features JA planejadas. O fan-out
+            # e sequencial, entao no despacho da feature N este glob resolve
+            # para os N-1 plan-graph ja gravados — e vazio na primeira, por
+            # construcao, sem erro (advisory).
+            #
+            # Sem isto cada planejador decidia ownership sozinho enquanto o
+            # compilador cobrava um invariante GLOBAL de "um create por
+            # arquivo". Medido em cadastro-funcionarios-04: 31 conflitos, 100%
+            # deles envolvendo a wave de foundation reivindicando arquivos de
+            # negocio de outras waves. A informacao existia; so nao chegava a
+            # quem decidia.
+            - "outputs/tobe/speckit/specs/*/plan-graph.json"
+
+  # ---------------------------------------------------------------------------
+  # wave4a — Gate do plano. Roda ANTES da wave5 porque um plano incoerente
+  # (grupo sem arquivos, consumo sem produtor, produces contaminado) condena o
+  # agente de tasks a inventar ownership, e o defeito só apareceria três passos
+  # adiante, no compilador, atribuído ao agente errado. Falhar aqui aponta o
+  # produtor certo e economiza os despachos da wave5. Ver ISSUE-004 §7.
+  # ---------------------------------------------------------------------------
+  - id: wave4a
+    depends_on: [wave4]
+    blocking: true
+    implemented: true
+    tools:
+      - id: speckit-plan-validate
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_task_compiler.py"
+          - "diagnose"
+          - "--project"
+          - "{project}"
+          - "--plans-only"
+          - "--warn"
+
+  # ---------------------------------------------------------------------------
+  # wave5 — Fragments locais de tasks atômicas. O JSON global nasce na wave5b.
+  # ---------------------------------------------------------------------------
+  - id: wave5
+    depends_on: [wave4a]
+    implemented: true
+    foreach:
+      source: wave_manifest
+      codegen_only: true
+    agents:
+      - id: ava-speckit-tasks
+        trigger: GT
+        output: "specs/{feature}/task-fragment.json"
+        inputs:
+          mandatory:
+            - "outputs/tobe/speckit/constitution.md"
+            - "outputs/tobe/speckit/specs/{feature}/plan.md"
+            - "outputs/tobe/speckit/specs/{feature}/plan-graph.json"
+            - "outputs/tobe/speckit/specs/{feature}/spec.md"
+            - "outputs/tobe/speckit/wave-spec-manifest.json"
+          advisory:
+            - "outputs/tobe/speckit/prototype-implementation-manifest.json"
+
+  # ---------------------------------------------------------------------------
+  # wave5a — Enriquece deterministicamente a própria W0 Foundation com as
+  # receitas oficiais de scaffold e tasks P1 por target_stack.
+  # ---------------------------------------------------------------------------
+  - id: wave5a
+    depends_on: [wave5]
+    blocking: true
+    implemented: true
+    tools:
+      - id: f4s-scaffold-inject
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/f4s_scaffold_injector.py"
+          - "--project"
+          - "{project}"
+          - "--json"
+
+  # ---------------------------------------------------------------------------
+  # wave5b — Consolidação determinística. Nenhum agente escreve o JSON global.
+  # ---------------------------------------------------------------------------
+  - id: wave5b
+    depends_on: [wave5a]
+    blocking: true
+    implemented: true
+    tools:
+      # Reparo determinístico de fragments ANTES da compilação: alinha headers,
+      # trace_id, task IDs duplicados, contract tokens, dependências cross-wave
+      # e sincroniza cada task-fragment.json com seu plan-graph.json. Com
+      # --allow-orphans, gaps de cobertura viram aviso em vez de erro fatal.
+      - id: speckit-fragment-repair
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_fragment_repair.py"
+          - "--project"
+          - "{project}"
+          - "--json"
+          - "--allow-orphans"
+          - "--warn"
+      - id: speckit-task-compile
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_task_compiler.py"
+          - "compile"
+          - "--project"
+          - "{project}"
+          - "--json"
+          - "--warn"
+      # Gate de PRODUCAO: olha o disco, nao o exit code. `compile --warn` saia
+      # com 0 sem gravar nada — o passo ficava verde e o buraco so aparecia 11
+      # checks adiante. Non-blocking como o resto da camada; o veredito fica em
+      # outputs/tobe/speckit/production-gate-status.json.
+      - id: speckit-production-gate
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_production_gate.py"
+          - "--project"
+          - "{project}"
+          - "--json"
+
+      # Sempre materializa os contratos estruturais. Se algum produtor falhou,
+      # cria placeholders INCOMPLETE auditáveis; não libera F4.
+      - id: speckit-output-reconcile-planning
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_output_reconciler.py"
+          - "--project"
+          - "{project}"
+          - "--stage"
+          - "planning"
+          - "--json"
+      - id: speckit-ledger-init
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/task_ledger.py"
+          - "--project"
+          - "{project}"
+          - "--init"
+          - "--json"
+          - "--warn"
+      # Os checks de rastreabilidade identificam lacunas de cobertura e problemas
+      # estruturais nos artefatos gerados. São questões de qualidade da informação:
+      # o grafo compila, o ledger inicializa e a F4 consegue executar mesmo quando
+      # há BRs ou TCs sem task (CHK-SK-007/009) ou âncoras reparadas (CHK-SK-006).
+      # `on_fail: warn` exibe o relatório completo no terminal e registra em
+      # repair-issues.json — visível e auditável — sem bloquear o pipeline.
+      # Operadores que precisarem de cobertura total podem rever e complementar
+      # as specs antes de re-executar a fase.
+      # `--json-out` persiste o MESMO resultado impresso acima em
+      # checks-report.json: sem isto, o achado 100% determinístico se perdia no
+      # log do runner — nem o agente de compliance (wave6) nem o exit gate o
+      # liam de volta, e um achado verificável por código tinha o mesmo destino
+      # de silêncio de um achado estocástico do LLM.
+      - id: speckit-dependency-checks
+        on_fail: warn
+        command:
+          - "{python}"
+          - "-m"
+          - "src.shared.checks"
+          - "--project"
+          - "{project}"
+          - "--suite"
+          - "speckit_traceability"
+          - "--json-out"
+          - "outputs/tobe/speckit/checks-report.json"
+          # `--warn` faz a suíte sair com 0 mesmo reprovando. Sem ele o exit 1
+          # virava RuntimeError no runner e a fase era rotulada "⏭ pulado" —
+          # rótulo que mente: a suíte RODOU e reprovou, e o relatório existe.
+          # O caminho de --json-out é relativo ao PROJETO (resolvido em
+          # src/shared/checks/__init__.py), não ao CWD do processo.
+          - "--warn"
+
+      # Cobertura protótipo → tarefa → API → integração → e2e. Passo separado
+      # porque `--suite` do CLI de checks aceita UM valor; transformá-lo em
+      # `append` mudaria o contrato que as outras fases já usam.
+      #
+      # É este passo que responde à pergunta que faltava na F3S: não "a spec
+      # registrou a tela?" (isso é `prototype_coverage`), e sim "existe TAREFA,
+      # com arquivo alvo e dono, para cada tela, componente, token, rota,
+      # operação de API, integração e fluxo e2e?".
+      - id: speckit-frontend-integration-checks
+        on_fail: warn
+        command:
+          - "{python}"
+          - "-m"
+          - "src.shared.checks"
+          - "--project"
+          - "{project}"
+          - "--suite"
+          - "speckit_frontend_integration"
+          - "--json-out"
+          - "outputs/tobe/speckit/frontend-integration-report.json"
+          - "--warn"
+
+  # ---------------------------------------------------------------------------
+  # wave6 — Conformidade. Roda DEPOIS dos checks determinísticos: o que pode ser
+  # verificado por código já foi. Este agente cobre o que exige julgamento.
+  # ---------------------------------------------------------------------------
+  - id: wave6
+    depends_on: [wave5b]
+    implemented: true
+    agents:
+      - id: ava-speckit-compliance
+        trigger: AC
+        timeout_s: 1200
+        inputs:
+          mandatory:
+            - "outputs/tobe/speckit/constitution.md"
+            - "outputs/tobe/speckit/specs/*/spec.md"
+            - "outputs/tobe/speckit/specs/*/plan.md"
+            - "outputs/tobe/speckit/specs/*/plan-graph.json"
+            - "outputs/tobe/speckit/specs/*/task-fragment.json"
+            - "outputs/tobe/speckit/specs/*/tasks.md"
+            - "outputs/tobe/speckit/traceability.json"
+          # advisory, não mandatory: projetos que rodaram a F3S antes desta
+          # mudança não têm estes arquivos em disco, e o gate de entrada não
+          # deve travar por causa de um insumo que só passou a existir depois.
+          advisory:
+            - "outputs/tobe/speckit/checks-report.json"
+            - "outputs/tobe/speckit/repair-issues.json"
+            - "outputs/tobe/speckit/frontend-integration-checks.json"
+            - "outputs/tobe/speckit/prototype-implementation-manifest.json"
+        outputs:
+          - "compliance-report.md"
+          - "compliance-status.json"
+
+  # ---------------------------------------------------------------------------
+  # wave6b — Normalização determinística do artefato de conformidade. Corrige,
+  # sem custo de LLM, o desvio medido em produção (nopcommerce-04-cli-ava,
+  # 2026-08-19): o agente escreveu `compliance-summary.json` com o schema de
+  # `ava-deliverable-security-compliance` (F7) em vez de
+  # `compliance-status.json` com o schema desta camada (F3S). `on_fail: warn`
+  # porque, quando nada aproveitável existe, o wave7 já reprova pelo motivo
+  # certo — este passo só evita queimar um re-run inteiro do agente por um
+  # desvio de nome/schema que é mecanicamente corrigível.
+  # ---------------------------------------------------------------------------
+  - id: wave6b
+    depends_on: [wave6]
+    implemented: true
+    tools:
+      - id: speckit-compliance-normalize
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_compliance_normalize.py"
+          - "--project"
+          - "{project}"
+          - "--json"
+
+  # ---------------------------------------------------------------------------
+  # wave6c — Reconciliação final. Persiste contratos obrigatórios antes do gate.
+  # ---------------------------------------------------------------------------
+  - id: wave6c
+    depends_on: [wave6b]
+    blocking: true
+    implemented: true
+    tools:
+      - id: speckit-output-reconcile-final
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_output_reconciler.py"
+          - "--project"
+          - "{project}"
+          - "--stage"
+          - "final"
+          - "--json"
+
+  # ---------------------------------------------------------------------------
+  # wave6d — Avaliação do gate de aprovação; o runner conduz a decisão humana.
+  # ---------------------------------------------------------------------------
+  - id: wave6d
+    depends_on: [wave6c]
+    blocking: true
+    implemented: true
+    tools:
+      - id: speckit-compliance-gate
+        requires_approval: true
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/shared/tools/speckit_compliance_gate.py"
+          - "--project"
+          - "{project}"
+          - "--evaluate"
+          - "--json"
+
+  # ---------------------------------------------------------------------------
+  # wave7 — Gate de saída materializado.
+  #
+  # `on_fail: warn` — era o ÚNICO nó de tool deste DAG sem a chave, e a omissão
+  # se lia como decisão quando era esquecimento. Sem ela, `run_tool_step`
+  # levanta `RuntimeError` e o operador vê "❌ tool reprovou" + "corrija a causa
+  # ANTES de confiar nas fases seguintes" — linguagem de bloqueio para uma
+  # esteira que, pela POLÍTICA DE ERRO do topo deste arquivo, continua sempre.
+  #
+  # O que o gate reprova, na prática, raramente é artefato ausente: medido em
+  # `nocommerce-01`, os 7 artefatos estruturais estavam OK e os dois itens em
+  # falta eram ESTADO — `completeness-status.json` com `status=INCOMPLETE` e
+  # uma decisão de conformidade pendente (`kind: human_approval`). Pendência de
+  # decisão humana não é erro; é o gate da wave6d esperando alguém.
+  #
+  # `--report` acompanha `on_fail: warn` por exigência da mesma política: uma
+  # tool que só imprime e sai != 0 "vira ruído, o runner segue em frente e o
+  # achado se perde". O veredito fica em
+  # outputs/tobe/speckit/exit-gate-status.json.
+  #
+  # O exit code REAL continua sendo propagado (o runner o exibe em
+  # `tool_exit_code`): a tool segue dizendo a verdade, e é o DAG que decide a
+  # consequência. `exit_gate.on_fail: block_f4`, abaixo, permanece intacto —
+  # ele declara a semântica do gate, não o comportamento deste nó.
+  # ---------------------------------------------------------------------------
+  - id: wave7
+    depends_on: [wave6d]
+    blocking: true
+    implemented: true
+    tools:
+      - id: speckit-exit-gate
+        on_fail: warn
+        command:
+          - "{python}"
+          - "src/modules/ava-fabric-agents/speckit/utils/artifact_gate_speckit.py"
+          - "--project"
+          - "{project}"
+          - "--gate"
+          - "exit"
+          - "--json"
+          - "--report"
+          - "--warn"
+
+# ── Gate de saída ────────────────────────────────────────────────────────────
+# Bloqueia a F4 quando ARTEFATOS estruturais estão ausentes. Suítes de check
+# (speckit_traceability, prototype_coverage) rodam para visibilidade mas não
+# bloqueiam — gaps de cobertura são questões de qualidade, não de integridade.
+# `suites_on_fail: warn` garante que o gate passa mesmo quando CHK-SK-007/009
+# reprovam: os artefatos existem, a F4 pode executar.
+exit_gate:
+  on_fail: block_f4
+  suites_on_fail: warn
+  items:
+    - path: "outputs/tobe/speckit/constitution.md"
+      produced_by: "ava-speckit-constitution (F3S, trigger GC)"
+    - path: "outputs/tobe/speckit/wave-spec-manifest.json"
+      produced_by: "speckit_wave_manifest.py (determinístico, não é agente)"
+    - path: "outputs/tobe/speckit/prototype-implementation-manifest.json"
+      produced_by: "prototype_manifest.py (determinístico, não é agente)"
+    # O gate confere a cardinalidade e os artefatos esperados por feature contra
+    # o manifesto; não há mais constante N x 5.
+    - path: "outputs/tobe/speckit/specs"
+      kind: manifest_features
+      manifest: "outputs/tobe/speckit/wave-spec-manifest.json"
+      produced_by: "ava-speckit-specification / planning / tasks (F3S)"
+    - path: "outputs/tobe/speckit/traceability.json"
+      produced_by: "speckit_task_compiler.py (determinístico, não é agente)"
+    - path: "outputs/tobe/speckit/tasks-progress.json"
+      produced_by: "task_ledger.py (determinístico, não é agente)"
+    - path: "outputs/tobe/speckit/compliance-status.json"
+      produced_by: "ava-speckit-compliance (F3S, trigger AC)"
+    - path: "outputs/tobe/speckit/completeness-status.json"
+      kind: json_field
+      field: status
+      expected: READY
+      produced_by: "speckit_output_reconciler.py (determinístico)"
+    - path: "outputs/tobe/speckit/compliance-status.json"
+      kind: human_approval
+      produced_by: "speckit-compliance-gate (F3S, wave6d) + decisão do operador"
+  check_suites:
+    - speckit_traceability
+    - prototype_coverage
+    # Cobertura protótipo → tarefa → API → integração → e2e. Como as demais,
+    # roda para visibilidade: lacuna de cobertura é qualidade, não integridade.
+    - speckit_frontend_integration

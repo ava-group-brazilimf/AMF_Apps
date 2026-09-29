@@ -1,0 +1,181 @@
+{# =====================================================================
+   Template corporativo: Calculadora de Esforço TO-BE — Effort Calculator
+   Owner   : PMO + Arquitetura Corporativa
+   Versão  : 1.0.0
+   Render  : ava-tobe-measure-size (Fase 3 da esteira TO-BE)
+
+   Variáveis esperadas no contexto de render:
+     project_name              : str
+     generated_at              : str ISO-8601
+     trace_id                  : str (UUID v4)
+     team_velocity_sp          : int (SP/sprint do time)
+     sprint_duration_weeks     : int (default 2)
+     overhead_pct              : float (default 0.15 = 15%)
+     contingency_pct           : float (default 0.20 = 20%)
+     fp_to_sp_factors          : dict {low: float, medium: float, high: float}
+     sp_to_hours               : dict {dev_senior: float, dev_pleno: float, qa: float, devops: float}
+     waves                     : list[{
+                                   number: int,
+                                   name: str,
+                                   bounded_contexts: list[{
+                                     name: str,
+                                     fp_count: int,
+                                     complexity: str (low|medium|high),
+                                     sp_calculated: float,
+                                     hours_dev_senior: float,
+                                     hours_dev_pleno: float,
+                                     hours_qa: float,
+                                     hours_devops: float,
+                                     hours_subtotal: float,
+                                     hours_with_overhead: float,
+                                     hours_with_contingency: float
+                                   }],
+                                   subtotal_fp: int,
+                                   subtotal_sp: float,
+                                   subtotal_hours_raw: float,
+                                   subtotal_hours_overhead: float,
+                                   subtotal_hours_contingency: float,
+                                   subtotal_hours_final: float,
+                                   sprints_estimated: float
+                                 }]
+     grand_total               : dict {fp, sp, hours_raw, hours_overhead, hours_contingency, hours_final, sprints}
+   ===================================================================== #}
+# Calculadora de Esforço TO-BE — {{ project_name }}
+
+| Campo | Valor |
+|---|---|
+| Documento | Calculadora de Esforço TO-BE |
+| Projeto | {{ project_name }} |
+| Versão | 1.0.0 |
+| Gerado em | {{ generated_at }} |
+| TraceID | `{{ trace_id }}` |
+| Sprint Duration | {{ sprint_duration_weeks }} semanas |
+| Team Velocity | {{ team_velocity_sp }} SP/sprint |
+| Overhead (reuniões/gestão) | {{ (overhead_pct * 100) | round(0) }}% |
+| Contingência | {{ (contingency_pct * 100) | round(0) }}% |
+
+> ⚠️ Documento **gerado automaticamente** pelo agente `ava-tobe-measure-size`. Não editar manualmente — alterações serão sobrescritas na próxima execução. Para ajustar parâmetros, altere `project-config.yaml` → `sizing_parameters`.
+
+---
+
+## 1. Fórmula de Conversão
+
+### 1.1 Function Points → Story Points
+
+A conversão de Function Points (FP) para Story Points (SP) aplica um **fator de complexidade** por módulo/bounded context:
+
+| Complexidade | Fator | Descrição |
+|---|---|---|
+| Baixa | {{ fp_to_sp_factors.low }} | Módulos com lógica simples, CRUD predominante, sem integrações complexas |
+| Média | {{ fp_to_sp_factors.medium }} | Módulos com regras de negócio moderadas, integrações padrão |
+| Alta | {{ fp_to_sp_factors.high }} | Módulos com lógica complexa, múltiplas integrações, regras fiscais/financeiras |
+
+**Fórmula:**
+```
+SP = FP × Fator_Complexidade
+```
+
+> 📊 **Reprodutível em planilha:** `=FP * VLOOKUP(complexidade; tabela_fatores; 2; FALSO)`
+
+### 1.2 Story Points → Horas (por papel)
+
+A conversão de SP para horas varia conforme o papel no time:
+
+| Papel | Horas/SP | Justificativa |
+|---|---|---|
+| Dev Sênior | {{ sp_to_hours.dev_senior }} h | Desenvolvimento core + code review + mentoria |
+| Dev Pleno | {{ sp_to_hours.dev_pleno }} h | Desenvolvimento de features + testes unitários |
+| QA | {{ sp_to_hours.qa }} h | Testes integrados, E2E, BDD scenarios |
+| DevOps | {{ sp_to_hours.devops }} h | CI/CD, IaC, monitoramento, deploys |
+
+**Fórmula:**
+```
+Horas_Brutas = SP × (Horas_DevSenior + Horas_DevPleno + Horas_QA + Horas_DevOps)
+```
+
+### 1.3 Overhead e Contingência
+
+| Fator | Percentual | Aplicação |
+|---|---|---|
+| Overhead (reuniões, gestão, ceremonies) | {{ (overhead_pct * 100) | round(0) }}% | Aplicado sobre horas brutas |
+| Contingência (riscos, impedimentos) | {{ (contingency_pct * 100) | round(0) }}% | Aplicado sobre horas + overhead |
+
+**Fórmula composta:**
+```
+Horas_Com_Overhead    = Horas_Brutas × (1 + {{ overhead_pct }})
+Horas_Final           = Horas_Com_Overhead × (1 + {{ contingency_pct }})
+Sprints_Estimados     = Horas_Final / (Team_Velocity_SP × Horas_Médias_por_SP)
+```
+
+> 📊 **Reprodutível em planilha:**
+> ```
+> =Horas_Brutas * (1 + 0.15) * (1 + 0.20)
+> ```
+
+---
+
+## 2. Esforço por Wave
+
+{% for wave in waves %}
+### Wave {{ wave.number }} — {{ wave.name }}
+
+| Bounded Context | FP | Complexidade | SP | Dev Sr (h) | Dev Pl (h) | QA (h) | DevOps (h) | Subtotal (h) | + Overhead | + Contingência |
+|---|---|---|---|---|---|---|---|---|---|---|
+{% for bc in wave.bounded_contexts %}| {{ bc.name }} | {{ bc.fp_count }} | {{ bc.complexity }} | {{ bc.sp_calculated | round(1) }} | {{ bc.hours_dev_senior | round(1) }} | {{ bc.hours_dev_pleno | round(1) }} | {{ bc.hours_qa | round(1) }} | {{ bc.hours_devops | round(1) }} | {{ bc.hours_subtotal | round(1) }} | {{ bc.hours_with_overhead | round(1) }} | {{ bc.hours_with_contingency | round(1) }} |
+{% endfor %}| **SUBTOTAL Wave {{ wave.number }}** | **{{ wave.subtotal_fp }}** | — | **{{ wave.subtotal_sp | round(1) }}** | — | — | — | — | **{{ wave.subtotal_hours_raw | round(1) }}** | **{{ wave.subtotal_hours_overhead | round(1) }}** | **{{ wave.subtotal_hours_final | round(1) }}** |
+
+> 🗓️ **Sprints estimados (Wave {{ wave.number }}):** {{ wave.sprints_estimated | round(1) }} sprints ({{ sprint_duration_weeks }} semanas cada)
+
+---
+{% endfor %}
+
+## 3. Resumo Consolidado (Grand Total)
+
+| Métrica | Valor |
+|---|---|
+| Total Function Points | {{ grand_total.fp }} |
+| Total Story Points | {{ grand_total.sp | round(1) }} |
+| Horas Brutas (sem overhead) | {{ grand_total.hours_raw | round(0) }} h |
+| Horas com Overhead (+{{ (overhead_pct * 100) | round(0) }}%) | {{ grand_total.hours_overhead | round(0) }} h |
+| **Horas Finais (com contingência +{{ (contingency_pct * 100) | round(0) }}%)** | **{{ grand_total.hours_final | round(0) }} h** |
+| **Sprints Totais Estimados** | **{{ grand_total.sprints | round(1) }}** |
+| Duração estimada (linear) | {{ (grand_total.sprints * sprint_duration_weeks) | round(0) }} semanas |
+
+---
+
+## 4. Premissas e Parâmetros
+
+| Parâmetro | Valor | Fonte |
+|---|---|---|
+| Velocity do time | {{ team_velocity_sp }} SP/sprint | `project-config.yaml → sizing_parameters.team_velocity` |
+| Sprint duration | {{ sprint_duration_weeks }} semanas | `project-config.yaml → sizing_parameters.sprint_weeks` |
+| Overhead | {{ (overhead_pct * 100) | round(0) }}% | Padrão PMO (reuniões + ceremonies + gestão) |
+| Contingência | {{ (contingency_pct * 100) | round(0) }}% | Buffer para riscos técnicos + impedimentos |
+| FP Factor (low) | {{ fp_to_sp_factors.low }} | Benchmark corporativo |
+| FP Factor (medium) | {{ fp_to_sp_factors.medium }} | Benchmark corporativo |
+| FP Factor (high) | {{ fp_to_sp_factors.high }} | Benchmark corporativo |
+
+---
+
+## 5. Critérios de Aprovação
+
+- [ ] Fórmula reproduzível em planilha (Excel/Google Sheets)
+- [ ] Aprovado por PM (gestão de esforço e cronograma)
+- [ ] Aprovado por Financeiro (budget alignment)
+- [ ] Totais consistentes com sizing-report.md
+- [ ] Subtotais por wave conferidos (soma dos BCs = subtotal wave)
+- [ ] Grand total = soma dos subtotais de todas as waves
+
+---
+
+## 6. Validação Cruzada
+
+| Verificação | Status |
+|---|---|
+| Σ FP (waves) == Grand Total FP | ☐ |
+| Σ SP (waves) == Grand Total SP | ☐ |
+| Σ Horas (waves) == Grand Total Horas | ☐ |
+| Nenhum BC com FP = 0 (exceto placeholders) | ☐ |
+| Overhead aplicado uniformemente ({{ (overhead_pct * 100) | round(0) }}%) | ☐ |
+| Contingência aplicada uniformemente ({{ (contingency_pct * 100) | round(0) }}%) | ☐ |
+| Fatores de complexidade dentro dos limites definidos | ☐ |

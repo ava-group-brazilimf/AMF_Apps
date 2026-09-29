@@ -1,0 +1,379 @@
+# stub-registry.yaml
+# Single source of truth for all stub agents in the AVA Fabric pipeline.
+# Update `status` when work begins / completes. Use `owner` to assign.
+#
+# Status values: STUB | IN_PROGRESS | COMPLETE
+# Priority: CRITICAL | HIGH | MEDIUM | LOW
+#
+# Routing keys reference fields in ConfigStack.yaml / project-config.yaml.
+# File paths are relative to src/modules/ava-fabric-agents/.
+
+stubs:
+  # ─── F3 Backend Coders ────────────────────────────────────────────────────
+
+  - id: coder-java-backend
+    file: tech-stack/agents/coder-java-backend.md
+    agent_name: ava-stack-java-backend
+    routing_key: "tobe_stack.backend_framework == 'spring-boot'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-19. Reference: coder-dotnet-backend.md.
+      build-cycle-java-scaffold: COMPLETE (2026-06-22). build-cycle-java-persistence: COMPLETE (2026-06-24).
+
+  - id: build-cycle-java-persistence
+    file: tech-stack/templates/build-cycle-java-persistence.md
+    agent_name: ava-build-cycle-java-persistence
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.backend_framework == 'spring-boot'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-24. Reference: tech-stack/templates/build-cycle-efcore-agent.md.
+      Generates Java 21 + Spring Data JPA + Flyway persistence layer:
+      AuditableBaseEntity/@MappedSuperclass, SoftDeletableBaseEntity/@SQLRestriction (Hibernate 6+),
+      JpaAuditingConfig/AuditorAware, domain I{Entity}Repository interfaces,
+      {Entity}JpaRepository + {Entity}RepositoryAdapter (infrastructure),
+      {BC}PersistenceConfig (@Configuration), JdbcClient read model (Spring 6.1+),
+      Flyway V1__initial.sql per entity + FlywayInstructions.md,
+      Maven Central dynamic version resolution (no hardcoded versions),
+      Azure Key Vault connection source enforcement.
+      Prerequisite: build-cycle-java-scaffold (COMPLETE 2026-06-22 — must run first).
+      Next: build-cycle-java-api.
+
+  - id: coder-python-backend
+    file: tech-stack/agents/coder-python-backend.md
+    agent_name: ava-stack-python-backend
+    routing_key: "tobe_stack.backend_framework == 'fastapi'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Reference implementation: coder-dotnet-backend.md.
+      Build-cycle scaffold implemented 2026-06-22: build-cycle-python-scaffold (COMPLETE).
+      Still needs: build-cycle-python-persistence, build-cycle-python-api.
+
+  - id: build-cycle-python-scaffold
+    file: tech-stack/templates/build-cycle-python-scaffold.md
+    agent_name: ava-build-cycle-python-scaffold
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.backend_framework == 'fastapi'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-22. Reference: tech-stack/templates/build-cycle-dotnet-scaffold-agent.md.
+      Generates Python 3.12 + FastAPI + SQLAlchemy async + Alembic scaffold:
+      pyproject.toml (PyPI dynamic resolution), shared/, per-BC Clean Architecture
+      (domain/application/infrastructure/api), conftest.py async fixtures,
+      docker-compose dev local, pip-audit security gate.
+      Next: build-cycle-python-persistence, build-cycle-python-api.
+
+  - id: coder-go-backend
+    file: tech-stack/agents/coder-go-backend.md
+    agent_name: ava-stack-go-backend
+    routing_key: "tobe_stack.backend_framework == 'gin'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: MEDIUM
+    owner: ""
+    notes: >
+      Implemented 2026-06-24. Reference: coder-dotnet-backend.md.
+      Go 1.22 + Gin + GORM + golang-jwt, Clean Architecture
+      (domain/usecase/infrastructure/delivery), SKILL.md created.
+      Build-cycle variants remain STUB: build-cycle-go-scaffold, build-cycle-go-persistence.
+
+  - id: coder-node-backend
+    file: tech-stack/agents/coder-node-backend.md
+    agent_name: ava-stack-node-backend
+    routing_key: "tobe_stack.backend_framework == 'nestjs'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: STUB
+    priority: MEDIUM
+    owner: ""
+
+  # ─── F3 Frontend Coders ───────────────────────────────────────────────────
+
+  - id: coder-react-frontend
+    file: tech-stack/agents/coder-react-frontend.md
+    agent_name: ava-stack-react-frontend
+    routing_key: "tobe_stack.frontend_framework == 'react'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implementado em 2026-07-13. Stack: Vite 5, TypeScript strict, Zustand +
+      TanStack Query, MSAL React (azure-ad), React Router v6 Data API, Vitest + RTL.
+      Modo build-cycle: redireciona para @ava-build-cycle-react-scaffold (redirect-only).
+      Modo generic: scaffold completo por BC com 5 camadas + npm audit gate.
+  - id: build-cycle-react-scaffold
+    file: tech-stack/templates/build-cycle-react-scaffold.md
+    agent_name: ava-build-cycle-react-scaffold
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.frontend_framework == 'react'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Novo agente implementado em 2026-07-13. Agente interno (sem SKILL.md — Article XI).
+      Gera scaffolding completo React 18 + Vite 5 + TypeScript strict por BC em Clean
+      Architecture: package.json, tsconfig, router lazy-load, auth (MSAL/Auth0),
+      Zustand + TanStack Query, Vitest + RTL + msw, npm audit gate.
+      CQRS configurável via architecture_patterns.cqrs.
+      Implemented 2026-06-26. Reference: coder-angular-frontend.md.
+      React 18 + Vite + TypeScript 5 + Zustand + MSAL React + React Router v6.
+      SKILL.md created at .github/skills/ava-stack-react-frontend/SKILL.md.
+      Build-cycle variants remain STUB: build-cycle-react, build-cycle-react-state.
+
+  - id: coder-blazor-frontend
+    file: tech-stack/agents/coder-blazor-frontend.md
+    agent_name: ava-stack-blazor-frontend
+    routing_key: "tobe_stack.frontend_framework == 'blazor'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: MEDIUM
+    owner: ""
+    notes: >
+      Implemented 2026-07-03. Reference: coder-angular-frontend.md.
+      Stack: Blazor WebAssembly + MudBlazor + Fluxor.Blazor.Web + MSAL.NET.
+      10 steps (Scaffold → Core → Auth → DS → Fluxor → Features → Routes → QA).
+      Scaffold manifest: src/shared/data/scaffold-manifests/blazor-scaffold-manifest.yaml.
+      Build-cycle variants remain STUB: build-cycle-blazor-scaffold, build-cycle-blazor-fluxor.
+
+  - id: coder-vue-frontend
+    file: tech-stack/agents/coder-vue-frontend.md
+    agent_name: ava-stack-vue-frontend
+    routing_key: "tobe_stack.frontend_framework == 'vue'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: MEDIUM
+    owner: "ava-stack-vue-frontend@1.0.0"
+    completed_at: "2025-07-10"
+    notes: "MAJOR bump 0.1.0-stub → 1.0.0: Composition API, Pinia, Vue Router 4, MSAL/Auth0, Security Compliance Gate"
+
+  - id: coder-svelte-frontend
+    file: tech-stack/agents/coder-svelte-frontend.md
+    agent_name: ava-stack-svelte-frontend
+    routing_key: "tobe_stack.frontend_framework == 'svelte'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: STUB
+    priority: MEDIUM
+    owner: ""
+    notes: >
+      Svelte 5 + SvelteKit + Vite. Runes ($state, $derived, $effect),
+      $props(), snippets. Research instructions in jsts-research-instructions.md.
+      Build validation via Vite Pipeline (VF0-VF6) in build-validator-agent.md.
+
+  # ─── F1 AS-IS Solution Agents ─────────────────────────────────────────────
+
+  - id: solution-cobol
+    file: asis-diagnostic/agents/solution-cobol.md
+    agent_name: ava-asis-solution-cobol
+    routing_key: "legacy_technology == 'cobol'"
+    dispatched_by: asis-diagnostic/agents/orchestrator-asis.md
+    status: STUB
+    priority: HIGH
+    owner: ""
+    notes: >
+      Reference implementations: solution-delphi.md, solution-vb.md.
+      Output contract must exactly match solution-delphi.md artifact_contracts.
+
+  - id: solution-powerbuilder
+    file: asis-diagnostic/agents/solution-powerbuilder.md
+    agent_name: ava-asis-solution-powerbuilder
+    routing_key: "legacy_technology == 'powerbuilder'"
+    dispatched_by: asis-diagnostic/agents/orchestrator-asis.md
+    status: STUB
+    priority: MEDIUM
+    owner: ""
+
+  - id: solution-dotnet
+    file: asis-diagnostic/agents/solution-dotnet.md
+    agent_name: ava-asis-solution-dotnet
+    routing_key: "legacy_technology == 'dotnet'"
+    dispatched_by: asis-diagnostic/agents/orchestrator-asis.md
+    status: implemented
+    priority: HIGH
+    owner: ""
+    implemented_in: "asis-diagnostic/agents/solution-dotnet.md"
+    notes: >
+      Implemented 2026-07-28. AST-backed C# and VB.NET analysis via ava-fabric-dotnet-analyzer
+      (run_ast_analysis.py --project {project_name} --language dotnet).
+      The underlying analyzer receives --language cs|vb|both based on repository contents
+      or the optional ava_ast_analyzers.dotnet_language config.
+      VB.NET legacy projects may still use legacy_technology: "vbnet" as an alias;
+      both route to this agent.
+
+  - id: solution-vbnet
+    file: asis-diagnostic/agents/solution-dotnet.md
+    agent_name: ava-asis-solution-dotnet
+    routing_key: "legacy_technology == 'vbnet' (deprecated alias for dotnet)"
+    dispatched_by: asis-diagnostic/agents/orchestrator-asis.md
+    status: alias
+    priority: HIGH
+    owner: ""
+    notes: >
+      Deprecated alias. Use legacy_technology: "dotnet" for all .NET projects.
+      This entry is retained for backward compatibility and routes to solution-dotnet.
+
+  - id: solution-java
+    file: asis-diagnostic/agents/solution-java.md
+    agent_name: ava-asis-solution-java
+    routing_key: "legacy_technology == 'java'"
+    dispatched_by: asis-diagnostic/agents/orchestrator-asis.md
+    status: implemented
+    priority: HIGH
+    owner: ""
+    implemented_in: "asis-diagnostic/agents/solution-java.md"
+    notes: >
+      Implemented 2026-07-29. AST-backed Java analysis via ava-fabric-java-analyzer
+      (run_ast_analysis.py --project {project_name} --language java).
+      Supports Java EE / Jakarta EE / Spring / Spring Boot / plain Java legacy codebases.
+      The analyzer emits a compressed.zip that is expanded into ast-raw/java/compressed/.
+
+  # ─── F7 DevOps IaC ────────────────────────────────────────────────────────
+
+  - id: iac-aws
+    file: devops-agents/agents/iac-aws-agent.md
+    agent_name: ava-devops-iac-aws
+    routing_key: "cloud_provider == 'aws'"
+    dispatched_by: devops-agents/agents/iac-agent.md (routing guard)
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-25. Reference: iac-azure-agent.md.
+      Terraform + AWS CDK (TypeScript). 8 modules: networking (VPC/SGs/ALB),
+      secrets-manager (KMS CMK + SM), ecs/eks (condicional), ecr (condicional),
+      rds, elasticache, cloudwatch (+ X-Ray), cognito, cloudfront (+ WAF v2).
+      Environments: dev/hml/prd. Output path: outputs/tobe/iac/aws/.
+      SKILL.md created. Registered in copilot-instructions.md.
+
+  - id: iac-gcp
+    file: devops-agents/agents/iac-gcp-agent.md
+    agent_name: ava-devops-iac-gcp
+    routing_key: "cloud_provider == 'gcp'"
+    dispatched_by: devops-agents/agents/iac-agent.md (routing guard)
+    status: COMPLETE
+    priority: MEDIUM
+    owner: ""
+    notes: >
+      Implementado 2026-07-01. Referência: iac-azure-agent.md.
+      Gera Terraform (google ~> 6.0) + Cloud Deployment Manager para:
+      networking (VPC), iam (Workload Identity), secret-manager, cloud-run ou gke,
+      artifact-registry (condicional), cloud-sql, memorystore, monitoring (4 golden signals),
+      cloud-armor + LB global. 3 ambientes: dev/hml/prd.
+      Output: outputs/tobe/infra/gcp/terraform/ e outputs/tobe/infra/gcp/deployment-manager/.
+      SKILL.md criado em .github/skills/ava-devops-iac-gcp/SKILL.md.
+
+  - id: iac-k8s-native
+    file: devops-agents/agents/iac-k8s-native-agent.md
+    agent_name: ava-devops-iac-k8s-native
+    routing_key: "cloud_provider == 'k8s-native'"
+    dispatched_by: devops-agents/agents/iac-agent.md (routing guard)
+    status: STUB
+    priority: MEDIUM
+    owner: ""
+    notes: >
+      Cloud-agnostic option. Works on top of any K8s cluster (AKS, EKS, GKE, on-prem).
+
+  # ─── F3 Build-Cycle Variants (depends on generic coders being complete first) ─
+
+  - id: build-cycle-java-scaffold
+    file: tech-stack/templates/build-cycle-java-scaffold.md
+    agent_name: ava-build-cycle-java-scaffold
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.backend_framework == 'spring-boot'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: LOW
+    owner: ""
+    notes: >-
+      Implemented 2026-06-22. Reference: build-cycle-dotnet-scaffold-agent.md.
+      Maven multi-module scaffold: parent BOM, SharedKernel, Contracts, domain/application/infrastructure/api per BC, host, tests (unit + integration), docker-compose.
+
+  - id: build-cycle-java-persistence
+    file: tech-stack/templates/build-cycle-java-persistence.md # to be created
+    agent_name: ava-build-cycle-java-persistence
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.backend_framework == 'spring-boot'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: STUB
+    priority: LOW
+    owner: ""
+    notes: Depends on coder-java-backend being COMPLETE first.
+
+  - id: build-cycle-python-scaffold
+    file: tech-stack/templates/build-cycle-python-scaffold.md # to be created
+    agent_name: ava-build-cycle-python-scaffold
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.backend_framework == 'fastapi'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: STUB
+    priority: LOW
+    owner: ""
+    notes: Depends on coder-python-backend being COMPLETE first.
+
+  - id: build-cycle-react
+    file: tech-stack/templates/build-cycle-react.md # to be created
+    agent_name: ava-build-cycle-react
+    routing_key: "pipeline_mode == 'build-cycle' AND tobe_stack.frontend_framework == 'react'"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: STUB
+    priority: LOW
+    owner: ""
+    notes: Depends on coder-react-frontend being COMPLETE first.
+
+  # ─── F3 Cross-Cutting (Reliability Pipeline) ──────────────────────────────
+
+  - id: docs-researcher
+    file: tech-stack/agents/docs-researcher-agent.md
+    agent_name: ava-stack-docs-researcher
+    routing_key: "always (cross-cutting — invoked before codegen)"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-25. Researches updated documentation for packages/frameworks
+      before codegen. Generates docs-research-bundle.md + resolved-packages.json.
+      Supports .NET and Angular protocols; other stacks emit WARNING and proceed.
+
+  - id: build-validator
+    file: tech-stack/agents/build-validator-agent.md
+    agent_name: ava-stack-build-validator
+    routing_key: "always (cross-cutting — invoked after codegen)"
+    dispatched_by: tech-stack/agents/orchestrator-stack.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-25. Deterministic compilation + lint + CVE scan post-codegen.
+      Dispatches ava-stack-build-fixer on failure. Max 5 retry iterations.
+      Supports .NET (full), Angular (full); other stacks via command stubs.
+
+  - id: build-fixer
+    file: tech-stack/agents/build-fixer-agent.md
+    agent_name: ava-stack-build-fixer
+    routing_key: "sub-agent (invoked only by ava-stack-build-validator)"
+    dispatched_by: tech-stack/agents/build-validator-agent.md
+    status: COMPLETE
+    priority: HIGH
+    owner: ""
+    notes: >
+      Implemented 2026-06-25. Sub-agent that classifies and fixes compilation errors.
+      Uses official documentation (fetch_webpage, github_text_search) for resolution.
+      Never invoked directly — only via build-validator retry loop.
+
+# ─── Summary ──────────────────────────────────────────────────────────────────
+# Total stubs: 16
+# CRITICAL: 0
+# HIGH: 7  (java-backend, python-backend, react-frontend, solution-cobol, solution-vbnet, iac-aws)
+# MEDIUM: 5 (go-backend, node-backend, blazor-frontend, vue-frontend, solution-powerbuilder, iac-k8s-native)
+# LOW: 4   (build-cycle variants — depend on generic coders first)
+# HIGH: 6  (java-backend, python-backend, react-frontend, solution-cobol, solution-vbnet)
+# MEDIUM: 6 (go-backend, node-backend, blazor-frontend, vue-frontend, solution-powerbuilder, iac-gcp, iac-k8s-native)
+# LOW: 4   (build-cycle variants — depend on generic coders first)
+# COMPLETE (recent): iac-aws (2026-06-25)

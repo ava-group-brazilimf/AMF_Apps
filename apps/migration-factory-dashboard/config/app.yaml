@@ -1,0 +1,67 @@
+# ══════════════════════════════════════════════════════════════════════
+#  Migration Factory Dashboard — configuração da fonte de dados
+#
+#  Este é o ÚNICO arquivo que declara o diretório raiz dos projetos.
+#  metrics.yaml define as métricas e NÃO conhece projetos.
+#
+#  Precedência do diretório raiz:
+#    1. variável de ambiente MIGRATION_FACTORY_PROJECTS_ROOT
+#    2. projects.root_directory (abaixo)
+#    3. falha controlada de configuração
+# ══════════════════════════════════════════════════════════════════════
+
+projects:
+  root_directory: "C:\\Desenv\\repo\\pre_release\\imfai-ava-fabric-apps-agents\\projects"
+  discovery_mode: "immediate_subdirectories"
+  project_name_source: "directory_name"
+
+  ignored_directories:
+    - ".git"
+    - ".github"
+    - ".idea"
+    - ".vscode"
+    - ".venv"
+    - "venv"
+    - "__pycache__"
+    - "node_modules"
+
+  metrics:
+    relative_directory: "outputs\\pipeline_runner"
+    file_name: "pipeline-runner-metrics.json"
+    file_format: "json"
+    encoding: "utf-8"
+
+  refresh:
+    strategy: "request"
+    interval_seconds: 30
+
+  removed_project_behavior: "remove_from_dashboard"
+  missing_metrics_file_behavior: "show_as_unavailable"
+  invalid_metrics_file_behavior: "show_error_and_continue"
+
+  # Ordenação da listagem (§7.14). field: directory_name | project_name | status
+  sort:
+    field: "directory_name"
+    order: "asc"
+
+  # Leitura consistente enquanto o pipeline grava o arquivo (§9.2).
+  read:
+    stability_retries: 3
+    retry_delay_seconds: 0.05
+    max_file_bytes: 33554432
+
+  # Cache em memória — opcional (§9.1). A chave inclui mtime e tamanho,
+  # portanto um arquivo alterado invalida a entrada automaticamente.
+  # O cache nunca guarda a LISTA de projetos, só o conteúdo já lido.
+  cache:
+    enabled: true
+    max_entries: 256
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s %(levelname)-7s %(name)s | %(message)s"
+
+server:
+  host: "127.0.0.1"
+  port: 5000
+  debug: false

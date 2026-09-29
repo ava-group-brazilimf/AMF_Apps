@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DbTypeTarget",
+  "description": "Configuração do banco de dados alvo para o ambiente TO-BE. Gerado pelo ava-devops-iac agent.",
+  "type": "object",
+  "required": [
+    "engine",
+    "version",
+    "tier",
+    "connection_string_template",
+    "pool_size",
+    "timeout_seconds",
+    "retry_count"
+  ],
+  "properties": {
+    "engine": {
+      "type": "string",
+      "enum": ["PostgreSQL", "Azure SQL"],
+      "description": "Engine do banco de dados alvo (derivado de ADR-002)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d+)?$",
+      "description": "Versão major ou major.minor da engine (ex: '16', '16.4')"
+    },
+    "tier": {
+      "type": "string",
+      "description": "Tier/SKU do serviço Azure (ex: 'Azure Database for PostgreSQL Flexible Server', 'Azure SQL Standard S3')"
+    },
+    "connection_string_template": {
+      "type": "string",
+      "description": "Template da connection string com placeholders (ex: Server={host};Database={db};...)"
+    },
+    "pool_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1024,
+      "description": "Tamanho máximo do connection pool"
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 300,
+      "description": "Timeout de conexão em segundos"
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Número de tentativas de retry em caso de falha transitória"
+    },
+    "adr_reference": {
+      "type": "string",
+      "description": "Referência ao ADR que justifica a escolha (ex: 'ADR-002')"
+    },
+    "environments": {
+      "type": "object",
+      "description": "Overrides por ambiente (dev, staging, production)",
+      "properties": {
+        "dev": { "$ref": "#/definitions/environment_override" },
+        "staging": { "$ref": "#/definitions/environment_override" },
+        "production": { "$ref": "#/definitions/environment_override" }
+      },
+      "additionalProperties": false
+    },
+    "trace_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "trace_id herdado do project-config.yaml"
+    },
+    "generated_by": {
+      "type": "string",
+      "enum": ["ava-devops-iac", "ava-tobe-database-design"],
+      "description": "Agente responsável pela geração"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "environment_override": {
+      "type": "object",
+      "properties": {
+        "tier": { "type": "string" },
+        "pool_size": { "type": "integer", "minimum": 1, "maximum": 1024 },
+        "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 300 },
+        "retry_count": { "type": "integer", "minimum": 0, "maximum": 10 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

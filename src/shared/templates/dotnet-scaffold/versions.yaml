@@ -1,0 +1,76 @@
+# .NET scaffold — matriz de versões por major do backend.
+#
+# Article I (Configuration-Driven): nenhuma versão vive em código Python nem no
+# corpo de um agente. Tudo é resolvido aqui, indexado pelo major lido de
+# `project-config.yaml → tobe_stack.backend_version`.
+#
+# Major não listado => o gerador reprova nomeando os suportados. NUNCA adivinhar
+# versão: preferimos bloquear a gerar uma solution que não restaura.
+#
+# Escopo deliberado dos pacotes:
+#   - EF Core só na Infrastructure, que é a única camada que conhece persistência.
+#   - A Api NÃO declara pacote algum. `Microsoft.AspNetCore.OpenApi` chegou a
+#     entrar e foi removido: arrasta `Microsoft.OpenApi`, que tem CVE de alta
+#     severidade (NU1903 / GHSA-v5pm-xwqc-g5wc) sem versão corrigida na linha
+#     2.x. Um esqueleto não pode nascer com vulnerabilidade conhecida por causa
+#     de código que ninguém escreveu ainda. Swagger/OpenAPI entram junto com o
+#     primeiro endpoint real, pelo codegen de features — mesma regra que o
+#     scaffold Angular aplica a NgRx e MSAL.
+#   - Domain e Application ficam sem pacote algum — é o que Clean Architecture pede.
+
+default_major: "8.0"
+
+supported_majors: ["8.0", "9.0", "10.0"]
+
+majors:
+  "8.0":
+    tfm: net8.0
+    lang_version: "12.0"
+    sdk_version: "8.0.400"
+    sdk_roll_forward: latestFeature
+    packages:
+      Microsoft.EntityFrameworkCore: "8.0.10"
+      Microsoft.EntityFrameworkCore.Design: "8.0.10"
+      Microsoft.EntityFrameworkCore.SqlServer: "8.0.10"
+      # Medido no SDK 8.0.424 em 2026-08-26 — ver a nota do bloco "10.0".
+      Microsoft.NET.Test.Sdk: "17.8.0"
+      xunit: "2.5.3"
+      xunit.runner.visualstudio: "2.5.3"
+      coverlet.collector: "6.0.0"
+
+  "9.0":
+    tfm: net9.0
+    lang_version: "13.0"
+    sdk_version: "9.0.100"
+    sdk_roll_forward: latestFeature
+    packages:
+      Microsoft.EntityFrameworkCore: "9.0.0"
+      Microsoft.EntityFrameworkCore.Design: "9.0.0"
+      Microsoft.EntityFrameworkCore.SqlServer: "9.0.0"
+      # ⚠️ NÃO VERIFICADO — não havia SDK 9.0.x instalado na máquina em que os
+      # blocos 8.0 e 10.0 foram medidos (2026-08-26), e ambos estavam errados
+      # com exatamente estes valores. Antes de usar .NET 9, confira com:
+      #   dotnet new xunit --name T --output . --framework net9.0 --no-restore
+      Microsoft.NET.Test.Sdk: "17.11.1"
+      xunit: "2.9.2"
+      xunit.runner.visualstudio: "2.8.2"
+
+  "10.0":
+    tfm: net10.0
+    lang_version: "14.0"
+    sdk_version: "10.0.100"
+    sdk_roll_forward: latestFeature
+    packages:
+      Microsoft.EntityFrameworkCore: "10.0.0"
+      Microsoft.EntityFrameworkCore.Design: "10.0.0"
+      Microsoft.EntityFrameworkCore.SqlServer: "10.0.0"
+      # Pacotes de teste: NÃO são escolha nossa — são o que o template
+      # `dotnet new xunit` do SDK 10.0.x emite. Divergir deles faz
+      # `_normalize_cpm` abortar com "versoes conflitantes", porque o gerador se
+      # recusa a rebaixar em silêncio o que o template declarou. Medido no SDK
+      # 10.0.303 em 2026-08-26. Ao subir de SDK, confira com:
+      #   dotnet new xunit --name T --output . --framework net10.0 --no-restore
+      Microsoft.NET.Test.Sdk: "17.14.1"
+      xunit: "2.9.3"
+      xunit.runner.visualstudio: "3.1.4"
+      coverlet.collector: "6.0.4"

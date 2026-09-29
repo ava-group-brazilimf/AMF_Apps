@@ -1,0 +1,134 @@
+# Angular scaffold — matriz de versões por major.
+#
+# Article I (Configuration-Driven): nenhuma versão de tecnologia vive no corpo de um
+# agente nem em código Python. Tudo é resolvido aqui, indexado pelo major lido de
+# `project-config.yaml → tobe_stack.frontend_version`.
+#
+# Major não listado abaixo => o gerador reprova com ERROR nomeando os suportados.
+# NUNCA adivinhar versão: preferimos bloquear a gerar um projeto que não compila.
+#
+# Escopo deliberado das dependências:
+#   - @angular/* e @angular/{cdk,material} acompanham o mesmo major do core, então o
+#     casamento de peer-dependencies é garantido.
+#   - NgRx e MSAL NÃO entram no scaffold. São matrizes de versão de outros fornecedores,
+#     com peer-deps próprias, e nada no esqueleto os importa. Uma dependência que ninguém
+#     usa só acrescenta risco de `npm install` falhar — que é exatamente a falha que este
+#     scaffold existe para eliminar. Quem os introduz é o codegen de features
+#     (`coder-angular-frontend`, `build-cycle-ngrx-agent`), junto com o código que os usa.
+
+default_major: 17
+
+supported_majors: ["17", "18", "19", "20"]
+
+majors:
+  "17":
+    dependencies:
+      "@angular/animations": "^17.3.0"
+      "@angular/cdk": "^17.3.0"
+      "@angular/common": "^17.3.0"
+      "@angular/compiler": "^17.3.0"
+      "@angular/core": "^17.3.0"
+      "@angular/forms": "^17.3.0"
+      "@angular/material": "^17.3.0"
+      "@angular/platform-browser": "^17.3.0"
+      "@angular/platform-browser-dynamic": "^17.3.0"
+      "@angular/router": "^17.3.0"
+      "rxjs": "~7.8.1"
+      "tslib": "^2.6.2"
+      "zone.js": "~0.14.4"
+    devDependencies:
+      "@angular-devkit/build-angular": "^17.3.0"
+      "@angular/cli": "^17.3.0"
+      "@angular/compiler-cli": "^17.3.0"
+      "@types/jasmine": "~5.1.4"
+      "jasmine-core": "~5.1.2"
+      "karma": "~6.4.3"
+      "karma-chrome-launcher": "~3.2.0"
+      "karma-coverage": "~2.2.1"
+      "karma-jasmine": "~5.1.0"
+      "karma-jasmine-html-reporter": "~2.1.0"
+      "typescript": "~5.4.5"
+
+  "18":
+    dependencies:
+      "@angular/animations": "^18.2.0"
+      "@angular/cdk": "^18.2.0"
+      "@angular/common": "^18.2.0"
+      "@angular/compiler": "^18.2.0"
+      "@angular/core": "^18.2.0"
+      "@angular/forms": "^18.2.0"
+      "@angular/material": "^18.2.0"
+      "@angular/platform-browser": "^18.2.0"
+      "@angular/platform-browser-dynamic": "^18.2.0"
+      "@angular/router": "^18.2.0"
+      "rxjs": "~7.8.1"
+      "tslib": "^2.6.3"
+      "zone.js": "~0.14.10"
+    devDependencies:
+      "@angular-devkit/build-angular": "^18.2.0"
+      "@angular/cli": "^18.2.0"
+      "@angular/compiler-cli": "^18.2.0"
+      "@types/jasmine": "~5.1.4"
+      "jasmine-core": "~5.2.0"
+      "karma": "~6.4.4"
+      "karma-chrome-launcher": "~3.2.0"
+      "karma-coverage": "~2.2.1"
+      "karma-jasmine": "~5.1.0"
+      "karma-jasmine-html-reporter": "~2.1.0"
+      "typescript": "~5.5.4"
+
+  "19":
+    dependencies:
+      "@angular/animations": "^19.2.0"
+      "@angular/cdk": "^19.2.0"
+      "@angular/common": "^19.2.0"
+      "@angular/compiler": "^19.2.0"
+      "@angular/core": "^19.2.0"
+      "@angular/forms": "^19.2.0"
+      "@angular/material": "^19.2.0"
+      "@angular/platform-browser": "^19.2.0"
+      "@angular/platform-browser-dynamic": "^19.2.0"
+      "@angular/router": "^19.2.0"
+      "rxjs": "~7.8.1"
+      "tslib": "^2.8.1"
+      "zone.js": "~0.15.0"
+    devDependencies:
+      "@angular-devkit/build-angular": "^19.2.0"
+      "@angular/cli": "^19.2.0"
+      "@angular/compiler-cli": "^19.2.0"
+      "@types/jasmine": "~5.1.5"
+      "jasmine-core": "~5.5.0"
+      "karma": "~6.4.4"
+      "karma-chrome-launcher": "~3.2.0"
+      "karma-coverage": "~2.2.1"
+      "karma-jasmine": "~5.1.0"
+      "karma-jasmine-html-reporter": "~2.1.0"
+      "typescript": "~5.7.2"
+
+  "20":
+    dependencies:
+      "@angular/animations": "^20.0.0"
+      "@angular/cdk": "^20.0.0"
+      "@angular/common": "^20.0.0"
+      "@angular/compiler": "^20.0.0"
+      "@angular/core": "^20.0.0"
+      "@angular/forms": "^20.0.0"
+      "@angular/material": "^20.0.0"
+      "@angular/platform-browser": "^20.0.0"
+      "@angular/platform-browser-dynamic": "^20.0.0"
+      "@angular/router": "^20.0.0"
+      "rxjs": "~7.8.1"
+      "tslib": "^2.8.1"
+      "zone.js": "~0.15.0"
+    devDependencies:
+      "@angular-devkit/build-angular": "^20.0.0"
+      "@angular/cli": "^20.0.0"
+      "@angular/compiler-cli": "^20.0.0"
+      "@types/jasmine": "~5.1.5"
+      "jasmine-core": "~5.6.0"
+      "karma": "~6.4.4"
+      "karma-chrome-launcher": "~3.2.0"
+      "karma-coverage": "~2.2.1"
+      "karma-jasmine": "~5.1.0"
+      "karma-jasmine-html-reporter": "~2.1.0"
+      "typescript": "~5.8.2"

@@ -1,0 +1,185 @@
+name: asis-diagnostic
+display_name: "Diagnóstico AS-IS"
+version: "1.8.2"
+description: "Agentes especializados na análise completa de aplicações legadas. legacy_technology em project-config.yaml determina qual solution agent é despachado: delphi, vb6 (implementados), cobol, vbnet, powerbuilder (stubs). security_enabled_asis flag controla execução automática da segurança na esteira. timing_benchmark_enabled flag controla coleta de timestamps NTP."
+agents:
+  - id: ava-asis-orchestrator
+    file: agents/orchestrator-asis.md
+    skill: ava-asis-orchestrator
+  - id: ava-asis-solution-delphi
+    file: agents/solution-delphi.md
+    skill: ava-asis-solution-delphi
+  - id: ava-asis-solution-vb
+    file: agents/solution-vb.md
+    skill: ava-asis-solution-vb
+  - id: ava-asis-solution-cobol
+    file: agents/solution-cobol.md
+    skill: ava-asis-solution-cobol
+    status: stub
+  - id: ava-asis-solution-dotnet
+    file: agents/solution-dotnet.md
+    skill: ava-asis-solution-dotnet
+  - id: ava-asis-solution-vbnet
+    file: agents/solution-dotnet.md
+    skill: ava-asis-solution-dotnet
+    status: alias
+  - id: ava-asis-solution-java
+    file: agents/solution-java.md
+    skill: ava-asis-solution-java
+  - id: ava-asis-solution-powerbuilder
+    file: agents/solution-powerbuilder.md
+    skill: ava-asis-solution-powerbuilder
+    status: stub
+  - id: ava-asis-business-rules-generator
+    file: agents/business-rules-generator-agent.md
+    skill: ava-asis-business-rules-generator 
+  - id: ava-asis-documentation
+    file: agents/documentation-asis.md
+    skill: ava-asis-documentation
+  - id: ava-asis-security-orchestrator
+    file: agents/security/security-orchestrator-asis.md
+    skill: ava-asis-security-orchestrator
+    skills:
+      - id: ava-asis-security-review
+        file: agents/security/security-review-asis.md
+      - id: ava-asis-security-sast
+        file: agents/security/sast-asis.md
+      - id: ava-asis-security-iast
+        file: agents/security/iast-asis.md
+      - id: ava-asis-security-threat-model
+        file: agents/security/threat-model-asis.md
+      - id: ava-asis-security-dependency-config
+        file: agents/security/dependency-config-asis.md
+      - id: ava-asis-security-pt-pattern
+        file: agents/security/pt-pattern-asis.md
+      - id: ava-asis-security-taint
+        file: agents/security/taint-asis.md
+  - id: ava-asis-inventory
+    file: agents/inventory-asis.md
+    skill: ava-asis-inventory
+  - id: ava-asis-gaps-risks
+    file: agents/gaps-risks-asis.md
+    skill: ava-asis-gaps-risks
+  - id: ava-asis-gap-migration-analyzer
+    file: agents/gap-migration-analyzer.md
+    skill: ava-asis-gap-migration-analyzer
+  - id: ava-asis-events-pubsub
+    file: agents/events-pubsub-asis.md
+    skill: ava-asis-events-pubsub
+  - id: ava-asis-bridge-fastqa
+    file: agents/bridge-fastqa-asis.md
+    skill: ava-asis-bridge-fastqa
+  - id: ava-asis-db-analyzer
+    file: agents/db-analyzer/db-analyzer.md
+    skill: ava-asis-db-analyzer
+    skills:
+      - id: mysql-agent
+        file: agents/db-analyzer/skills/mysql-agent.md
+      - id: mariadb-agent
+        file: agents/db-analyzer/skills/mariadb-agent.md
+      - id: oracle-agent
+        file: agents/db-analyzer/skills/oracle-agent.md
+      - id: sqlserver-agent
+        file: agents/db-analyzer/skills/sqlserver-agent.md
+outputs:
+  base_path: "projects/{project_name}/outputs/asis"
+  artifacts:
+    # Orchestrator
+    - master-report.md
+    # Solution agents — architecture & patterns
+    - architecture-blueprint.md
+    - pattern-classifications.json
+    - bounded-context-map.md
+    - data-access-profile.md
+    - vcl-lifecycle-map.md
+    - ui-lifecycle-map.md
+    - api-map.md
+    - data-structure.md
+    - code-usage-analysis.md
+    - file-export-dependencies.md
+    - file-import-dependencies.md
+    - external-dependencies.md
+    # Diagrams (.mmd)
+    - diagrams/c4-context.mmd
+    - diagrams/c4-container.mmd
+    - diagrams/c4-component.mmd
+    - diagrams/component-diagram.mmd
+    # Diagrams (.drawio)
+    - diagrams/c4-context.drawio
+    - diagrams/c4-container.drawio
+    - diagrams/c4-component.drawio
+    - diagrams/component-diagram.drawio
+    - diagrams/diagrama-componentes.drawio
+    # Business Rules — BRG outputs (docs/ directory)
+    - docs/business-rules.md
+    - docs/business-rules.json
+    # Documentation
+    - docs/value-chain.md
+    - docs/functional-requirements.md
+    - docs/screen-navigation-map.md
+    - docs/screen-rules.md
+    # Test Gaps (asis/qa/ depuis ava-asis-bridge-fastqa v4.1.0 Step 15)
+    - qa/test-gaps.md
+    # Bridge FastQA outputs (qa/ directory)
+    - qa/test-plan.md
+    - qa/test-cases.md
+    # Security — canônicos (somente SE security_enabled_asis: true)
+    - security-map.md
+    - vulnerabilities.md
+    - compliance-gaps.md
+    # Security — orchestrator outputs (somente SE security_enabled_asis: true)
+    - security/security-findings.json
+    - security/executive-security-summary.md
+    - security/technical-findings-report.md
+    # Security — sub-agent JSONs (somente SE security_enabled_asis: true — 7 agentes)
+    - security/sast-asis.json
+    - security/iast-asis.json
+    - security/threat-model-asis.json
+    - security/taint-asis.json
+    - security/dependency-config-asis.json
+    - security/pt-pattern-asis.json
+    - security/security-review-asis.json
+    # Security — artefatos mandátorios (somente SE security_enabled_asis: true)
+    - security/SBOM.md
+    - security/sbom.cyclonedx.json
+    - security/license-compliance-report.md
+    - security/iac-cicd-security-report.md
+    - security/supply-chain-risk-report.md
+    - security/asset-inventory.md
+    - security/attack-surface.md
+    - security/threat-model-stride.md
+    - security/hardening-checklist.md
+    - security/taint-flow-report.md
+    - security/pt-pattern-correlation.md
+    - security/remediation-validation.md
+    - security/security-regression-plan.md
+    - security/remediation-backlog.md
+    - security/owasp-coverage-matrix.md
+    - security/runtime-security-validation.md
+    - security/privilege-matrix.md
+    - security/secret-management-plan.md
+    # Inventory
+    - inventory-report.md
+    - metrics.json
+    - complexity-map.md
+    # Gaps & Risks
+    - gaps-risks-report.md
+    - risk-register.json
+    - migration-risks-summary.md
+    # Gap Migration Analyzer
+    - gap-list-report.md
+    - gap-register.json
+    - gap-analysis-summary.md
+    # DB Analyzer
+    - db/db-type.json
+    - db/schema-inventory.md
+    - db/er-diagram.mmd
+    - db/stored-procedures-map.md
+    - db/business-logic-in-db.md
+    - db/db-quality-report.md
+    - db/db-analysis-report.md
+    # Events / Pub-Sub / Queues
+    - events-pubsub-inventory.md
+    - events-pubsub-grid.json
+    - events-pubsub-risks.md
+    - diagrams/events-pubsub-flow.mmd

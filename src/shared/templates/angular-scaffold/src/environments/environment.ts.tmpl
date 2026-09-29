@@ -1,0 +1,13 @@
+/** Ambiente de desenvolvimento.
+ *
+ * Substituído por `environment.prod.ts` no build de produção via `fileReplacements`
+ * em `angular.json`. As duas variantes DEVEM manter exatamente as mesmas chaves.
+ *
+ * GUARDRAIL: nunca hardcodar URL de API, client ID ou tenant em componentes ou
+ * services — sempre por aqui.
+ */
+export const environment = {
+  production: false,
+  appName: '%%app_title%%',
+  apiUrl: '/api/v1',
+};

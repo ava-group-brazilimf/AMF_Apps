@@ -1,0 +1,992 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ava-fabric/schemas/speckit-prototype-manifest.schema.json",
+  "title": "SpecKit Prototype Implementation Manifest",
+  "description": "Extracao ESTATICA e determinista do prototipo navegavel da F3. Fonte formal de planejamento da F3S para telas, rotas, componentes, formularios, tabelas, estados, tokens de design e acessibilidade. Nenhum JavaScript do prototipo e executado; nada aqui e inferido por LLM.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "generated_at",
+    "prototype",
+    "design_system",
+    "screens",
+    "warnings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "NAO normativo. Excluido do checksum e de qualquer comparacao de determinismo."
+    },
+    "target_stack": {
+      "type": "object",
+      "description": "Stack resolvida de context/project-config.yaml. Autoridade sobre em QUE tecnologia os componentes sao planejados.",
+      "additionalProperties": false,
+      "properties": {
+        "frontend_framework": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "frontend_language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "frontend_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "backend_framework": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "backend_language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "backend_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "package_manager": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "prototype": {
+      "type": "object",
+      "required": [
+        "entrypoint",
+        "checksum",
+        "assets"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "entrypoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "sha256 do entrypoint. PROTOTYPE-CHECKSUM-CONSISTENCY compara este valor com o disco."
+        },
+        "content_checksum": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "sha256 do entrypoint + todos os assets locais, na ordem canonica."
+        },
+        "screen_list": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "design_tokens_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/asset"
+          }
+        }
+      }
+    },
+    "design_system": {
+      "type": "object",
+      "required": [
+        "colors",
+        "typography",
+        "spacing",
+        "breakpoints",
+        "icons",
+        "global_styles",
+        "component_patterns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "colors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/token"
+          }
+        },
+        "typography": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/token"
+          }
+        },
+        "spacing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/token"
+          }
+        },
+        "other_tokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/token"
+          },
+          "description": "Tokens reais do prototipo fora das categorias nomeadas (radius, shadow, z-index, transition). Existem para que DESIGN-SYSTEM-COVERAGE consiga exigir owner de TODO token, sem forcar categoria errada."
+        },
+        "breakpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/breakpoint"
+          }
+        },
+        "icons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/icon"
+          }
+        },
+        "global_styles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/global_style"
+          }
+        },
+        "component_patterns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/component_pattern"
+          }
+        }
+      }
+    },
+    "shared_components": {
+      "type": "array",
+      "description": "Componentes usados por mais de uma tela. Ownership de create pertence a UMA unica wave (foundation por padrao) - ver SINGLE-CREATE-OWNER.",
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    },
+    "screens": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/screen"
+      }
+    },
+    "flows": {
+      "type": "array",
+      "description": "Fluxos de navegacao derivados dos alvos de navegacao entre telas. Base de E2E-COVERAGE.",
+      "items": {
+        "$ref": "#/$defs/flow"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/warning"
+      }
+    }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "required": [
+        "path",
+        "kind",
+        "scope"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "stylesheet",
+            "script",
+            "image",
+            "font",
+            "media",
+            "other"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "local",
+            "external"
+          ],
+          "description": "external NUNCA e baixado; vira dependencia externa declarada."
+        },
+        "checksum": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "referenced_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "token": {
+      "type": "object",
+      "required": [
+        "token_id",
+        "name",
+        "value",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "token_id": {
+          "type": "string",
+          "pattern": "^TOK-[A-Z0-9-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "source_anchor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin": {
+          "enum": [
+            "css-custom-property",
+            "design-tokens-json"
+          ]
+        }
+      }
+    },
+    "breakpoint": {
+      "type": "object",
+      "required": [
+        "breakpoint_id",
+        "query",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "breakpoint_id": {
+          "type": "string",
+          "pattern": "^BPT-[A-Z0-9-]+$"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1
+        },
+        "min_width": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "max_width": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "icon": {
+      "type": "object",
+      "required": [
+        "icon_id",
+        "name",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "icon_id": {
+          "type": "string",
+          "pattern": "^ICO-[A-Z0-9-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "inline-svg",
+            "icon-font",
+            "image"
+          ]
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "global_style": {
+      "type": "object",
+      "required": [
+        "selector",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declarations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "component_pattern": {
+      "type": "object",
+      "required": [
+        "pattern_id",
+        "base_class",
+        "variants",
+        "usage_count",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "pattern_id": {
+          "type": "string",
+          "pattern": "^PAT-[A-Z0-9-]+$"
+        },
+        "base_class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "usage_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_by_screens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": [
+        "component_id",
+        "kind",
+        "name",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "pattern": "^CMP-[A-Z0-9-]+$"
+        },
+        "kind": {
+          "enum": [
+            "layout",
+            "navigation",
+            "form",
+            "table",
+            "modal",
+            "card",
+            "button",
+            "field",
+            "list",
+            "toolbar",
+            "feedback",
+            "region",
+            "other"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selector": {
+          "type": "string"
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shared": {
+          "type": "boolean",
+          "default": false
+        },
+        "used_by_screens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "design_tokens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessibility_hints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_anchor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Componente ESTRUTURAL, cobrado por PROTOTYPE-COMPONENT-COVERAGE. Botao e campo sao false: implementados dentro do formulario, tabela ou toolbar que os contem."
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "required": [
+        "route_id",
+        "path",
+        "screen_id",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "pattern": "^RTE-[A-Z0-9-]+$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "screen_id": {
+          "type": "string"
+        },
+        "default": {
+          "type": "boolean",
+          "default": false
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "screen": {
+      "type": "object",
+      "required": [
+        "screen_id",
+        "name",
+        "route",
+        "source_anchor",
+        "components"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "screen_id": {
+          "type": "string",
+          "pattern": "^SCR-[A-Z0-9-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "route": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "route_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bounded_context": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bounded_context_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_anchor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "html_id": {
+          "type": "string"
+        },
+        "layout": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dynamic": {
+          "type": "boolean",
+          "description": "true quando a tela declara endpoint, formulario ou tabela de dados. FRONTEND-BACKEND-INTEGRATION so exige integracao de telas dynamic."
+        },
+        "static_justification": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        },
+        "forms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/form"
+          }
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table"
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        },
+        "navigation_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          }
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "design_tokens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "api_endpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/api_endpoint"
+          }
+        },
+        "accessibility_hints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "responsive_hints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "required": [
+        "form_id",
+        "component_id",
+        "fields",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "form_id": {
+          "type": "string",
+          "pattern": "^FRM-[A-Z0-9-]+$"
+        },
+        "component_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "html_id": {
+          "type": "string"
+        },
+        "submit_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": [
+        "field_id",
+        "name",
+        "input_type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "field_id": {
+          "type": "string",
+          "pattern": "^FLD-[A-Z0-9-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_type": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false
+        },
+        "validations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/validation"
+          }
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "rule",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": [
+            "string",
+            "boolean",
+            "number",
+            "null"
+          ]
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "required": [
+        "table_id",
+        "component_id",
+        "columns",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "table_id": {
+          "type": "string",
+          "pattern": "^TBL-[A-Z0-9-]+$"
+        },
+        "component_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "html_id": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "row_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "action_id",
+        "label",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^ACT-[A-Z0-9-]+$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "navigate",
+            "submit",
+            "reset",
+            "open-modal",
+            "close-modal",
+            "invoke",
+            "unknown"
+          ]
+        },
+        "handler": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_screen_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "state",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "loading",
+            "empty",
+            "error",
+            "success",
+            "disabled",
+            "validation"
+          ]
+        },
+        "selector": {
+          "type": "string"
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "api_endpoint": {
+      "type": "object",
+      "required": [
+        "method",
+        "path",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "operation_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Resolvido pelo speckit_wave_manifest contra os OpenAPI. null aqui significa 'ainda nao resolvido', nunca 'inexistente'."
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "required": [
+        "flow_id",
+        "screens",
+        "source_anchor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "flow_id": {
+          "type": "string",
+          "pattern": "^FLW-[A-Z0-9-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "screens": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "critical": {
+          "type": "boolean",
+          "default": false
+        },
+        "source_anchor": {
+          "type": "string"
+        }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "required": [
+        "code",
+        "severity",
+        "message",
+        "evidence",
+        "recommended_action"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^PM-[0-9]{3}$"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "affected_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

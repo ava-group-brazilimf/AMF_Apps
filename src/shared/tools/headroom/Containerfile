@@ -1,0 +1,64 @@
+# AVA Fabric — Headroom proxy interceptor (Podman/Docker)
+#
+# Build a partir da RAIZ do repositório (o contexto precisa enxergar ./vendor):
+#   podman build -f src/shared/tools/headroom/Containerfile -t ava-headroom:latest .
+#
+# O fork embedded usa maturin (Rust). Este Containerfile instala o toolchain
+# Rust e builda o FORK — dentro do container o fork é o que roda de fato,
+# diferente do setup.ps1 em máquina sem cargo. Use -SkipML/HEADROOM_EXTRAS para
+# imagens menores.
+
+FROM docker.io/library/python:3.12-slim AS builder
+
+ARG HEADROOM_EXTRAS=proxy,mcp,code,memory,otel
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    CARGO_HOME=/opt/cargo \
+    RUSTUP_HOME=/opt/rustup \
+    PATH=/opt/cargo/bin:/opt/venv/bin:$PATH
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential curl pkg-config libssl-dev \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+       | sh -s -- -y --profile minimal --default-toolchain stable \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python -m venv /opt/venv && pip install --upgrade pip setuptools wheel maturin
+
+COPY src/shared/tools/headroom/vendor /build/vendor
+RUN pip install "/build/vendor[${HEADROOM_EXTRAS}]" && pip install "pyyaml>=6.0"
+
+# ─────────────────────────────────────────────────────────────────────────────
+FROM docker.io/library/python:3.12-slim
+
+ENV PATH=/opt/venv/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    HEADROOM_TELEMETRY=off \
+    HEADROOM_HOST=0.0.0.0 \
+    HEADROOM_PORT=8787 \
+    HEADROOM_BACKEND=anthropic \
+    HEADROOM_MODE=token
+
+COPY --from=builder /opt/venv /opt/venv
+
+# Só os módulos da tool — o vendor não é necessário em runtime (já instalado).
+WORKDIR /app
+COPY src/shared/tools/headroom/headroom_config.py \
+     src/shared/tools/headroom/headroom_context.py \
+     src/shared/tools/headroom/headroom_tool.py \
+     src/shared/tools/headroom/mcp_server.py \
+     src/shared/tools/headroom/headroom.yaml \
+     /app/src/shared/tools/headroom/
+
+RUN useradd --create-home --uid 10001 headroom && chown -R headroom:headroom /app
+USER headroom
+
+EXPOSE 8787
+
+# 0.0.0.0 aqui é seguro porque o bind é dentro do container; publique a porta
+# apenas em 127.0.0.1 no compose (Artigo VII — a chave do Foundry trafega aqui).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD python -c "import socket,os,sys; s=socket.create_connection(('127.0.0.1', int(os.environ.get('HEADROOM_PORT','8787'))), 3); s.close()" || exit 1
+
+ENTRYPOINT ["headroom", "proxy", "--no-http2"]

@@ -1,0 +1,455 @@
+---
+# Testability Anti-Patterns Catalog
+# Used by ava-qa-gaps-requirements for automated gap detection
+version: "1.0.0"
+last_updated: "2026-05-27"
+scope: ["backend-dotnet-cleanarch", "frontend-angular"]
+
+antipatterns:
+  # ============================================================
+  # BACKEND — .NET Clean Architecture
+  # ============================================================
+  
+  - id: AP-BE-001
+    name: "Fat Controllers"
+    category: "presentation-layer"
+    severity: "blocker"
+    description: "Controllers containing business logic instead of delegating to Application layer"
+    detection_rules:
+      - "Controller action methods > 50 lines"
+      - "Complex conditional logic (nested if/else > 3 levels) in controllers"
+      - "Direct database access or ORM usage in controllers"
+      - "Business calculations or validations in controller methods"
+    testability_impact: "Cannot unit test business logic without HTTP infrastructure; tight coupling to framework"
+    recommendation: "Extract logic to Command/Query handlers; controllers should only validate input and orchestrate"
+    references:
+      - "ADR-004-backend.md — Clean Architecture principles"
+      - "dotnet-patterns-reference.md — Thin Controller pattern"
+    example_good: |
+      [ApiController]
+      public class OrdersController : ControllerBase
+      {
+          private readonly IMediator _mediator;
+          
+          [HttpPost]
+          public async Task<IActionResult> Create(CreateOrderCommand cmd)
+          {
+              var result = await _mediator.Send(cmd);
+              return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+          }
+      }
+    example_bad: |
+      [ApiController]
+      public class OrdersController : ControllerBase
+      {
+          private readonly AppDbContext _db;
+          
+          [HttpPost]
+          public async Task<IActionResult> Create(OrderDto dto)
+          {
+              // BAD: Business logic in controller
+              if (dto.Total < 0) return BadRequest("Invalid total");
+              var order = new Order { Total = dto.Total, Status = "Pending" };
+              _db.Orders.Add(order);
+              await _db.SaveChangesAsync();
+              return Ok(order);
+          }
+      }
+
+  - id: AP-BE-002
+    name: "Missing Dependency Injection"
+    category: "infrastructure-layer"
+    severity: "blocker"
+    description: "Using 'new' operator for dependencies instead of constructor injection"
+    detection_rules:
+      - "Absence of DependencyInjection.cs in Infrastructure projects"
+      - "'new DbContext()' or 'new Repository()' in Application/Domain layers"
+      - "Static service locator pattern (ServiceProvider.GetService)"
+    testability_impact: "Cannot mock dependencies; tightly coupled to concrete implementations"
+    recommendation: "Create DependencyInjection.cs per bounded context; use constructor injection exclusively"
+    references:
+      - "architecture-technical-tobe.md — DI Setup"
+      - "solution-structure.md — Infrastructure layer structure"
+    example_good: |
+      public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Result<Order>>
+      {
+          private readonly IOrderRepository _repository;
+          private readonly IUnitOfWork _unitOfWork;
+          
+          public CreateOrderHandler(IOrderRepository repository, IUnitOfWork unitOfWork)
+          {
+              _repository = repository;
+              _unitOfWork = unitOfWork;
+          }
+      }
+    example_bad: |
+      public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Result<Order>>
+      {
+          public async Task<Result<Order>> Handle(CreateOrderCommand request, CancellationToken ct)
+          {
+              // BAD: Creating dependencies manually
+              var repository = new OrderRepository(new AppDbContext());
+              await repository.AddAsync(new Order());
+          }
+      }
+
+  - id: AP-BE-003
+    name: "Application Layer with Concrete Infrastructure Dependencies"
+    category: "application-layer"
+    severity: "blocker"
+    description: "Application layer referencing EF Core, Dapper, or other infrastructure packages directly"
+    detection_rules:
+      - "Application.csproj with <PackageReference> to Microsoft.EntityFrameworkCore"
+      - "Application.csproj with <PackageReference> to Dapper or System.Data.SqlClient"
+      - "Using directives with 'Microsoft.EntityFrameworkCore' in Application layer files"
+    testability_impact: "Application layer cannot be tested without database; violates Dependency Inversion Principle"
+    recommendation: "Define repository interfaces in Application/Domain; implement in Infrastructure only"
+    references:
+      - "ADR-004-backend.md — Dependency Inversion"
+      - "architecture-blueprint.md — Clean Architecture layers"
+
+  - id: AP-BE-004
+    name: "Domain Layer with External Dependencies"
+    category: "domain-layer"
+    severity: "blocker"
+    description: "Domain layer referencing NuGet packages beyond System.* (violates pure domain principle)"
+    detection_rules:
+      - "Domain.csproj with <PackageReference> to non-framework packages"
+      - "Domain entities with [JsonProperty] or [Column] attributes"
+      - "Domain layer with references to System.Data, EntityFrameworkCore, or Newtonsoft.Json"
+    testability_impact: "Domain logic coupled to infrastructure concerns; cannot test domain rules in isolation"
+    recommendation: "Keep Domain layer pure C#; move persistence concerns to Infrastructure; use mapping layer"
+    references:
+      - "ADR-004-backend.md — Pure Domain"
+      - "dotnet-patterns-reference.md — Domain-Driven Design"
+
+  - id: AP-BE-005
+    name: "Entities with Public Setters"
+    category: "domain-layer"
+    severity: "warning"
+    description: "Domain entities with unrestricted public setters (no encapsulation)"
+    detection_rules:
+      - "Entity properties with 'public set' without validation"
+      - "Entities without Guard Clauses in constructors"
+      - "Mutable value objects (not using 'record' or 'init')"
+    testability_impact: "Cannot enforce invariants; entities can be in invalid states during tests"
+    recommendation: "Use private setters; expose behavior via methods; implement Guard Clauses"
+    references:
+      - "dotnet-patterns-reference.md — Entity Encapsulation"
+    example_good: |
+      public class Order : Entity
+      {
+          public decimal Total { get; private set; }
+          public OrderStatus Status { get; private set; }
+          
+          public void Submit()
+          {
+              Guard.Against.NegativeOrZero(Total, nameof(Total));
+              Status = OrderStatus.Submitted;
+              AddDomainEvent(new OrderSubmittedEvent(Id));
+          }
+      }
+    example_bad: |
+      public class Order : Entity
+      {
+          public decimal Total { get; set; }  // BAD: Public setter without validation
+          public OrderStatus Status { get; set; }
+      }
+
+  - id: AP-BE-006
+    name: "Direct Bounded Context References"
+    category: "bounded-context-isolation"
+    severity: "blocker"
+    description: "Bounded contexts with direct project references to other BCs (no Context Map strategy)"
+    detection_rules:
+      - "<ProjectReference> from BC-A.Application to BC-B.Application"
+      - "Namespace imports crossing bounded context boundaries"
+      - "Absence of Context Map strategy definition in bounded-context-map.md"
+    testability_impact: "Cannot test bounded contexts independently; cyclic dependencies"
+    recommendation: "Define Context Map strategy (ACL, OHS, Conformist); use domain events or API calls for integration"
+    references:
+      - "bounded-context-map.md — Context Mapping Patterns"
+      - "ADR-004-backend.md — Bounded Context Isolation"
+
+  - id: AP-BE-007
+    name: "Missing Anti-Corruption Layer"
+    category: "bounded-context-isolation"
+    severity: "warning"
+    description: "Integration with external systems or legacy code without ACL"
+    detection_rules:
+      - "Direct references to external DTOs or models in Domain layer"
+      - "Legacy data structures used directly in Application handlers"
+      - "Context Map strategy marked as 'Conformist' without justification"
+    testability_impact: "Domain polluted with external concepts; difficult to mock external dependencies"
+    recommendation: "Implement Anti-Corruption Layer with translators; map external models to domain types"
+    references:
+      - "architecture-design-tobe.md — Context Map Patterns"
+
+  - id: AP-BE-008
+    name: "DbContext Exposed Outside Infrastructure"
+    category: "infrastructure-layer"
+    severity: "blocker"
+    description: "DbContext used directly in Application or Presentation layers"
+    detection_rules:
+      - "Constructor injection of DbContext in Application layer"
+      - "DbContext used in controller actions"
+      - "Absence of Repository pattern implementation"
+    testability_impact: "Cannot replace data access with test doubles; tightly coupled to EF Core"
+    recommendation: "Wrap DbContext in Repository implementations; expose only IRepository interfaces"
+    references:
+      - "dotnet-patterns-reference.md — Repository Pattern"
+
+  - id: AP-BE-009
+    name: "Missing Health Checks"
+    category: "observability"
+    severity: "warning"
+    description: "API without /health and /ready endpoints"
+    detection_rules:
+      - "architecture-blueprint.md without health check section"
+      - "Program.cs without AddHealthChecks() call"
+      - "Absence of health check configuration in solution-structure.md"
+    testability_impact: "Cannot validate service readiness in integration tests; difficult to diagnose deployment issues"
+    recommendation: "Implement health checks for database, cache, and external dependencies"
+    references:
+      - "architecture-technical-tobe.md — Observability"
+      - "ADR-007-observability.md"
+
+  - id: AP-BE-010
+    name: "Unstructured Logging"
+    category: "observability"
+    severity: "warning"
+    description: "Using Console.WriteLine or string interpolation instead of structured logging"
+    detection_rules:
+      - "Console.WriteLine() calls in Application or Infrastructure layers"
+      - "String interpolation in log messages (not using ILogger with parameters)"
+      - "Absence of ILogger<T> injection"
+    testability_impact: "Cannot verify log output in tests; difficult to parse logs for assertions"
+    recommendation: "Use ILogger<T> with structured parameters; configure Serilog or equivalent"
+    references:
+      - "ADR-007-observability.md — Logging Strategy"
+
+  # ============================================================
+  # FRONTEND — Angular 17+
+  # ============================================================
+
+  - id: AP-FE-001
+    name: "Smart Components with Business Logic"
+    category: "component-architecture"
+    severity: "blocker"
+    description: "Components containing business logic instead of delegating to services"
+    detection_rules:
+      - "Component .ts files > 150 lines (excluding inline templates)"
+      - "Complex calculations or validations in component methods"
+      - "HTTP calls directly in component (not via service)"
+    testability_impact: "Cannot unit test logic without Angular testing utilities; tight coupling to DOM"
+    recommendation: "Extract logic to services; components should only handle presentation and user interaction"
+    references:
+      - "angular-patterns-reference.md — Smart/Dumb Pattern"
+      - "ADR-005-frontend.md — Component Design"
+    example_good: |
+      @Component({ selector: 'app-order-page' })
+      export class OrderPageComponent {
+        orders$ = this.orderService.getOrders();
+        
+        constructor(private orderService: OrderService) {}
+        
+        onSubmit(form: FormGroup): void {
+          this.orderService.createOrder(form.value).subscribe();
+        }
+      }
+    example_bad: |
+      @Component({ selector: 'app-order-page' })
+      export class OrderPageComponent {
+        orders: Order[] = [];
+        
+        constructor(private http: HttpClient) {}
+        
+        loadOrders(): void {
+          // BAD: HTTP call and business logic in component
+          this.http.get<Order[]>('/api/orders').subscribe(orders => {
+            this.orders = orders.filter(o => o.total > 100); // Business rule
+          });
+        }
+      }
+
+  - id: AP-FE-002
+    name: "Direct localStorage Usage"
+    category: "state-management"
+    severity: "blocker"
+    description: "Components or services using localStorage directly without abstraction"
+    detection_rules:
+      - "localStorage.setItem() or localStorage.getItem() calls outside StorageService"
+      - "Absence of storage abstraction service"
+    testability_impact: "Cannot mock storage in tests; tests pollute actual browser storage"
+    recommendation: "Create StorageService with interface; inject in components; use test doubles"
+    references:
+      - "angular-patterns-reference.md — Storage Abstraction"
+
+  - id: AP-FE-003
+    name: "Template-Driven Forms"
+    category: "component-architecture"
+    severity: "warning"
+    description: "Using FormsModule with [(ngModel)] instead of ReactiveFormsModule"
+    detection_rules:
+      - "Imports of FormsModule in standalone components or modules"
+      - "[(ngModel)] usage in templates"
+      - "Absence of FormGroup/FormControl in component logic"
+    testability_impact: "Cannot test form validation logic without DOM; difficult to test async validators"
+    recommendation: "Use ReactiveFormsModule exclusively; define forms with FormBuilder in component"
+    references:
+      - "angular-patterns-reference.md — Reactive Forms"
+      - "ADR-005-frontend.md — Form Strategy"
+
+  - id: AP-FE-004
+    name: "HttpClient Injection in Components"
+    category: "service-layer"
+    severity: "blocker"
+    description: "Components injecting HttpClient directly instead of using services"
+    detection_rules:
+      - "HttpClient injected in component constructors"
+      - "HTTP calls in component methods"
+    testability_impact: "Cannot mock HTTP responses without Angular testing utilities; tight coupling to HTTP"
+    recommendation: "Create dedicated services for HTTP calls; inject services in components"
+    references:
+      - "angular-patterns-reference.md — Service Layer Pattern"
+
+  - id: AP-FE-005
+    name: "Services Without Interfaces"
+    category: "service-layer"
+    severity: "warning"
+    description: "Services not defining interfaces (difficult to mock in tests)"
+    detection_rules:
+      - "Injectable services without corresponding interface file"
+      - "Component dependencies typed as concrete classes (not interfaces)"
+    testability_impact: "Cannot easily create test doubles; must use spies instead of clean mocks"
+    recommendation: "Define interface for each service; inject interface (not concrete class) in consumers"
+    references:
+      - "angular-patterns-reference.md — Interface-based Services"
+
+  - id: AP-FE-006
+    name: "Mutable State"
+    category: "state-management"
+    severity: "blocker"
+    description: "State mutated directly instead of using immutable patterns"
+    detection_rules:
+      - "Direct assignment to state properties (this.state.value = x)"
+      - "Array.push() or Object.assign() on state objects"
+      - "Absence of immutability in state management pattern definition"
+    testability_impact: "State changes unpredictable; difficult to test state transitions"
+    recommendation: "Use immutable updates (spread operator); if NgRx, use reducers; if Signals, use update()"
+    references:
+      - "angular-patterns-reference.md — Immutable State"
+
+  - id: AP-FE-007
+    name: "Side Effects in Constructors"
+    category: "component-architecture"
+    severity: "blocker"
+    description: "Constructors performing HTTP calls or other side effects"
+    detection_rules:
+      - "HTTP calls in component/service constructors"
+      - "Subscriptions started in constructors (not in ngOnInit)"
+    testability_impact: "Cannot instantiate component in tests without side effects executing"
+    recommendation: "Move initialization logic to ngOnInit or reactive streams"
+    references:
+      - "angular-patterns-reference.md — Lifecycle Hooks"
+
+  - id: AP-FE-008
+    name: "Missing .spec.ts Files"
+    category: "testability"
+    severity: "warning"
+    description: "Components or services without corresponding unit test files"
+    detection_rules:
+      - "Component .ts files without matching .spec.ts"
+      - "Service .ts files without matching .spec.ts"
+      - "solution-structure.md without test file references"
+    testability_impact: "No automated test coverage; regression risk"
+    recommendation: "Generate .spec.ts for all components and services; enforce via CI gate"
+    references:
+      - "architecture-blueprint.md — Testing Strategy"
+
+  - id: AP-FE-009
+    name: "Unmanaged Subscriptions"
+    category: "component-architecture"
+    severity: "warning"
+    description: "Subscriptions without unsubscribe or takeUntil (memory leaks)"
+    detection_rules:
+      - "subscribe() calls without corresponding unsubscribe in ngOnDestroy"
+      - "Absence of takeUntil or async pipe"
+    testability_impact: "Memory leaks in test suites; unpredictable test failures"
+    recommendation: "Use async pipe or takeUntil(destroy$) pattern for all subscriptions"
+    references:
+      - "angular-patterns-reference.md — RxJS Best Practices"
+
+  - id: AP-FE-010
+    name: "Missing State Management Pattern Definition"
+    category: "state-management"
+    severity: "warning"
+    description: "architecture-blueprint.md does not define frontend state management approach"
+    detection_rules:
+      - "Absence of 'frontend_state' in architecture_patterns config"
+      - "Mixed usage of services, BehaviorSubjects, and global variables for state"
+    testability_impact: "Inconsistent state patterns; difficult to test state-dependent logic"
+    recommendation: "Define and document state management pattern (NgRx, Signals, or service-based)"
+    references:
+      - "ADR-005-frontend.md — State Management Decision"
+
+  # ============================================================
+  # CROSS-CUTTING
+  # ============================================================
+
+  - id: AP-CC-001
+    name: "Hardcoded Configuration Values"
+    category: "configuration"
+    severity: "blocker"
+    description: "Connection strings, API keys, or endpoints hardcoded in source code"
+    detection_rules:
+      - "Connection strings in appsettings.json (not Key Vault references)"
+      - "API keys as string literals in code"
+      - "Absence of IOptions<T> pattern for settings"
+    testability_impact: "Cannot swap configuration for test environments; secrets exposed in source control"
+    recommendation: "Use Azure Key Vault references; inject via IOptions<T>; never hardcode secrets"
+    references:
+      - "ADR-003-security.md — Secrets Management"
+      - "architecture-technical-tobe.md — Configuration Pattern"
+
+  - id: AP-CC-002
+    name: "Missing Correlation IDs"
+    category: "observability"
+    severity: "warning"
+    description: "Distributed tracing without correlation IDs across service boundaries"
+    detection_rules:
+      - "HTTP calls without X-Correlation-Id header propagation"
+      - "Logs without correlation context"
+    testability_impact: "Cannot trace requests through test scenarios; difficult to debug integration tests"
+    recommendation: "Implement correlation ID middleware; propagate via HTTP headers; include in all logs"
+    references:
+      - "ADR-007-observability.md — Distributed Tracing"
+
+# ============================================================
+# Detection Severity Legend
+# ============================================================
+severity_definitions:
+  blocker:
+    description: "Prevents effective unit or integration testing; must be fixed before codegen"
+    impact: "High"
+    action: "Redesign required"
+  warning:
+    description: "Reduces testability but does not completely block testing"
+    impact: "Medium"
+    action: "Strongly recommended to fix"
+  info:
+    description: "Best practice violation; low impact on testability"
+    impact: "Low"
+    action: "Optional improvement"
+
+# ============================================================
+# Usage Instructions
+# ============================================================
+usage:
+  agents: ["ava-qa-gaps-requirements"]
+  inputs:
+    - "architecture-blueprint.md"
+    - "solution-structure.md"
+    - "bounded-context-map.md"
+  detection_strategy: "Rule-based pattern matching + architectural analysis"
+  output_format: "testability-gaps-report.md with anti-pattern IDs and recommendations"

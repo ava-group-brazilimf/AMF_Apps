@@ -1,0 +1,63 @@
+# AVA Fabric — Headroom Tool · defaults
+# =====================================================================
+# Camada MAIS FRACA da configuração. Precedência efetiva (forte → fraco):
+#
+#   1. variáveis de ambiente (HEADROOM_* / AVA_FOUNDRY_* / ANTHROPIC_TARGET_API_URL)
+#   2. projects/{project}/context/project-config.yaml → bloco `headroom:`
+#   3. este arquivo
+#
+# Artigo I da Constituição: nada de limiar/endpoint hardcoded em código.
+# Quem resolve a precedência é headroom_config.py::load_config().
+# ---------------------------------------------------------------------
+
+headroom:
+  # ── Feature flags ─────────────────────────────────────────────────
+  enabled: true
+
+  # Modelo e limite de contexto do endpoint Foundry.
+  # ATENÇÃO: o endpoint da esteira é Anthropic-compatible (…/anthropic),
+  # não Azure OpenAI. Ver copilot-cli-v1.bat na raiz do repo.
+  model: "claude-sonnet-4-6"
+  context_limit: 200000
+
+  # rust = detector nativo (Magika/ONNX). No Windows o headroom recusa o
+  # backend nativo por padrão e cai para o detector puro-Python; manter
+  # "auto" evita o aviso a cada chamada. Use "rust" em Linux/container.
+  detect_backend: auto
+
+  # Compressão inline (headroom.compress) usada por `headroom_tool.py compress`.
+  compress:
+    # None = deixa o Kompress decidir pelo próprio limiar (conservador).
+    target_ratio: null
+    min_tokens_to_compress: 250
+    compress_user_messages: true
+    protect_recent: 0
+
+  # ── Proxy interceptor ─────────────────────────────────────────────
+  proxy:
+    enabled: true
+    # 127.0.0.1 por padrão (Artigo VII — o proxy carrega a chave do Foundry
+    # em trânsito; NÃO expor em 0.0.0.0 fora de container).
+    host: "127.0.0.1"
+    port: 8787
+    # Upstream real. No headroom isto NÃO é uma flag --upstream: é
+    # `--anthropic-api-url` / env ANTHROPIC_TARGET_API_URL.
+    upstream: "https://aif-imf-apps-prd-eus2-001.services.ai.azure.com/anthropic"
+    backend: "anthropic"
+    # JSONL nativo do proxy (timestamp, model, tokens_before, tokens_after,
+    # latency_ms). Relativo à raiz do repo.
+    log_file: ".headroom/proxy-requests.jsonl"
+    mode: "token"          # token = máxima compressão | cache = prefix-cache
+    http2: false           # HTTP/1.1 evita corrupção TLS em stream cancelado
+    request_timeout_seconds: 600
+
+  # ── Observabilidade ───────────────────────────────────────────────
+  observability:
+    # Relativo a projects/{project}/ — fica ao lado de agent-events.jsonl
+    # e pipeline-run-state.json, escritos por pipeline_observer.py.
+    metrics_file: "outputs/observability/headroom-metrics.jsonl"
+
+  # ── Degradação ────────────────────────────────────────────────────
+  # true = qualquer falha do headroom devolve o conteúdo original sem
+  # comprimir. A esteira nunca para por causa desta tool (IV3).
+  fallback_on_error: true

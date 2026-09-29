@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    Sem PackageReference. O host web já vem do framework compartilhado, e cada
+    pacote no esqueleto é risco de restore quebrado ou CVE herdada por código
+    que ninguém escreveu ainda — `Microsoft.AspNetCore.OpenApi` foi removido
+    daqui exatamente por isso (NU1903 em Microsoft.OpenApi, sem versão corrigida
+    na linha 2.x). Swagger/OpenAPI entram junto com o primeiro endpoint real,
+    pelo codegen de features. Mesma regra que o scaffold Angular aplica a NgRx.
+  -->
+  <ItemGroup>
+%%PROJECT_REFERENCES%%
+  </ItemGroup>
+
+</Project>

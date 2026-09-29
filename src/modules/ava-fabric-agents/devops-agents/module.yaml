@@ -1,0 +1,51 @@
+name: devops-agents
+display_name: "DevOps Agents"
+version: "1.1.0"
+description: "IaC, CI/CD, containerização, execução local (Podman), aprovação de package, comparação de versões e monitoramento/observabilidade"
+handoff:
+  to: "Summary (F8)"
+  role: "Executam automação de infraestrutura, pipelines CI/CD e validações operacionais"
+  reason: "Preparar ambientes, deploy e governança da solução"
+  step: "F7 — Agents 7"
+
+agents:
+  - id: ava-devops-iac
+    file: agents/iac-agent.md
+  - id: ava-devops-ci
+    file: agents/ci-agent.md
+  - id: ava-devops-cd
+    file: agents/cd-agent.md
+  - id: ava-devops-package-approval
+    file: agents/package-approval-agent.md
+  - id: ava-devops-compare-version
+    file: agents/compare-version-agent.md
+    depends_on: ava-devops-cd
+    trigger: post_deploy_staging_smoke_ok
+  - id: ava-devops-containerize
+    file: agents/containerize-agent.md
+    skill: ava-devops-containerize
+  - id: ava-devops-podman-run
+    file: agents/podman-run-agent.md
+    skill: ava-devops-podman-run
+    depends_on: ava-devops-containerize
+    description: "Executa localmente no Windows (Podman) a solução containerizada — pré-flight de dependências, machine, .env e compose up"
+  - id: ava-devops-iac-azure
+    file: agents/iac-azure-agent.md
+    skill: ava-devops-iac-azure
+  - id: ava-devops-iac-aws
+    file: agents/iac-aws-agent.md
+    status: stub
+  - id: ava-devops-iac-gcp
+    file: agents/iac-gcp-agent.md
+    status: stub
+  - id: ava-devops-iac-k8s-native
+    file: agents/iac-k8s-native-agent.md
+    status: stub
+  - id: ava-devops-cost-estimate
+    file: agents/cost-estimate-agent.md
+  - id: ava-devops-monitoring-observability
+    file: agents/monitoring-observability-agent.md
+    skill: ava-devops-monitoring-observability
+  - id: ava-devops-orchestrator
+    file: agents/orchestrator-devops.md
+    description: "Orquestra planejamento (DP, Momento 1) e execução (DE, Momento 2) dos agentes DevOps"

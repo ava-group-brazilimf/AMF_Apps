@@ -1,0 +1,78 @@
+﻿MARKER=Escopo INDEX=1588 CONTEXT=     
+           
+         
+         PDF 
+       
+       
+          07/08/2026 15:08  
+          Cobertura :
+           F1 AS-IS  
+          Escopo :
+           All modules â€” Delphi  
+         Executado 
+       
+     
+
+     
+     
+       
+       
+         
+         
+         
+
+         
+         
+           Resumo Executi
+MARKER=cobertura INDEX=5479 CONTEXT=      
+             
+               RelatÃ³rio consolidado 
+              Â· AVA Fabric Agent Factory Â·
+               F1 AS-IS 
+               cobertura  Â· trace
+               11111111-1111-4111-8111-111111111111 
+             
+              
+           
+           
+             
+           
+             
+         
+
+         
+ 
+MARKER=Recursos INDEX=49233 CONTEXT= 
+              
+           
+           
+              Artefatos IaC  
+                
+           
+           
+             
+               Recursos Provisionados 
+             
+             
+               
+                 
+                   
+                     Recurso 
+                     Provider 
+                     Ambi
+MARKER=Ambientes INDEX=50533 CONTEXT=l Â· scripts/ Â·
+                post-deploy-validation.yml 
+             
+              
+           
+           
+             
+               Ambientes de Deploy 
+             
+             
+               
+                 
+                   
+                     Ambiente 
+                     EstratÃ©gia 
+                     Apr

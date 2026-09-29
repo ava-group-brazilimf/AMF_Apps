@@ -1,0 +1,153 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# HIPAA — Health Insurance Portability and Accountability Act
+# Public Law 104-191 (1996) + HITECH Act (2009) + Omnibus Rule (2013)
+# Authority: HHS OCR (U.S. Department of Health and Human Services,
+#            Office for Civil Rights)
+# Jurisdiction: US — applies to covered entities and business associates
+# ─────────────────────────────────────────────────────────────────────────────
+
+id: hipaa
+name: "Health Insurance Portability and Accountability Act"
+jurisdiction:
+  countries: ["US"]
+  authority: "HHS OCR"
+  authority_full_name: "U.S. Department of Health and Human Services, Office for Civil Rights"
+  applicability:
+    - "Covered Entities: health plans, healthcare clearinghouses, healthcare providers"
+    - "Business Associates: entities handling PHI on behalf of covered entities"
+    - "Subcontractors of business associates"
+
+# Timelines and retention
+retention:
+  default_days: 2190                      # 6 years — retention of HIPAA-related documents (45 CFR §164.530(j))
+  breach_notification_days: 60            # §164.404 — notify individuals within 60 days of discovery
+  breach_hhs_notification_days: 60        # §164.408 — notify HHS within 60 days (≥500 individuals: immediate)
+  data_subject_response_days: 30          # §164.524 — respond to access request within 30 days (+30 extension)
+
+# Patient rights (§164.524–§164.528)
+data_subject_rights:
+  - id: DSR-01
+    right: "access"
+    description: "Right to access and obtain a copy of PHI"
+    section: "§164.524"
+  - id: DSR-02
+    right: "amendment"
+    description: "Right to request amendment of PHI"
+    section: "§164.526"
+  - id: DSR-03
+    right: "accounting_of_disclosures"
+    description: "Right to receive accounting of disclosures of PHI"
+    section: "§164.528"
+  - id: DSR-04
+    right: "restriction"
+    description: "Right to request restrictions on uses and disclosures"
+    section: "§164.522"
+  - id: DSR-05
+    right: "confidential_communications"
+    description: "Right to request confidential communications"
+    section: "§164.522(b)"
+  - id: DSR-06
+    right: "breach_notification"
+    description: "Right to be notified of a breach of unsecured PHI"
+    section: "§164.404"
+
+# Protected Health Information (PHI) — 18 identifiers (§164.514(b)(2))
+pii_identifiers:
+  - "Name"
+  - "Geographic data (smaller than state)"
+  - "Dates (birth, admission, discharge, death) — except year"
+  - "Phone numbers"
+  - "Fax numbers"
+  - "Email addresses"
+  - "Social Security Number"
+  - "Medical record numbers"
+  - "Health plan beneficiary numbers"
+  - "Account numbers"
+  - "Certificate/license numbers"
+  - "Vehicle identifiers and serial numbers"
+  - "Device identifiers and serial numbers"
+  - "Web URLs"
+  - "IP addresses"
+  - "Biometric identifiers"
+  - "Full-face photographs"
+  - "Any other unique identifying number or code"
+
+# HIPAA Security Rule requirements (§164.302–§164.318)
+security_requirements:
+  - id: SEC-01
+    category: "Administrative Safeguards"
+    section: "§164.308"
+    controls:
+      - "Security Management Process (risk analysis, risk management)"
+      - "Assigned Security Responsibility (Security Officer)"
+      - "Workforce Security (authorization, clearance, termination)"
+      - "Information Access Management (access establishment, modification)"
+      - "Security Awareness and Training"
+      - "Security Incident Procedures"
+      - "Contingency Plan (backup, disaster recovery, emergency mode)"
+      - "Evaluation (periodic assessment)"
+      - "Business Associate Contracts"
+  - id: SEC-02
+    category: "Physical Safeguards"
+    section: "§164.310"
+    controls:
+      - "Facility Access Controls"
+      - "Workstation Use policies"
+      - "Workstation Security"
+      - "Device and Media Controls (disposal, re-use, accountability)"
+  - id: SEC-03
+    category: "Technical Safeguards"
+    section: "§164.312"
+    controls:
+      - "Access Control (unique user ID, emergency access, automatic logoff, encryption)"
+      - "Audit Controls (hardware, software, procedural logging)"
+      - "Integrity Controls (mechanism to authenticate ePHI)"
+      - "Person or Entity Authentication"
+      - "Transmission Security (integrity controls, encryption)"
+  - id: SEC-04
+    category: "Organizational Requirements"
+    section: "§164.314"
+    controls:
+      - "Business Associate Agreements (BAA)"
+      - "Group Health Plan requirements"
+
+# Minimum Necessary Standard (§164.502(b))
+minimum_necessary:
+  description: "Use, disclose, and request only the minimum amount of PHI necessary"
+  exceptions:
+    - "Disclosures to the individual"
+    - "Treatment purposes"
+    - "Uses/disclosures authorized by individual"
+    - "Disclosures to HHS for enforcement"
+    - "Uses/disclosures required by law"
+
+# Breach categories and notification rules
+breach_notification:
+  unsecured_phi:
+    description: "PHI not rendered unusable/unreadable (not encrypted per NIST guidance)"
+    individual_notice: "Written notice within 60 days"
+    hhs_notice: "Within 60 days if ≥500 individuals; annual log if <500"
+    media_notice: "Required if ≥500 residents of a state/jurisdiction affected"
+  risk_assessment_factors:
+    - "Nature and extent of PHI involved"
+    - "Unauthorized person who used/received PHI"
+    - "Whether PHI was actually acquired or viewed"
+    - "Extent to which risk has been mitigated"
+
+# Sanctions (HITECH Act, §13410)
+sanctions:
+  - type: "tier_1"
+    description: "Did not know — $100–$50,000 per violation"
+    annual_max: "$25,000"
+  - type: "tier_2"
+    description: "Reasonable cause — $1,000–$50,000 per violation"
+    annual_max: "$100,000"
+  - type: "tier_3"
+    description: "Willful neglect (corrected) — $10,000–$50,000 per violation"
+    annual_max: "$250,000"
+  - type: "tier_4"
+    description: "Willful neglect (not corrected) — $50,000 per violation"
+    annual_max: "$1,500,000"
+  - type: "criminal"
+    description: "Up to $250,000 fine and/or 10 years imprisonment"
+    applies_to: "Knowingly obtaining/disclosing PHI, false pretenses, intent to sell"

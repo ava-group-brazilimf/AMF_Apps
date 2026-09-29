@@ -1,0 +1,131 @@
+<#
+.SYNOPSIS
+    Verificação real do código gerado — restore, build, test, lint.
+
+.DESCRIPTION
+    Emitido pela F3S em `outputs/tobe/source-code/verify.ps1`. É o único comando
+    que o razão de progresso aceita como prova: `task_ledger.record_result` grava
+    o exit code deste script, não a opinião do agente.
+
+    A execução auditada de `nopcommerce-02-cli-ava` entregou relatórios com
+    `Build Status: ✅ PASS (Simulated — toolchain validation pending)` enquanto o
+    `dotnet build` real falhava com 1 + 35 + 8 erros em cascata (RC-02).
+    Este script existe para que "simulado" deixe de ser uma opção.
+
+    Mantenha `TreatWarningsAsErrors=false` para builds locais e de verificação
+    (conforme política atual de geração), exceto se o projeto explicitamente
+    reativar o modo restritivo. Nunca filtre a saída para o script passar.
+
+.PARAMETER Scope
+    all (default) | domain | backend | frontend — restringe o que roda.
+
+.PARAMETER SkipRestore
+    Pula restore/install quando as dependências já estão em cache.
+
+.EXAMPLE
+    pwsh ./verify.ps1
+    pwsh ./verify.ps1 -Scope backend
+
+.NOTES
+    Placeholders substituídos pela F3S a partir de `tobe_stack` do project-config:
+      {BACKEND_FRAMEWORK} {FRONTEND_FRAMEWORK} {BACKEND_DIR} {FRONTEND_DIR}
+      {SOLUTION_FILE} {PACKAGE_MANAGER} {COVERAGE_LINE_MIN} {COVERAGE_BRANCH_MIN}
+#>
+[CmdletBinding()]
+param(
+    [ValidateSet('all', 'domain', 'backend', 'frontend')]
+    [string]$Scope = 'all',
+    [switch]$SkipRestore
+)
+
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
+
+$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$backendDir  = Join-Path $root '{BACKEND_DIR}'
+$frontendDir = Join-Path $root '{FRONTEND_DIR}'
+$failures = New-Object System.Collections.Generic.List[string]
+
+function Invoke-Step {
+    param([string]$Name, [scriptblock]$Body, [string]$WorkingDirectory)
+
+    if ($WorkingDirectory -and -not (Test-Path $WorkingDirectory)) {
+        Write-Host "  [SKIP] $Name — $WorkingDirectory nao existe" -ForegroundColor DarkGray
+        return
+    }
+    Write-Host "`n  ==> $Name" -ForegroundColor Cyan
+    Push-Location $WorkingDirectory
+    try {
+        & $Body
+        # Nao confie em excecao: exe nativo sinaliza falha por exit code.
+        if ($LASTEXITCODE -ne 0) {
+            $failures.Add("$Name (exit $LASTEXITCODE)")
+            Write-Host "  [FAIL] $Name — exit $LASTEXITCODE" -ForegroundColor Red
+        } else {
+            Write-Host "  [ OK ] $Name" -ForegroundColor Green
+        }
+    } catch {
+        $failures.Add("$Name ($($_.Exception.Message))")
+        Write-Host "  [FAIL] $Name — $($_.Exception.Message)" -ForegroundColor Red
+    } finally {
+        Pop-Location
+    }
+}
+
+Write-Host "Verificacao real — escopo: $Scope" -ForegroundColor White
+Write-Host "Backend : {BACKEND_FRAMEWORK}"
+Write-Host "Frontend: {FRONTEND_FRAMEWORK}"
+# Directory.Build.props pode redirecionar bin/obj para C:\avaout no Windows.
+# O target CreateBaseOutputDirs cria o diretorio se necessario.
+
+# ── Backend ──────────────────────────────────────────────────────────────────
+if ($Scope -in @('all', 'backend', 'domain')) {
+    if (-not $SkipRestore) {
+        Invoke-Step 'restore de pacotes' { dotnet restore '{SOLUTION_FILE}' } $backendDir
+    }
+    if ($Scope -eq 'domain') {
+        # Fatia minima: dominio e aplicacao compilam isoladamente. Util enquanto
+        # infra e apresentacao ainda estao sendo geradas por outros grupos.
+        Invoke-Step 'build do dominio' {
+            dotnet build '{SOLUTION_FILE}' --no-restore `
+                /p:TreatWarningsAsErrors=false
+        } $backendDir
+    } else {
+        Invoke-Step 'build da solucao' {
+            dotnet build '{SOLUTION_FILE}' --no-restore `
+                /p:TreatWarningsAsErrors=false
+        } $backendDir
+    }
+    Invoke-Step 'testes de backend' {
+        dotnet test '{SOLUTION_FILE}' --no-build --no-restore `
+            --collect:"XPlat Code Coverage" `
+            --logger "trx;LogFileName=backend-tests.trx"
+    } $backendDir
+    Invoke-Step 'auditoria de vulnerabilidades' {
+        dotnet list '{SOLUTION_FILE}' package --vulnerable --include-transitive
+    } $backendDir
+}
+
+# ── Frontend ─────────────────────────────────────────────────────────────────
+if ($Scope -in @('all', 'frontend')) {
+    if (-not $SkipRestore) {
+        Invoke-Step 'instalacao de dependencias' { {PACKAGE_MANAGER} ci } $frontendDir
+    }
+    Invoke-Step 'lint do frontend'    { {PACKAGE_MANAGER} run lint } $frontendDir
+    Invoke-Step 'build do frontend'   { {PACKAGE_MANAGER} run build } $frontendDir
+    Invoke-Step 'testes do frontend'  { {PACKAGE_MANAGER} run test -- --watch=false } $frontendDir
+}
+
+# ── Veredito ─────────────────────────────────────────────────────────────────
+Write-Host ''
+if ($failures.Count -eq 0) {
+    Write-Host "  OK — todas as verificacoes passaram." -ForegroundColor Green
+    exit 0
+}
+
+Write-Host "  FALHA — $($failures.Count) verificacao(oes) reprovada(s):" -ForegroundColor Red
+foreach ($f in $failures) { Write-Host "    - $f" -ForegroundColor Red }
+Write-Host ''
+Write-Host "  Este exit code vai para o razao de progresso. A task NAO sera marcada" -ForegroundColor Yellow
+Write-Host "  como verificada. Corrija o defeito — nunca afrouxe a verificacao." -ForegroundColor Yellow
+exit 1

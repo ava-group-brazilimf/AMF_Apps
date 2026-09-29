@@ -1,0 +1,6 @@
+testSuiteId,testCaseId,result,evidencePath,comment,attachToWorkItem,autoBug,bugSeverity
+38,14,Passed,C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-14,Execução automatizada - Teste de logo no cabeçalho,true,false,3 - Medium
+38,15,Failed,C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-15,Falha na validação do formulário de login,false,true,2 - High
+39,16,Blocked,C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-16,Teste bloqueado por dependência externa,true,false,4 - Low
+38,17,Passed,C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-17,Validação de campos obrigatórios - OK,false,false,3 - Medium
+40,18,NotApplicable,C:/projetos/avanade-code-qa/fastqa/manual_test/evidence/TC-18,Teste não aplicável nesta versão,false,false,4 - Low

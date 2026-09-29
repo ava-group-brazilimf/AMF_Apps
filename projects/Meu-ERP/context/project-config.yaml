@@ -1,0 +1,44 @@
+project_name: "MEU-ERP"
+repository_path: "C://_git//Examples//Meu-ERP"
+legacy_technology: "delphi"
+trace_id: "test-pbi366-agent-fix-verification"
+scope_modules: "all"
+client_name: "Avanade"
+pm_name: "Test PM"
+tech_lead_name: "Test TL"
+language: "pt"
+pipeline_mode: "generic"
+
+tobe_stack:
+  backend_framework: "dotnet"
+  backend_version: "8.0"
+  frontend_framework: "angular"
+  frontend_version: "17"
+  runtime: ".NET 8"
+  language: "C# 12"
+  persistence:
+    type: "sqlserver"
+    orm: "entity-framework-core"
+    micro_orm: "dapper"
+  auth:
+    provider: "azure-ad"
+    library: "microsoft-identity-web"
+  architecture_patterns:
+    cqrs: true
+    mediator: "mediatr"
+    clean_architecture: true
+  observability:
+    provider: "azure-application-insights"
+    logging: "serilog"
+    tracing: "opentelemetry"
+  infrastructure:
+    cloud: "azure"
+    hosting: "azure-app-service"
+
+quality_gates:
+  coverage_minimum: 80
+  build_warnings_as_errors: true
+
+outputs_base_path: "projects/{project_name}/outputs"
+context_base_path: "projects/{project_name}/context"
+inputs_base_path: "projects/{project_name}/inputs"

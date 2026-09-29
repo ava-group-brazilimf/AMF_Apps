@@ -1,0 +1,11 @@
+C4Container
+  title Sophia TO-BE historical C4 reproduction
+  Person(user, "User", "Architecture reviewer")
+  System_Ext(ext, "External System", "External dependency")
+  Container_Boundary(app, "Sophia") {
+    Container(api, "API", "ASP.NET Core", "Application API")
+    ContainerDb(db, "Database", "SQL", "Persistent data")
+  }
+  Rel(user, api, "Uses", "HTTPS")
+  Rel(api, db, "Reads and writes", "SQL")
+  Rel(api, ext, "Integrates", "HTTPS")

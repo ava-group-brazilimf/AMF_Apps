@@ -1,0 +1,19 @@
+// %%COPYRIGHT%%
+
+using Xunit;
+
+namespace %%NAMESPACE%%;
+
+/// <summary>
+/// Prova que a solution compila e que o runner de testes executa. Não valida
+/// regra de negócio — não existe nenhuma no scaffold.
+/// </summary>
+public class ScaffoldSmokeTests
+{
+    [Fact]
+    public void SharedKernel_assembly_marker_is_reachable()
+    {
+        Assert.Equal("%%SHARED_DOMAIN_NAMESPACE%%",
+            %%SHARED_DOMAIN_NAMESPACE%%.AssemblyMarker.Name);
+    }
+}

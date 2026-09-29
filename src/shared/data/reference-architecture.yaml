@@ -1,0 +1,819 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# AVA Fabric — Reference Architecture TO-BE (Fonte Única de Verdade)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Este arquivo consolida stack tecnológica, padrões de arquitetura e princípios
+# de referência para todos os projetos da fábrica. Os agentes TO-BE DEVEM
+# consumir este arquivo como fonte canônica.
+#
+# Caminho canônico: src/shared/data/reference-architecture.yaml
+# ═══════════════════════════════════════════════════════════════════════════════
+
+version: "1.0.0"
+last_updated: "2026-05-06"
+maintainer: "AVA Fabric Architecture Team"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TECH STACK — Tecnologias alvo categorizadas por camada
+# ─────────────────────────────────────────────────────────────────────────────
+tech_stack:
+
+  backend:
+    runtime: ".NET 8"
+    language: "C# 12"
+    framework: "ASP.NET Core 8"
+    orm: "Entity Framework Core 8"
+    micro_orm: "Dapper"
+    mediator: "MediatR 12"
+    validation: "FluentValidation 11"
+    mapping: "AutoMapper 13"
+    logging: "Serilog 4"
+    testing:
+      unit: "xUnit 2.7"
+      mocking: "Moq 4.20"
+      assertions: "FluentAssertions 7"
+      integration: "Testcontainers 3"
+    api:
+      documentation: "Swashbuckle (OpenAPI 3)"
+      versioning: "Asp.Versioning 8"
+      health: "AspNetCore.Diagnostics.HealthChecks"
+
+  frontend:
+    framework: "Angular 17"
+    language: "TypeScript 5.3"
+    state_management: "NgRx Signals"
+    component_library: "Angular Material / Custom Design System"
+    testing:
+      unit: "Jest"
+      e2e: "Playwright"
+    build: "Nx (monorepo)"
+
+  data:
+    primary_database: "Azure SQL"
+    cache: "Redis"
+    migrations: "EF Core Migrations"
+    search: "Azure Cognitive Search (quando aplicável)"
+
+  infrastructure:
+    cloud: "Microsoft Azure"
+    container_runtime: "Azure Container Apps"
+    api_gateway: "Azure API Management"
+    message_broker: "Azure Service Bus"
+    secrets: "Azure Key Vault"
+    configuration: "Azure App Configuration"
+    iac: "Bicep / Terraform"
+    ci_cd: "Azure DevOps Pipelines"
+
+  observability:
+    logs: "Serilog → Application Insights"
+    metrics: "OpenTelemetry → Azure Monitor"
+    traces: "OpenTelemetry Distributed Tracing"
+    correlation: "Correlation ID (W3C Trace Context)"
+    alerting: "Azure Monitor Alerts (SLO-based)"
+    dashboards: "Azure Workbooks / Grafana"
+
+  security:
+    identity: "Azure AD B2C"
+    auth_protocol: "OAuth2 / OpenID Connect"
+    token_library: "Microsoft.Identity.Web + MSAL"
+    secrets_management: "Azure Key Vault"
+    waf: "Azure Front Door WAF"
+    sast: "SonarQube / GitHub Advanced Security"
+    dependency_scan: "Dependabot / OWASP Dependency-Check"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ARCHITECTURE PATTERNS — Padrões estruturais de referência
+# ─────────────────────────────────────────────────────────────────────────────
+architecture_patterns:
+
+  - id: PAT-001
+    name: "Clean Architecture"
+    description: "Separação em Domain, Application, Infrastructure, Presentation"
+    layers:
+      - "Domain (entities, value objects, domain events, interfaces)"
+      - "Application (use cases, commands/queries, DTOs, validators)"
+      - "Infrastructure (EF Core, external services, repositories)"
+      - "Presentation (API controllers, middleware, filters)"
+    status: mandatory
+
+  - id: PAT-002
+    name: "Modular Monolith"
+    description: "Módulos por Bounded Context com fronteiras explícitas, evoluível para microsserviços"
+    characteristics:
+      - "Cada módulo = 1 Bounded Context"
+      - "Comunicação inter-módulo via MediatR (in-process events)"
+      - "Cada módulo tem seu próprio schema no banco"
+      - "Fronteiras fortes: sem referência direta a entidades de outro módulo"
+    evolution_path: "Modular Monolith → Microsserviços (quando escala justificar)"
+    status: mandatory
+
+  - id: PAT-003
+    name: "CQRS (Command Query Responsibility Segregation)"
+    description: "Separação de modelos de leitura e escrita via MediatR handlers"
+    write_side: "Commands → Domain → Repository → DB"
+    read_side: "Queries → Read Model (Dapper/View) → DTO"
+    status: mandatory
+
+  - id: PAT-004
+    name: "Domain-Driven Design (DDD)"
+    description: "Modelagem estratégica e tática baseada em domínio"
+    strategic:
+      - "Bounded Contexts com Context Map"
+      - "Ubiquitous Language por contexto"
+      - "Anti-Corruption Layers entre contextos"
+    tactical:
+      - "Aggregates, Entities, Value Objects"
+      - "Domain Events, Domain Services"
+      - "Repository pattern"
+    status: mandatory
+
+  - id: PAT-005
+    name: "API-First / Contract-First"
+    description: "Contratos OpenAPI definidos antes da implementação"
+    practices:
+      - "OpenAPI 3.0 spec como artefato de design"
+      - "Versionamento de API (URL path ou header)"
+      - "Contract testing entre front e back"
+    status: mandatory
+
+  - id: PAT-006
+    name: "Micro Frontend (Domain-Aligned)"
+    description: "Frontend modular alinhado aos Bounded Contexts do backend"
+    practices:
+      - "Módulos Angular lazy-loaded por domínio"
+      - "Design System compartilhado (tokens, componentes base)"
+      - "Performance budgets por módulo"
+      - "Observability no frontend (RUM)"
+    status: mandatory
+
+  - id: PAT-007
+    name: "Cloud-Native"
+    description: "Aplicação containerizada, stateless, configurável por ambiente"
+    practices:
+      - "12-Factor App compliance"
+      - "Container-ready (Docker multi-stage)"
+      - "Config via environment/Azure App Configuration"
+      - "Horizontal scaling via Azure Container Apps"
+    status: mandatory
+
+  - id: PAT-008
+    name: "Resilience Patterns"
+    description: "Padrões de resiliência para comunicação distribuída"
+    patterns:
+      - "Retry with exponential backoff (Polly)"
+      - "Circuit Breaker (Polly)"
+      - "Timeout policies"
+      - "Bulkhead isolation"
+      - "Graceful degradation"
+      - "Health checks (liveness + readiness)"
+    status: mandatory
+
+  - id: PAT-009
+    name: "Security First (Zero Trust, Secure-by-Design)"
+    description: "Segurança integrada em todo o ciclo de desenvolvimento"
+    practices:
+      - "Zero Trust: nunca confiar, sempre verificar"
+      - "Secure-by-Design: security como requisito não-funcional"
+      - "Shift-Left: SAST/DAST no pipeline de CI"
+      - "Principle of Least Privilege"
+      - "Input validation em toda boundary"
+      - "OWASP Top 10 compliance"
+    status: mandatory
+
+  - id: PAT-010
+    name: "IaC / GitOps"
+    description: "Infraestrutura como código com versionamento Git"
+    practices:
+      - "Bicep/Terraform para provisionamento"
+      - "Environments: dev → staging → production"
+      - "Infrastructure drift detection"
+      - "Policy-as-Code (Azure Policy)"
+    status: mandatory
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ARCHITECTURE PRINCIPLES — Princípios norteadores
+# ─────────────────────────────────────────────────────────────────────────────
+architecture_principles:
+
+  - id: PRINC-001
+    name: "Observabilidade"
+    pillars:
+      - "Structured Logging (Serilog + correlation ID)"
+      - "Metrics (OpenTelemetry counters, histograms)"
+      - "Distributed Traces (W3C Trace Context)"
+      - "SLO/SLI definition per service"
+      - "Actionable Alerts (low noise, high signal)"
+    status: mandatory
+
+  - id: PRINC-002
+    name: "Código Defensivo"
+    practices:
+      - "Fail Fast: validar inputs na boundary do sistema"
+      - "Input Validation: FluentValidation em todo Command/Query"
+      - "Idempotência: operações de escrita idempotentes (deduplication key)"
+      - "Timeouts: toda chamada externa com timeout explícito"
+      - "Retry + Circuit Breaker: Polly policies configuráveis"
+      - "Graceful Degradation: fallback para funcionalidades não-críticas"
+    status: mandatory
+
+  - id: PRINC-003
+    name: "Automação"
+    practices:
+      - "CI/CD: build, test, deploy automatizados"
+      - "Policy Gates: quality gates no pipeline (coverage, SAST, lint)"
+      - "Database migrations automatizadas (EF Core)"
+      - "Infrastructure provisioning automatizado (IaC)"
+    status: mandatory
+
+  - id: PRINC-004
+    name: "Evolução Incremental"
+    practices:
+      - "Backward Compatibility: API versioning, database migrations não-destrutivas"
+      - "Feature Flags: rollout gradual de funcionalidades"
+      - "Strangler Fig: migração incremental do legado"
+      - "Blue/Green ou Canary deployment"
+    status: mandatory
+
+  - id: PRINC-005
+    name: "Privacidade e Compliance by Design"
+    practices:
+      - "Compliance conforme jurisdição do projeto (LGPD, GDPR, CCPA, HIPAA — resolver via country em project-config.yaml)"
+      - "Knowledge files: src/shared/data/compliance/{regulation}.yaml"
+      - "Data classification (PII, sensitive, public)"
+      - "Audit trail para dados sensíveis"
+      - "Encryption at rest + in transit"
+      - "Data retention policies (prazo derivado da regulação ativa)"
+      - "Privacy by Design e by Default"
+    status: mandatory
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CROSS-CUTTING CONCERNS — Preocupações transversais com status de implementação
+# ─────────────────────────────────────────────────────────────────────────────
+cross_cutting_concerns:
+
+  - id: CC-001
+    name: "Authentication & Authorization"
+    technology: "Azure AD B2C + RBAC + Policy-based authorization"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-design"
+
+  - id: CC-002
+    name: "Structured Logging & Audit Trail"
+    technology: "Serilog + Application Insights + Azure Monitor"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-003
+    name: "Exception Handling Pipeline"
+    technology: "Global exception middleware + ProblemDetails (RFC 9457)"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-004
+    name: "Caching Strategy"
+    technology: "Redis (distributed) + IMemoryCache (local)"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-005
+    name: "Health Checks"
+    technology: "ASP.NET Core Health Checks (liveness + readiness + startup)"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-006
+    name: "API Versioning"
+    technology: "Asp.Versioning (URL segment strategy)"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-design"
+
+  - id: CC-007
+    name: "Correlation & Distributed Tracing"
+    technology: "OpenTelemetry + W3C Trace Context propagation"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-008
+    name: "Configuration Management"
+    technology: "Azure App Configuration + Key Vault + Options pattern"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-009
+    name: "Resilience (Retry, Circuit Breaker, Timeout)"
+    technology: "Microsoft.Extensions.Http.Resilience (Polly v8)"
+    status: planned
+    agent_responsible: "ava-tobe-architecture-technical"
+
+  - id: CC-010
+    name: "Database Migrations"
+    technology: "EF Core Migrations (code-first, idempotent scripts)"
+    status: planned
+    agent_responsible: "ava-coder-dotnet-backend"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BOUNDED CONTEXT TEMPLATE — Estrutura padrão de cada módulo
+# ─────────────────────────────────────────────────────────────────────────────
+bounded_context_template:
+  layers:
+    domain:
+      path: "src/{ModuleName}/Domain/"
+      contains: ["Entities", "ValueObjects", "DomainEvents", "Interfaces", "Exceptions"]
+    application:
+      path: "src/{ModuleName}/Application/"
+      contains: ["Commands", "Queries", "DTOs", "Validators", "Mappings", "Behaviors"]
+    infrastructure:
+      path: "src/{ModuleName}/Infrastructure/"
+      contains: ["Persistence", "Repositories", "ExternalServices", "Configuration"]
+    presentation:
+      path: "src/{ModuleName}/API/"
+      contains: ["Controllers", "Middleware", "Filters", "Models"]
+    tests:
+      unit: "tests/{ModuleName}.UnitTests/"
+      integration: "tests/{ModuleName}.IntegrationTests/"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# QUALITY GATES — Gates obrigatórios para cada entrega
+# ─────────────────────────────────────────────────────────────────────────────
+quality_gates:
+
+  code_coverage:
+    line_coverage_min: 80
+    branch_coverage_min: 70
+    tool: "Coverlet + ReportGenerator"
+
+  static_analysis:
+    sonar_quality_gate: "pass"
+    zero_critical_vulnerabilities: true
+    zero_blocker_issues: true
+    max_code_smells_per_module: 10
+    duplication_threshold_percent: 3
+
+  api_contract:
+    openapi_spec_valid: true
+    breaking_changes_require_version_bump: true
+    contract_tests_pass: true
+
+  performance:
+    p95_response_time_ms: 500
+    max_memory_per_container_mb: 512
+    startup_time_max_seconds: 10
+
+  security:
+    owasp_top_10_compliance: true
+    sast_clean: true
+    dependency_vulnerabilities_critical: 0
+    dependency_vulnerabilities_high: 0
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ARCHITECTURE STYLES — 6 estilos candidatos para seleção via Decision Matrix
+# Usados exclusivamente pelo agente architecture-decision-matrix-tobe
+# ─────────────────────────────────────────────────────────────────────────────
+architecture_styles:
+
+  - id: STY-001
+    name: "Simple Monolith"
+    description: "Aplicação única, camadas implícitas, sem separação explícita de domínios"
+    typical_team_size: "1-5"
+    deployment_model: "single process / single container"
+    recommended_when:
+      - "Sistema pequeno (< 50K LOC)"
+      - "Equipe reduzida sem especialização em infra"
+      - "Migration readiness baixo — big-bang inviável"
+      - "Prazo curto para first release"
+    risk_level: low
+    evolution_path: "Simple Monolith → Clean Architecture (quando dívida técnica crescer)"
+
+  - id: STY-002
+    name: "Clean Architecture"
+    description: "Separação explícita em Domain / Application / Infrastructure / Presentation; sem fronteiras inter-domínio formais"
+    typical_team_size: "3-10"
+    deployment_model: "single process / single container"
+    recommended_when:
+      - "Sistema de médio porte (10-200K LOC)"
+      - "Time com conhecimento de padrões DDD e SOLID"
+      - "Necessidade de testabilidade alta sem overhead de múltiplos serviços"
+      - "Domínio bem definido mas sem necessidade de evolução para microsserviços"
+    risk_level: low
+    evolution_path: "Clean Architecture → Modular Monolith (quando BCs precisarem de isolamento)"
+
+  - id: STY-003
+    name: "Vertical Slice Architecture"
+    description: "Organização por feature/caso de uso em vez de camadas; cada slice é auto-contido"
+    typical_team_size: "3-8"
+    deployment_model: "single process / single container"
+    recommended_when:
+      - "Alta frequência de entrega por feature independente"
+      - "Time acostumado com MediatR + CQRS por slice"
+      - "Domínio com features relativamente independentes entre si"
+    risk_level: low
+    evolution_path: "Vertical Slice → Modular Monolith (agrupando slices por BC)"
+
+  - id: STY-004
+    name: "Modular Monolith"
+    description: "Módulos por Bounded Context com fronteiras explícitas, comunicação in-process via eventos, evoluível para microsserviços"
+    typical_team_size: "5-15"
+    deployment_model: "single process / single container (múltiplos módulos internos)"
+    recommended_when:
+      - "Múltiplos bounded contexts claramente identificados"
+      - "Necessidade de isolamento sem overhead de rede distribuída"
+      - "Roadmap de migração gradual para microsserviços no futuro"
+      - "Compliance e auditoria cross-módulo simplificados"
+    risk_level: medium
+    evolution_path: "Modular Monolith → Microservices (extrair módulos quando escala justificar)"
+
+  - id: STY-005
+    name: "Microservices"
+    description: "Serviços independentes por Bounded Context, comunicação via API/mensageria, deploy e escala independentes"
+    typical_team_size: "10+"
+    deployment_model: "múltiplos processos / múltiplos containers / orchestration"
+    recommended_when:
+      - "Alta necessidade de escalabilidade independente por domínio"
+      - "Times autônomos por serviço (Conway's Law)"
+      - "Domínio altamente decomponível com BCs bem isolados"
+      - "Operação madura (CI/CD avançado, observabilidade full)"
+    risk_level: high
+    evolution_path: "Microservices (ponto final — ou colapso para Modular Monolith se overhead superar benefícios)"
+
+  - id: STY-006
+    name: "Cloud-Native"
+    description: "Microsserviços + infra serverless / containers gerenciados + event-driven; otimizado para plataforma de nuvem"
+    typical_team_size: "10+"
+    deployment_model: "containers gerenciados (ACA/AKS) + serverless + event streaming"
+    recommended_when:
+      - "Necessidade de elasticidade automática"
+      - "Workloads com picos imprevisíveis"
+      - "Time com maturidade em Azure Container Apps / AKS"
+      - "Compliance que exige isolamento total de dados por tenant"
+    risk_level: very_high
+    evolution_path: "Cloud-Native (ponto final — nível máximo de complexidade operacional)"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DECISION CRITERIA — 10 critérios ponderados para Decision Matrix (total = 100%)
+# Usados exclusivamente pelo agente architecture-decision-matrix-tobe
+# ─────────────────────────────────────────────────────────────────────────────
+decision_criteria:
+
+  - id: C-01
+    name: "Decomponibilidade do Sistema Legado"
+    weight_percent: 10
+    description: >
+      Grau de separabilidade das responsabilidades no AS-IS: coesão dos bounded contexts
+      identificados, índice de acoplamento entre módulos, presença de estado/dados
+      compartilhados entre contextos e facilidade de estabelecer fronteiras explícitas.
+    data_sources:
+      - "outputs/asis/docs/bounded-context-map.md → bounded_context_count, coupling_index"
+      - "outputs/asis/master-report.md → migration_readiness_score"
+      - "outputs/asis/docs/business-rules.md → cross-module dependencies"
+    scoring_anchors:
+      score_1_to_3: >
+        Responsabilidades fortemente acopladas: dados e lógica compartilhados entre módulos,
+        BCs implícitos ou inexistentes, migration_readiness_score < 40
+      score_4_to_6: >
+        Acoplamento moderado: alguns BCs identificáveis, fronteiras parcialmente separáveis,
+        migration_readiness_score 40-65
+      score_7_to_10: >
+        Alta coesão por módulo: BCs bem delimitados, dados isolados por contexto,
+        acoplamento residual apenas em pontos de integração, migration_readiness_score > 65
+    style_baseline_scores:
+      STY-001: 5  # indiferente ao grau de decomponibilidade — ignora BCs por design
+      STY-002: 6  # beneficia de BCs mas tolera acoplamento moderado
+      STY-003: 6  # similar ao Clean Architecture
+      STY-004: 7  # exige BCs identificáveis mas tolera acoplamento inicial
+      STY-005: 8  # exige alta decomponibilidade — penalizado por GR-01 se readiness baixo
+      STY-006: 7  # similar ao Microservices mas foco em infra elástica
+
+  - id: C-02
+    name: "Viabilidade de Migração do Legado"
+    weight_percent: 15
+    description: >
+      Quão praticável é a migração do sistema AS-IS para o estilo alvo: risco de
+      regredir funcionalidades críticas, complexidade de strangler-fig ou big-bang,
+      dependências COM/DLL/API externas a desacoplar.
+    data_sources:
+      - "outputs/asis/master-report.md → migration_readiness_score, critical_findings"
+      - "outputs/asis/gaps-risks-report.md → riscos de migração por nível"
+      - "project-config.yaml → legacy_technology, scope_modules"
+    scoring_anchors:
+      score_1_to_3: >
+        Migração de alto risco: muitas dependências externas acopladas, lógica de negócio
+        na UI, SQL inline extenso, nenhuma cobertura de testes AS-IS, migration_readiness_score < 30
+      score_4_to_6: >
+        Migração viável com esforço significativo: dependências externas mapeadas e isoláveis,
+        alguma lógica de negócio extraível, migration_readiness_score 30-60
+      score_7_to_10: >
+        Migração de baixo risco: BCs claros, dependências externas isoladas, lógica de negócio
+        em módulos separados, migration_readiness_score > 60
+    style_baseline_scores:
+      STY-001: 9  # menor risco — estrutura simples, fácil de reproduzir
+      STY-002: 7  # risco moderado-baixo — estrutura conhecida e bem documentada
+      STY-003: 7  # risco moderado-baixo — slices independentes facilitam migração incremental
+      STY-004: 6  # risco moderado — exige identificação prévia de BCs e seus contratos
+      STY-005: 4  # alto risco — strangler-fig complexo com múltiplos serviços
+      STY-006: 3  # risco mais alto — adiciona complexidade de infra sobre decomposição
+
+  - id: C-03
+    name: "Time to First Production Release"
+    weight_percent: 12
+    description: >
+      Velocidade para entregar a primeira versão funcional em produção: considera
+      scaffolding inicial, curva de aprendizado, complexidade de pipeline CI/CD
+      e tempo de configuração de infra.
+    data_sources:
+      - "project-config.yaml → pipeline_mode, legacy_technology"
+      - "outputs/asis/master-report.md → loc_total, module_count"
+    scoring_anchors:
+      score_1_to_3: >
+        Primeiro release lento: scaffolding complexo, múltiplos pipelines de CI/CD,
+        configuração de infra extensa, curva de aprendizado alta
+      score_4_to_6: >
+        Primeiro release em prazo moderado: scaffolding conhecido, pipeline padrão,
+        algumas dependências de infra a configurar
+      score_7_to_10: >
+        Primeiro release rápido: estrutura simples, pipeline CI/CD mínimo,
+        infra de um único container, scaffolding em horas
+    style_baseline_scores:
+      STY-001: 9  # scaffolding mínimo, pipeline simples, deploy imediato
+      STY-002: 8  # scaffolding bem documentado (AVA Fabric templates disponíveis)
+      STY-003: 8  # similar ao Clean Architecture
+      STY-004: 6  # scaffolding mais elaborado; fronteiras de módulo a definir antes do primeiro release
+      STY-005: 3  # múltiplos repositórios, pipelines, API gateways — demora para V1 funcional
+      STY-006: 2  # maior lead time — requer plataforma Cloud-Native estável antes de qualquer entrega
+
+  - id: C-04
+    name: "Manutenibilidade de Longo Prazo"
+    weight_percent: 10
+    description: >
+      Facilidade de evoluir, corrigir e entender o sistema após 2+ anos: legibilidade
+      do código, isolamento de mudanças, onboarding de novos membros, testabilidade
+      e coerência de padrões.
+    data_sources:
+      - "outputs/asis/master-report.md → cc_avg, test_coverage, loc_total"
+      - "outputs/asis/gaps-risks-report.md → tech_debt_index"
+    scoring_anchors:
+      score_1_to_3: >
+        Manutenibilidade baixa: ausência de fronteiras, lógica espalhada, alto acoplamento,
+        difícil de testar unitariamente, onboarding lento
+      score_4_to_6: >
+        Manutenibilidade moderada: alguns padrões aplicados, fronteiras parciais,
+        testabilidade razoável
+      score_7_to_10: >
+        Alta manutenibilidade: separação clara de responsabilidades, alta cobertura de testes,
+        padrões consistentes, onboarding rápido via documentação gerada
+    style_baseline_scores:
+      STY-001: 4  # tende a acumular dívida técnica com o tempo sem disciplina explícita
+      STY-002: 8  # separação de camadas garante manutenibilidade estrutural
+      STY-003: 7  # boa manutenibilidade por feature; risco de inconsistência cross-slice
+      STY-004: 9  # módulos isolados com contratos explícitos — manutenibilidade excelente
+      STY-005: 7  # cada serviço é simples; complexidade está na comunicação e no runtime
+      STY-006: 6  # manutenibilidade do código OK mas operação complexa aumenta MTTR
+
+  - id: C-05
+    name: "Necessidade de Escalabilidade Independente"
+    weight_percent: 8
+    description: >
+      Grau em que diferentes partes do sistema têm requisitos de carga distintos que
+      justificam escala independente: módulos com picos de uso díspares, workloads de
+      leitura/escrita assimétricos, SLAs diferenciados por domínio.
+    data_sources:
+      - "outputs/asis/docs/functional-requirements.md → requisitos de performance"
+      - "outputs/asis/docs/value-chain.md → fluxos críticos vs. secundários"
+      - "project-config.yaml → scope_modules"
+    scoring_anchors:
+      score_1_to_3: >
+        Requisitos de escala uniformes: todos os módulos têm carga similar,
+        sem SLAs diferenciados, escalabilidade horizontal do monolito é suficiente
+      score_4_to_6: >
+        Alguns módulos com carga diferenciada: 1-2 domínios com pico previsível,
+        escala parcial desejável mas não crítica
+      score_7_to_10: >
+        Escala independente crítica: múltiplos domínios com cargas díspares,
+        SLAs por serviço obrigatórios, custo de super-provisionar o monolito é alto
+    style_baseline_scores:
+      STY-001: 3  # escala apenas como unidade — não resolve escala diferenciada
+      STY-002: 4  # escala como unidade — melhor que monolito simples mas sem isolamento
+      STY-003: 4  # similar ao Clean Architecture
+      STY-004: 6  # pode extrair módulos quentes para serviços separados quando necessário
+      STY-005: 9  # escala independente por serviço é o principal diferencial
+      STY-006: 10 # auto-scaling por container + serverless — máxima granularidade de escala
+
+  - id: C-06
+    name: "Isolamento de Dados / Acoplamento de Domínio"
+    weight_percent: 8
+    description: >
+      Grau de separação dos dados entre domínios: schemas independentes, sem joins
+      cross-domain, contratos de dados explícitos entre BCs, facilidade de eventual
+      migração de dados para stores independentes.
+    data_sources:
+      - "outputs/asis/db/schema-inventory.md → tabelas por módulo, foreign keys cross-module"
+      - "outputs/asis/docs/bounded-context-map.md → data ownership por BC"
+      - "outputs/asis/db/er-diagram.mmd → dependências de dados cross-domínio"
+    scoring_anchors:
+      score_1_to_3: >
+        Dados fortemente compartilhados: tabelas usadas por múltiplos módulos,
+        joins cross-domain extensos, sem ownership claro de dados por BC
+      score_4_to_6: >
+        Isolamento parcial: maioria dos dados por módulo, alguns joins cross-domain
+        controláveis, ownership majoritariamente definido
+      score_7_to_10: >
+        Isolamento forte: cada BC tem seu próprio schema, sem joins cross-domain diretos,
+        contratos de dados via eventos ou APIs
+    style_baseline_scores:
+      STY-001: 3  # sem isolamento — banco compartilhado como norma
+      STY-002: 5  # isolamento lógico por camada, sem isolamento físico de dados
+      STY-003: 5  # similar ao Clean Architecture
+      STY-004: 8  # schema por módulo é padrão — isolamento físico dentro do mesmo DB
+      STY-005: 9  # banco independente por serviço — isolamento total
+      STY-006: 9  # similar ao Microservices
+
+  - id: C-07
+    name: "Complexidade Operacional"
+    weight_percent: 10
+    description: >
+      Custo operacional de manter o sistema em produção: número de componentes a monitorar,
+      complexidade de debugging distribuído, número de pipelines CI/CD, overhead de infra
+      e maturidade requerida da equipe de operações.
+      Score ALTO = BAIXA complexidade operacional (critério invertido em relação ao overhead).
+    data_sources:
+      - "project-config.yaml → pipeline_mode, legacy_technology"
+      - "outputs/asis/master-report.md → external_integrations_count"
+    scoring_anchors:
+      score_1_to_3: >
+        Alta complexidade operacional: muitos serviços a monitorar, debugging distribuído
+        complexo, múltiplos pipelines, alta exigência de maturidade DevOps
+      score_4_to_6: >
+        Complexidade operacional moderada: alguns serviços, pipeline padrão, debugging
+        majoritariamente local com alguns spans distribuídos
+      score_7_to_10: >
+        Baixa complexidade operacional: deploy único, pipeline simples, debugging local,
+        monitoramento centralizado trivial
+    style_baseline_scores:
+      STY-001: 9  # operação mínima — um processo, um deploy
+      STY-002: 8  # operação simples — um container, pipeline único
+      STY-003: 8  # similar ao Clean Architecture
+      STY-004: 7  # um container mas com múltiplos módulos internos — ligeiramente mais complexo
+      STY-005: 3  # alta complexidade — service mesh, distributed tracing obrigatório
+      STY-006: 2  # maior complexidade — plataforma cloud (ACA/AKS), observabilidade full obrigatória
+
+  - id: C-08
+    name: "Testabilidade"
+    weight_percent: 8
+    description: >
+      Facilidade de escrever e executar testes unitários, de integração e end-to-end:
+      injeção de dependência, fronteiras claras, isolamento de side effects,
+      velocidade de feedback do suite de testes.
+    data_sources:
+      - "outputs/asis/master-report.md → test_coverage AS-IS"
+      - "project-config.yaml → tobe_stack.testing (se declarado)"
+    scoring_anchors:
+      score_1_to_3: >
+        Testabilidade baixa: dependências acopladas, difícil mockar infraestrutura,
+        testes lentos por dependência de banco/rede em testes unitários
+      score_4_to_6: >
+        Testabilidade moderada: DI disponível, alguns mocks possíveis, testes unitários
+        viáveis mas com esforço adicional
+      score_7_to_10: >
+        Alta testabilidade: injeção de dependência por design, fronteiras claras, testes
+        unitários rápidos sem IO, integração com Testcontainers
+    style_baseline_scores:
+      STY-001: 4  # testabilidade baixa sem disciplina explícita de DI
+      STY-002: 9  # DI obrigatório em todas as camadas — testabilidade excelente
+      STY-003: 8  # cada slice testável independentemente
+      STY-004: 9  # módulos isolados com contratos — mocks por BC
+      STY-005: 7  # cada serviço testável individualmente mas contract tests adicionam overhead
+      STY-006: 6  # testabilidade OK mas ambiente de teste local complexo (Testcontainers pesados)
+
+  - id: C-09
+    name: "Aderência ao Domínio de Negócio (DDD fit)"
+    weight_percent: 10
+    description: >
+      Quão bem o estilo arquitetural expressa o modelo de domínio do negócio:
+      expressividade da linguagem ubíqua, mapeamento natural de BCs para estruturas
+      de código, suporte a Domain Events e regras de negócio complexas.
+    data_sources:
+      - "outputs/asis/docs/bounded-context-map.md → bounded_context_count, BC complexity"
+      - "outputs/asis/docs/business-rules.md → complexidade das regras de negócio"
+      - "outputs/asis/docs/functional-requirements.md → domain richness"
+    scoring_anchors:
+      score_1_to_3: >
+        Baixo fit DDD: estrutura técnica não reflete o domínio, BCs misturados,
+        regras de negócio dispersas em camadas de infra ou UI
+      score_4_to_6: >
+        Fit DDD moderado: alguns BCs mapeados, regras de negócio em camada de aplicação,
+        linguagem ubíqua parcialmente implementada
+      score_7_to_10: >
+        Alto fit DDD: BCs explícitos com domain model rico, Domain Events, linguagem
+        ubíqua pervasiva, Aggregates com invariantes protegidas
+    style_baseline_scores:
+      STY-001: 3  # sem suporte estrutural a DDD
+      STY-002: 8  # camada Domain explícita — suporte nativo a DDD tático
+      STY-003: 6  # DDD por slice — funciona mas sem visão estratégica de BCs
+      STY-004: 9  # módulo por BC com domain model completo — melhor fit DDD
+      STY-005: 8  # serviço por BC — excelente fit estratégico, complexidade tática distribuída
+      STY-006: 7  # similar ao Microservices mas foco em infra reduz visibilidade do domínio
+
+  - id: C-10
+    name: "Postura de Conformidade e Segurança"
+    weight_percent: 9
+    description: >
+      Facilidade de implementar e auditar requisitos de conformidade (LGPD, GDPR, CCPA)
+      e segurança: rastreabilidade de dados sensíveis, audit trail centralizado,
+      isolamento de PII por domínio, superfície de ataque controlada.
+    data_sources:
+      - "project-config.yaml → country, tobe_compliance (se declarado)"
+      - "outputs/asis/gaps-risks-report.md → SEC-NNN findings"
+      - "outputs/asis/master-report.md → security_gate"
+    scoring_anchors:
+      score_1_to_3: >
+        Conformidade difícil: dados sensíveis espalhados por toda a base, audit trail
+        complexo de implementar, superfície de ataque ampla
+      score_4_to_6: >
+        Conformidade moderada: alguns controles implementáveis, audit trail centralizado
+        possível, PII mapeável com esforço
+      score_7_to_10: >
+        Conformidade facilitada: dados PII isolados por BC com ownership claro, audit
+        trail estrutural, superfície de ataque reduzida, security gate integrado
+    style_baseline_scores:
+      STY-001: 4  # conformidade requer disciplina manual — sem suporte estrutural
+      STY-002: 7  # camadas facilitam isolamento de concerns de segurança
+      STY-003: 6  # conformidade por slice — cobertura parcial sem visão cross-cutting
+      STY-004: 8  # módulos com ownership claro facilitam LGPD/GDPR
+      STY-005: 8  # isolamento total por serviço — conformidade granular
+      STY-006: 7  # similar ao Microservices mas complexidade de infra pode obscurecer auditoria
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DECISION GUARDRAILS — Regras de ajuste/bloqueio aplicadas sobre os scores
+# Usados exclusivamente pelo agente architecture-decision-matrix-tobe
+# ─────────────────────────────────────────────────────────────────────────────
+decision_guardrails:
+
+  - id: GR-01
+    name: "Legado Altamente Acoplado"
+    condition: "coupling_index == HIGH OR migration_readiness_score < 40"
+    data_source: "outputs/asis/master-report.md → migration_readiness_score, coupling_index"
+    effect:
+      styles_affected: ["STY-005", "STY-006"]
+      action: cap_score
+      criterion: C-01
+      cap_value: 4
+    rationale: >
+      Decomposição forçada em sistema fortemente acoplado introduz risco crítico de migração.
+      Microservices e Cloud-Native não são viáveis sem fronteiras claras no legado.
+
+  - id: GR-02
+    name: "Ausência de Container Infrastructure"
+    condition: "container_runtime NOT declared in project-config.yaml tobe_stack.infrastructure"
+    data_source: "project-config.yaml → tobe_stack.infrastructure.container_runtime"
+    effect:
+      styles_affected: ["STY-006"]
+      action: block
+      message: >
+        Cloud-Native BLOCKED — container_runtime não declarado em project-config.yaml.
+        Declare tobe_stack.infrastructure.container_runtime antes de selecionar Cloud-Native.
+        ADR compensatório obrigatório se selecionado após desbloqueio.
+    rationale: >
+      Cloud-Native requer decisão explícita de plataforma de contêineres.
+      Selecionar o estilo sem infra declarada é uma decisão não-rastreável.
+
+  - id: GR-03
+    name: "Migration Readiness Baixo — Ajuste de Score Global"
+    condition: "migration_readiness_score < 40"
+    data_source: "outputs/asis/master-report.md → migration_readiness_score"
+    effect:
+      adjustments:
+        - styles: ["STY-001"]
+          criterion: C-02
+          delta: +1.5
+        - styles: ["STY-005"]
+          criterion: C-02
+          delta: -1.5
+    rationale: >
+      Sistemas com baixa prontidão de migração beneficiam abordagens simples
+      e penalizam arquiteturas que exigem decomposição prévia extensa.
+
+  - id: GR-04
+    name: "Alta Contagem de Bounded Contexts"
+    condition: "bounded_context_count > 15"
+    data_source: "outputs/asis/docs/bounded-context-map.md → bounded_context_count"
+    effect:
+      adjustments:
+        - styles: ["STY-004", "STY-005"]
+          criterion: C-06
+          delta: +1.0
+    rationale: >
+      Sistemas com muitos BCs identificados beneficiam diretamente de arquiteturas
+      que isolam dados por domínio — reforçando o fit de Modular Monolith e Microservices.
+
+  - id: GR-05
+    name: "Compliance Obrigatório sem Security Layer Declarado"
+    condition: "compliance_required == true AND tobe_stack.auth NOT declared in project-config.yaml"
+    data_source: "project-config.yaml → country (LGPD/GDPR inference) + tobe_stack.auth"
+    effect:
+      styles_affected: ["STY-001"]
+      action: block
+      message: >
+        Simple Monolith BLOCKED — compliance_required: true mas tobe_stack.auth não declarado.
+        Declare tobe_stack.auth e tobe_stack.security antes de selecionar Simple Monolith
+        para sistemas com LGPD/GDPR.
+    rationale: >
+      Simple Monolith sem security layer estrutural não oferece os controles mínimos
+      exigidos por regulações de privacidade de dados.

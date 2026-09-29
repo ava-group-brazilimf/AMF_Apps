@@ -1,0 +1,6 @@
+{
+  "scenario": "malformed-construct",
+  "rootCause": "INVALID_MERMAID",
+  "stage": "STATIC_VALIDATION",
+  "publicationAllowed": false
+}

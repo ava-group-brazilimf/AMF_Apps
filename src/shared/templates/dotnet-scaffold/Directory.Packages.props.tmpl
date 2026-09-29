@@ -1,0 +1,17 @@
+<Project>
+
+  <!--
+    Central Package Management: a versão de cada pacote vive AQUI e em nenhum
+    outro lugar. Um <PackageReference> com Version= dentro de um .csproj quebra
+    o CPM e é reprovado por src/shared/utils/verify_cpm_consistency.py.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+%%PACKAGE_VERSIONS%%
+  </ItemGroup>
+
+</Project>

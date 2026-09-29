@@ -1,0 +1,13 @@
+import { Routes } from '@angular/router';
+
+/** Rotas raiz — uma entrada lazy por bounded context.
+ *
+ * GUARDRAIL: toda rota `loadChildren`/`loadComponent` deve apontar para um arquivo que
+ * existe na árvore. Rota apontando para módulo inexistente é erro de compilação, não
+ * erro de runtime.
+ */
+export const routes: Routes = [
+  { path: '', redirectTo: '%%default_route%%', pathMatch: 'full' },
+%%bc_routes_block%%
+  { path: '**', redirectTo: '%%default_route%%' },
+];
